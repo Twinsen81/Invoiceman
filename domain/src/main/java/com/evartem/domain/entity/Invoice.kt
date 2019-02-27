@@ -1,0 +1,23 @@
+package com.evartem.domain.entity
+
+/**
+ * Represents an invoice - a document issued by a seller to the buyer that indicates the quantities and costs of the
+ * products or services provider by the seller.
+ *
+ * The class represents only the basic information from a real invoice since it's purpose is not to edit or process
+ * the invoice data but to identify one particular invoice among others.
+ *
+ * @property id the document's id on the back-end
+ * @property number the document's number
+ * @property date the document's date
+ * @property seller the name of the company that issued this document
+ * @property scanCopyUrl an optional url to the image with a scanned copy of the document (e.g. JPG or PDF)
+ * @property comment an optional comment
+ */
+data class Invoice (
+    val id: Int,
+    val number: Int,
+    val date: String,
+    val seller: String,
+    val scanCopyUrl: String?,
+    val comment: String?)
