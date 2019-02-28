@@ -10,8 +10,12 @@ package com.evartem.domain.entity.doc
  * @property articleScanRequired the product's article must be scanned from the packaging and must match the [article]
  * property. This ensures that the packaging being processed corresponds to this product
  * @property hasSerialNumber this product has a serial number and it must be entered
- * @property serialNumberScanRequired the serial number must be scanned, not entered manually. Manual input is possible
- * only for users with the proper permissions (e.g. when scanning fails for some reason)
+ * @property serialNumberScanRequired the serial number must be scanned, not entered manually. Manual input
+ * (e.g. when scanning fails for some reason) is possible only for users with the proper permissions
+ * @property equalSerialNumbersAreOk products can have the same serial numbers (since some products have only
+ * a batch number, not a distinct serial number)
+ * @property result the list that contains the result of processing this product by a warehouse employee - serial
+ * numbers and statuses of accepted packagings
  */
 data class Product(
     val id: Int,
@@ -20,5 +24,7 @@ data class Product(
     val quantity: Int,
     val articleScanRequired: Boolean,
     val hasSerialNumber: Boolean,
-    val serialNumberScanRequired: Boolean
+    val serialNumberScanRequired: Boolean,
+    val equalSerialNumbersAreOk: Boolean,
+    val result: List<Result>
 )

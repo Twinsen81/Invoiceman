@@ -5,5 +5,5 @@ data class User (
     val fullName: String,
     val position: String,
     val group: Group,
-    val status: Status
+    val status: UserStatus
 )
