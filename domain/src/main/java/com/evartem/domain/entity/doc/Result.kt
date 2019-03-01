@@ -10,7 +10,8 @@ package com.evartem.domain.entity.doc
  *
  * @property status the status of the scanning/accepting operation
  * @property serial an optional serial number of the packaging being processed
- * @property comment an optional comment about this result
+ * @property comment an optional comment about this result. The comment is obligatory if serial number scanning fails, i.e.
+ * [status] = [ResultStatus.FAILED]
  * @property id the id that identifies this result among others in the [Product.result].
  */
 data class Result(
