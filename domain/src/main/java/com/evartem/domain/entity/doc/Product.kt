@@ -27,4 +27,19 @@ data class Product(
     val serialNumberScanRequired: Boolean,
     val equalSerialNumbersAreOk: Boolean,
     val result: List<Result>
-)
+) {
+    fun addResult(status: ResultStatus,
+                  serial: String? = null,
+                  comment: String? = null) {
+
+    }
+
+    fun deleteResult(resultId: Int) {
+
+    }
+
+    fun updateResult(result: Result) {
+
+    }
+
+}
