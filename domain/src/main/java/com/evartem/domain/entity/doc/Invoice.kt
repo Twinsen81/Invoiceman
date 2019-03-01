@@ -7,7 +7,7 @@ package com.evartem.domain.entity.doc
  * The class represents only the basic information from a real invoice since it's purpose is not to edit or process
  * the invoice data but to identify one particular invoice among others.
  *
- * @property id the document's id on the back-end
+ * @property id the document's id on the back-end (UUID)
  * @property number the document's number
  * @property date the document's date
  * @property seller the name of the company that issued this document
@@ -16,7 +16,7 @@ package com.evartem.domain.entity.doc
  * @property products the [Product]s listed in this invoice
  */
 data class Invoice (
-    val id: Int,
+    val id: String,
     val number: Int,
     val date: String,
     val seller: String,
