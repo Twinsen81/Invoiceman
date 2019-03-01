@@ -6,6 +6,6 @@ package com.evartem.domain.entity.doc
  * the operation is completed, else - failed.
  */
 enum class ResultStatus {
-    /** the processing succeeded - got the result*/ COMPLETED,
-    /** the processing failed - no result*/ FAILED
+    /** the processing succeeded - got the result */ COMPLETED,
+    /** the processing failed - no result */ FAILED
 }
