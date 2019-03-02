@@ -14,6 +14,7 @@ package com.evartem.domain.entity.doc
  * (e.g. when scanning fails for some reason) is possible only for users with the proper permissions
  * @property equalSerialNumbersAreOk products can have the same serial numbers (since some products have only
  * a batch number, not a distinct serial number)
+ * @property serialNumberPattern an optional [Regex] pattern that the serial numbers must be tested against
  * @property result the list that contains the result of processing this product by a warehouse employee - serial
  * numbers and statuses of accepted packagings
  */
@@ -26,16 +27,86 @@ data class Product(
     val hasSerialNumber: Boolean,
     val serialNumberScanRequired: Boolean,
     val equalSerialNumbersAreOk: Boolean,
-    val result: List<Result>
+    val serialNumberPattern: String?,
+    private val result: MutableList<Result>
 ) {
-    fun addResult(status: ResultStatus,
-                  serial: String? = null,
-                  comment: String? = null) {
 
+    private val serialRegex: Regex? by lazy { serialNumberPattern?.toRegex() }
+
+    fun getResult(): List<Result> = result
+
+    fun addResult(
+        status: ResultStatus,
+        serial: String? = null,
+        comment: String? = null
+    ) {
+        val trimmedSerial = serial?.trim()
+        val trimmedComment = comment?.trim()
+        checkResultIsCorrect(status, trimmedSerial, trimmedComment)
+        result.add(Result(status, trimmedSerial, trimmedComment, getNextResultId()))
     }
 
-    fun deleteResult(resultId: Int) {
+    /**
+     * Checks that the provided result contains consistent data according to this product properties.
+     * The function throws [IllegalArgumentException] in case it finds any inconsistencies.
+     * These checks must be enforced on the UI level and thus should always pass successfully here.
+     * They are carried out only to prevent inconsistent data in the model.
+     * A thrown exception from this function indicates a problem on the UI level.
+     */
+    private fun checkResultIsCorrect(status: ResultStatus, serial: String?, comment: String?) {
+        checkTheNumberOfResultsIsNotExceeded()
+        when (status) {
+            ResultStatus.COMPLETED -> {
+                if (hasSerialNumber) {
+                    checkHasSerialNumber(serial)
+                    if (!equalSerialNumbersAreOk)
+                        checkSerialIsUnique(serial)
+                    if (serialNumberPattern != null)
+                        checkSerialMatchesPattern(serial ?: "")
+                }
+            }
+            ResultStatus.FAILED -> {
+                checkFailedResultHasComment(comment)
+            }
+        }
+    }
 
+    //region RESULT CONSISTENCY CHECKS
+    private fun checkHasSerialNumber(serial: String?) {
+        if (serial == null || serial.isEmpty())
+            throw IllegalArgumentException("This product must have a serial number")
+    }
+
+    private fun checkSerialIsUnique(serial: String?) {
+        result.forEach { if (it.serial == serial) throw IllegalArgumentException("A duplicate serial number") }
+    }
+
+    private fun checkSerialMatchesPattern(serial: String) {
+        val result = serialRegex?.matches(serial)
+        if (result == null || !result)
+            throw IllegalArgumentException("The serial number doesn't match the provided pattern")
+    }
+
+    private fun checkFailedResultHasComment(comment: String?) {
+        if (comment == null || comment.isEmpty())
+            throw IllegalArgumentException("A failed processing attempt must include a comment about the failure")
+    }
+
+    private fun checkTheNumberOfResultsIsNotExceeded() {
+        if (result.size >= quantity)
+            throw IllegalArgumentException("The number of processed packagings exceeds the product number in the invoice")
+    }
+    //endregion
+
+    private fun getNextResultId() =
+        (result
+            .map { result -> result.id }
+            .fold(0) { maxId, currentId -> if (currentId > maxId) currentId else maxId }) + 1
+
+
+    fun deleteResult(resultId: Int) {
+        val resultToDelete = result.find { it.id == resultId } ?: throw IllegalArgumentException("Unable to find the result with the id: $resultId")
+        result.remove(resultToDelete)
     }
 
     fun updateResult(result: Result) {
