@@ -109,8 +109,10 @@ data class Product(
         result.remove(resultToDelete)
     }
 
-    fun updateResult(result: Result) {
-
+    fun updateResult(newResult: Result) {
+        val resultToUpdate = result.find { it.id == newResult.id } ?: throw IllegalArgumentException("Unable to find the result with the id: ${newResult.id}")
+        val indexToUpdate = result.indexOf(resultToUpdate)
+        result[indexToUpdate] = newResult
     }
 
 }
