@@ -2,39 +2,31 @@ apply plugin: 'java-library'
 apply plugin: 'kotlin'
 apply plugin: 'org.jetbrains.dokka'
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-}
+def ext = rootProject.extensions.ext
 
-sourceCompatibility = "7"
-targetCompatibility = "7"
-buildscript {
-    ext.kotlin_version = '1.3.21'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
+sourceCompatibility = ext.compiler.java
+targetCompatibility = rootProject.extensions.ext.compiler.java
 
-}
-repositories {
-    mavenCentral()
-}
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = rootProject.extensions.ext.compiler.java
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = rootProject.extensions.ext.compiler.java
     }
 }
+
 dokka {
     outputFormat = 'html'
     outputDirectory = "$buildDir/kdoc"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation domainDependencies
+    testImplementation domainTestDependencies
 }
 
 
