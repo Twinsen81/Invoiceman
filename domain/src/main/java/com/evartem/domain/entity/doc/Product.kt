@@ -23,12 +23,12 @@ data class Product(
     val article: String,
     val description: String,
     val quantity: Int,
-    val articleScanRequired: Boolean,
-    val hasSerialNumber: Boolean,
-    val serialNumberScanRequired: Boolean,
-    val equalSerialNumbersAreOk: Boolean,
-    val serialNumberPattern: String?,
-    private val result: MutableList<Result>
+    val articleScanRequired: Boolean = true,
+    val hasSerialNumber: Boolean = true,
+    val serialNumberScanRequired: Boolean = true,
+    val equalSerialNumbersAreOk: Boolean = false,
+    private val result: MutableList<Result> = mutableListOf(),
+    val serialNumberPattern: String? = null
 ) {
 
     private val serialRegex: Regex? by lazy { serialNumberPattern?.toRegex() }
