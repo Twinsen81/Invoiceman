@@ -33,7 +33,7 @@ data class Product(
 
     private val serialRegex: Regex? by lazy { serialNumberPattern?.toRegex() }
 
-    fun getResult(): List<Result> = results
+    fun getResults(): List<Result> = results
 
     fun addResult(
         status: ResultStatus,
