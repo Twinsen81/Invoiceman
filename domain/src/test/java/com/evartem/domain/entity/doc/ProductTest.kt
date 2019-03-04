@@ -1,27 +1,33 @@
 package com.evartem.domain.entity.doc
 
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.Rule
 
-
-
 class ProductTest {
 
-    @Rule @JvmField
+    @Rule
+    @JvmField
     val exception: ExpectedException = ExpectedException.none()
 
-    //private val product1 = Product(1, "6ES7654-6CL03-4KF0", "H-series PLC", 1)
+    lateinit var product1: Product
+    lateinit var product1SerialNumber1: String
+    lateinit var product1SerialNumber2: String
+    lateinit var product1SerialNumber3: String
 
-    private val product1 = Product(2, "6ES7322-1BL00-0AA0", "32 DI module", 3)
-    private val product1SerialNumber1 = "123456"
-    private val product1SerialNumber2 = "234567"
-    private val product1SerialNumber3 = "345678"
+    @Before
+    fun setup() {
+        //private val product1 = Product(1, "6ES7654-6CL03-4KF0", "H-series PLC", 1)
+        product1 = Product(2, "6ES7322-1BL00-0AA0", "32 DI module", 3)
+        product1SerialNumber1 = "123456"
+        product1SerialNumber2 = "234567"
+        product1SerialNumber3 = "345678"
+    }
 
     @Test
     fun `Correct results should complete processing successfully`() {
-
         // GIVEN correct results
         // WHEN add them to the Product
         product1.addResult(ResultStatus.COMPLETED, product1SerialNumber1)
@@ -31,7 +37,6 @@ class ProductTest {
         // SHOULD complete processing successfully
         assertTrue(product1.isProcessingFinishedSuccessfully)
     }
-
 
     @Test
     fun `More results than expected should throw an exception`() {
@@ -44,6 +49,27 @@ class ProductTest {
         // SHOULD throw an IllegalArgumentException
         exception.expect(IllegalArgumentException::class.java)
         product1.addResult(ResultStatus.COMPLETED, "000000")
+    }
+
+    @Test
+    fun `Shuffling results should keep their IDs unique`() {
+        // GIVEN a product with a few results
+        product1.addResult(ResultStatus.COMPLETED, product1SerialNumber1)
+        val result2 = product1.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
+        val result3 = product1.addResult(ResultStatus.COMPLETED, product1SerialNumber3)
+
+        // WHEN delete and add results
+        product1.deleteResult(result2.id)
+        product1.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
+        product1.deleteResult(result3.id)
+        product1.addResult(ResultStatus.COMPLETED, product1SerialNumber3)
+
+        // SHOULD keep IDs in the results collection unique
+        assertTrue(
+            product1.getResults()
+                .groupBy { it.id }
+                .map { groupedById -> groupedById.value.size }
+                .none { groupSize -> groupSize > 1 })
     }
 
     /*
