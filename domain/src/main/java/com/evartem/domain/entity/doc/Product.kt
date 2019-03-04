@@ -105,7 +105,6 @@ data class Product(
             .map { result -> result.id }
             .fold(0) { maxId, currentId -> if (currentId > maxId) currentId else maxId }) + 1
 
-
     fun deleteResult(resultId: Int) {
         val resultToDelete = results.find { it.id == resultId }
             ?: throw IllegalArgumentException("Unable to find the result with the id: $resultId")
@@ -127,5 +126,4 @@ data class Product(
 
     val isProcessingFinishedSuccessfully
         get() = results.size == quantity && results.all { it.status == ResultStatus.COMPLETED }
-
 }
