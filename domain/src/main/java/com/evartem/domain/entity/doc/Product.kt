@@ -105,14 +105,25 @@ data class Product(
 
 
     fun deleteResult(resultId: Int) {
-        val resultToDelete = result.find { it.id == resultId } ?: throw IllegalArgumentException("Unable to find the result with the id: $resultId")
+        val resultToDelete = result.find { it.id == resultId }
+            ?: throw IllegalArgumentException("Unable to find the result with the id: $resultId")
         result.remove(resultToDelete)
     }
 
     fun updateResult(newResult: Result) {
-        val resultToUpdate = result.find { it.id == newResult.id } ?: throw IllegalArgumentException("Unable to find the result with the id: ${newResult.id}")
+        val resultToUpdate = result.find { it.id == newResult.id }
+            ?: throw IllegalArgumentException("Unable to find the result with the id: ${newResult.id}")
         val indexToUpdate = result.indexOf(resultToUpdate)
         result[indexToUpdate] = newResult
     }
+
+    val isProcessingFinished
+        get() = result.size == quantity
+
+    val isProcessingFinishedWithErrors
+        get() = result.size == quantity && result.any { it.status == ResultStatus.FAILED }
+
+    val isProcessingFinishedSuccessfully
+        get() = result.size == quantity && result.all { it.status == ResultStatus.COMPLETED }
 
 }
