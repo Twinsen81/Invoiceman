@@ -15,7 +15,7 @@ package com.evartem.domain.entity.doc
  * @property equalSerialNumbersAreOk products can have the same serial numbers (since some products have only
  * a batch number, not a distinct serial number)
  * @property serialNumberPattern an optional [Regex] pattern that the serial numbers must be tested against
- * @property result the list that contains the result of processing this product by a warehouse employee - serial
+ * @property results the list that contains the result of processing this product by a warehouse employee - serial
  * numbers and statuses of accepted packagings
  */
 data class Product(
@@ -27,23 +27,25 @@ data class Product(
     val hasSerialNumber: Boolean = true,
     val serialNumberScanRequired: Boolean = true,
     val equalSerialNumbersAreOk: Boolean = false,
-    private val result: MutableList<Result> = mutableListOf(),
+    private val results: MutableList<Result> = mutableListOf(),
     val serialNumberPattern: String? = null
 ) {
 
     private val serialRegex: Regex? by lazy { serialNumberPattern?.toRegex() }
 
-    fun getResult(): List<Result> = result
+    fun getResult(): List<Result> = results
 
     fun addResult(
         status: ResultStatus,
         serial: String? = null,
         comment: String? = null
-    ) {
+    ): Result {
         val trimmedSerial = serial?.trim()
         val trimmedComment = comment?.trim()
         checkResultIsCorrect(status, trimmedSerial, trimmedComment)
-        result.add(Result(status, trimmedSerial, trimmedComment, getNextResultId()))
+        val result = Result(status, trimmedSerial, trimmedComment, getNextResultId())
+        results.add(result)
+        return result
     }
 
     /**
@@ -78,7 +80,7 @@ data class Product(
     }
 
     private fun checkSerialIsUnique(serial: String?) {
-        result.forEach { if (it.serial == serial) throw IllegalArgumentException("A duplicate serial number") }
+        results.forEach { if (it.serial == serial) throw IllegalArgumentException("A duplicate serial number") }
     }
 
     private fun checkSerialMatchesPattern(serial: String) {
@@ -93,37 +95,37 @@ data class Product(
     }
 
     private fun checkTheNumberOfResultsIsNotExceeded() {
-        if (result.size >= quantity)
+        if (results.size >= quantity)
             throw IllegalArgumentException("The number of processed packagings exceeds the product number in the invoice")
     }
     //endregion
 
     private fun getNextResultId() =
-        (result
+        (results
             .map { result -> result.id }
             .fold(0) { maxId, currentId -> if (currentId > maxId) currentId else maxId }) + 1
 
 
     fun deleteResult(resultId: Int) {
-        val resultToDelete = result.find { it.id == resultId }
+        val resultToDelete = results.find { it.id == resultId }
             ?: throw IllegalArgumentException("Unable to find the result with the id: $resultId")
-        result.remove(resultToDelete)
+        results.remove(resultToDelete)
     }
 
     fun updateResult(newResult: Result) {
-        val resultToUpdate = result.find { it.id == newResult.id }
+        val resultToUpdate = results.find { it.id == newResult.id }
             ?: throw IllegalArgumentException("Unable to find the result with the id: ${newResult.id}")
-        val indexToUpdate = result.indexOf(resultToUpdate)
-        result[indexToUpdate] = newResult
+        val indexToUpdate = results.indexOf(resultToUpdate)
+        results[indexToUpdate] = newResult
     }
 
     val isProcessingFinished
-        get() = result.size == quantity
+        get() = results.size == quantity
 
     val isProcessingFinishedWithErrors
-        get() = result.size == quantity && result.any { it.status == ResultStatus.FAILED }
+        get() = results.size == quantity && results.any { it.status == ResultStatus.FAILED }
 
     val isProcessingFinishedSuccessfully
-        get() = result.size == quantity && result.all { it.status == ResultStatus.COMPLETED }
+        get() = results.size == quantity && results.all { it.status == ResultStatus.COMPLETED }
 
 }
