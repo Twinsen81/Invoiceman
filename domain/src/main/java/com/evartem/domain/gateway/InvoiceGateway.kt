@@ -6,7 +6,7 @@ import io.reactivex.Single
 
 interface InvoiceGateway {
 
-    fun getInvoicesForUser(user: User): Single<InvoiceGatewayResult.InvoicesRequestResult>
+    fun getInvoicesForUser(user: User, refresh: Boolean = false): Single<InvoiceGatewayResult.InvoicesRequestResult>
 
     fun requestInvoiceForProcessing(user: User, invoice: Invoice): Single<InvoiceGatewayResult.ProcessingRequestResult>
 
