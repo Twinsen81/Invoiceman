@@ -23,4 +23,13 @@ data class Invoice (
     val products: List<Product>,
     val scanCopyUrl: String? = null,
     val comment: String? = null
-)
+) {
+    val isProcessingFinished
+        get() = products.all { it.isProcessingFinished }
+
+    val isProcessingFinishedWithErrors
+        get() = isProcessingFinished && products.any { it.isProcessingFinishedWithErrors }
+
+    val isProcessingFinishedSuccessfully
+        get() = products.all { it.isProcessingFinishedSuccessfully }
+}
