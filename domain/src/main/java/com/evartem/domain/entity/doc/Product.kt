@@ -84,8 +84,7 @@ data class Product(
     }
 
     private fun checkSerialMatchesPattern(serial: String) {
-        val result = serialRegex?.matches(serial)
-        if (result == null || !result)
+        if (!isSerialMatchingPattern(serial))
             throw IllegalArgumentException("The serial number doesn't match the provided pattern")
     }
 
@@ -104,6 +103,9 @@ data class Product(
         (results
             .map { result -> result.id }
             .fold(0) { maxId, currentId -> if (currentId > maxId) currentId else maxId }) + 1
+
+    fun isSerialMatchingPattern(serial: String) =
+        serialRegex?.matches(serial.trim()) ?: true
 
     fun deleteResult(resultId: Int) {
         val resultToDelete = results.find { it.id == resultId }
