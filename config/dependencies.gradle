@@ -12,6 +12,10 @@ ext {
     ktx = '1.1.0-alpha04'
     material = '1.1.0-alpha03'
     rxKotlin = '2.3.0'
+    retrofit = '2.5.0'
+    okHttp = '3.13.1'
+    moshi = '1.8.0'
+    room = '1.1.0'
     //endregion
 
     //region VERSIONS: Testing
@@ -33,8 +37,29 @@ ext {
     ]
     //endregion
 
+    //region DATA
+    dataDependencies = [
+            project(':domain'),
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+            "com.squareup.okhttp3:logging-interceptor:$okHttp",
+            "com.squareup.retrofit2:retrofit:$retrofit",
+            "com.squareup.retrofit2:converter-moshi:$retrofit",
+            "com.squareup.retrofit2:adapter-rxjava2:$retrofit",
+            "com.squareup.moshi:moshi-kotlin:$moshi",
+            "android.arch.persistence.room:runtime:$room",
+            "android.arch.persistence.room:rxjava2:$room"
+    ]
+
+    dataTestDependencies = [
+            "junit:junit:$jUnit",
+            "org.mockito:mockito-core:$mockito"
+    ]
+    //endregion
+
     //region APP
     appDependencies = [
+            project(':domain'),
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
             "androidx.appcompat:appcompat:$appCompat",
             "androidx.core:core-ktx:$ktx",

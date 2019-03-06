@@ -32,7 +32,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':domain')
     implementation appDependencies
     testImplementation appTestDependencies
     androidTestImplementation appInstrumentationTestDependencies
