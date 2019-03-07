@@ -6,6 +6,7 @@ data class InvoiceRemoteModel (
     val date: String,
     val seller: String,
     val products: List<ProductRemoteModel>,
+    val processedByUser: String? = null,
     val scanCopyUrl: String? = null,
     val comment: String? = null
 )
