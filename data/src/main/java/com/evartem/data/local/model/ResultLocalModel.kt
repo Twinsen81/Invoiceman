@@ -6,6 +6,6 @@ import io.realm.annotations.PrimaryKey
 open class ResultLocalModel(
     @PrimaryKey var id: Int = 0,
     var status: ResultStatusLocalModel? = null,
-    val serial: String? = null,
-    val comment: String? = null
+    var serial: String? = null,
+    var comment: String? = null
 ) : RealmObject()

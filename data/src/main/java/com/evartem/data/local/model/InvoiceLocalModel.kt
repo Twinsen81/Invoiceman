@@ -8,7 +8,8 @@ open class InvoiceLocalModel(
     var number: Int = 0,
     var date: String = "",
     var seller: String = "",
-    var products: List<ProductLocalModel> = RealmList(),
+    var products: RealmList<ProductLocalModel> = RealmList(),
+    var processedByUser: String? = null,
     var scanCopyUrl: String? = null,
     var comment: String? = null
 ): RealmObject()

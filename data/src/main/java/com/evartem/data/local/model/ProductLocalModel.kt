@@ -13,6 +13,6 @@ open class ProductLocalModel(
     var hasSerialNumber: Boolean = true,
     var serialNumberScanRequired: Boolean = true,
     var equalSerialNumbersAreOk: Boolean = false,
-    var results: List<ResultLocalModel> = RealmList(),
+    var results: RealmList<ResultLocalModel> = RealmList(),
     var serialNumberPattern: String? = null
 ): RealmObject()
