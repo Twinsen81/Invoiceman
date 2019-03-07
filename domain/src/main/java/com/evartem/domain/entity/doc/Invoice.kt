@@ -11,6 +11,7 @@ package com.evartem.domain.entity.doc
  * @property number the document's number
  * @property date the document's date
  * @property seller the name of the company that issued this document
+ * @property processedByUser the ID of the user that has accepted this invoice for processing
  * @property scanCopyUrl an optional url to the image with a scanned copy of the document (e.g. JPG or PDF)
  * @property comment an optional comment from the person who added this document to the database
  * @property products the [Product]s listed in this invoice
@@ -21,6 +22,7 @@ data class Invoice (
     val date: String,
     val seller: String,
     val products: List<Product>,
+    val processedByUser: String? = null,
     val scanCopyUrl: String? = null,
     val comment: String? = null
 ) {
