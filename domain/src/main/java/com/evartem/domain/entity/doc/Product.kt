@@ -35,6 +35,17 @@ data class Product(
 
     fun getResults(): List<Result> = results
 
+    /**
+     * Adds the provided info as a result for the current [Product].
+     *
+     * The function throws [IllegalArgumentException] in case it finds any inconsistencies in the provided info,
+     * e.g. [serial] is null when [hasSerialNumber] = true or [serial] doesn't match [serialNumberPattern].
+     * These checks must be enforced on the UI level and thus should always pass successfully here.
+     * They are carried out only to prevent inconsistent data in the model.
+     * A thrown exception from this function indicates a problem on the UI level.
+     *
+     * @throws IllegalArgumentException if the provided result is inconsistent
+     */
     fun addResult(
         status: ResultStatus,
         serial: String? = null,
@@ -50,10 +61,8 @@ data class Product(
 
     /**
      * Checks that the provided result contains consistent data according to this product properties.
-     * The function throws [IllegalArgumentException] in case it finds any inconsistencies.
-     * These checks must be enforced on the UI level and thus should always pass successfully here.
-     * They are carried out only to prevent inconsistent data in the model.
-     * A thrown exception from this function indicates a problem on the UI level.
+     *
+     * @throws IllegalArgumentException if the provided result is inconsistent
      */
     private fun checkResultIsCorrect(status: ResultStatus, serial: String?, comment: String?) {
         checkTheNumberOfResultsIsNotExceeded()
