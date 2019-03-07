@@ -1,15 +1,14 @@
 package com.evartem.data.local.model
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import io.realm.RealmList
+import io.realm.RealmObject
 
-@Entity(tableName = "Invoice")
-data class InvoiceLocalModel(
-    @PrimaryKey val id: String,
-    val number: Int,
-    val date: String,
-    val seller: String,
-    val products: List<ProductLocalModel>,
-    val scanCopyUrl: String? = null,
-    val comment: String? = null
-)
+open class InvoiceLocalModel(
+    var id: String = "",
+    var number: Int = 0,
+    var date: String = "",
+    var seller: String = "",
+    var products: List<ProductLocalModel> = RealmList(),
+    var scanCopyUrl: String? = null,
+    var comment: String? = null
+): RealmObject()

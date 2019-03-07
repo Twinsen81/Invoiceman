@@ -1,7 +1,6 @@
 ext {
 
     compiler = [
-            java  : JavaVersion.VERSION_1_8,
             kotlin: '1.3.21',
             dokka : '0.9.17'
     ]
@@ -15,7 +14,6 @@ ext {
     retrofit = '2.5.0'
     okHttp = '3.13.1'
     moshi = '1.8.0'
-    room = '1.1.0'
     //endregion
 
     //region VERSIONS: Testing
@@ -40,15 +38,14 @@ ext {
     //region DATA
     dataDependencies = [
             project(':domain'),
+            "org.jetbrains.kotlin:kotlin-reflect:$compiler.kotlin", // Explicit dependency for Realm, since it uses an older version and that generates a warning
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
             "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
             "com.squareup.okhttp3:logging-interceptor:$okHttp",
             "com.squareup.retrofit2:retrofit:$retrofit",
             "com.squareup.retrofit2:converter-moshi:$retrofit",
             "com.squareup.retrofit2:adapter-rxjava2:$retrofit",
-            "com.squareup.moshi:moshi-kotlin:$moshi",
-            "android.arch.persistence.room:runtime:$room",
-            "android.arch.persistence.room:rxjava2:$room"
+            "com.squareup.moshi:moshi-kotlin:$moshi"
     ]
 
     dataTestDependencies = [

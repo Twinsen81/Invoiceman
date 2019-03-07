@@ -1,18 +1,18 @@
 package com.evartem.data.local.model
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import io.realm.RealmList
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
-@Entity(tableName = "Product")
-data class ProductLocalModel(
-    @PrimaryKey val id: Int,
-    val article: String,
-    val description: String,
-    val quantity: Int,
-    val articleScanRequired: Boolean = true,
-    val hasSerialNumber: Boolean = true,
-    val serialNumberScanRequired: Boolean = true,
-    val equalSerialNumbersAreOk: Boolean = false,
-    private val results: List<ResultLocalModule> = listOf(),
-    val serialNumberPattern: String? = null
-)
+open class ProductLocalModel(
+    @PrimaryKey var id: Int = 0,
+    var article: String = "",
+    var description: String = "",
+    var quantity: Int = 0,
+    var articleScanRequired: Boolean = true,
+    var hasSerialNumber: Boolean = true,
+    var serialNumberScanRequired: Boolean = true,
+    var equalSerialNumbersAreOk: Boolean = false,
+    var results: List<ResultLocalModel> = RealmList(),
+    var serialNumberPattern: String? = null
+): RealmObject()
