@@ -27,6 +27,12 @@ android {
         outputFormat = 'html'
         outputDirectory = "$buildDir/kdoc"
     }
+
+
+    compileOptions {
+        sourceCompatibility = ext.compiler.java
+        targetCompatibility = ext.compiler.java
+    }
 }
 
 dependencies {
