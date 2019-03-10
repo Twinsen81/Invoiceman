@@ -8,4 +8,20 @@ open class ResultStatusLocalModel(
      * status = 1 = [com.evartem.domain.entity.doc.ResultStatus.FAILED]
      */
     var status: Int = 0
-) : RealmObject()
+) : RealmObject() {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ResultStatusLocalModel
+
+        if (status != other.status) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return status
+    }
+}

@@ -15,4 +15,57 @@ open class ProductLocalModel(
     var equalSerialNumbersAreOk: Boolean = false,
     var results: RealmList<ResultLocalModel> = RealmList(),
     var serialNumberPattern: String? = null
-): RealmObject()
+): RealmObject() {
+
+    fun insertOrUpdateResult(newResult: ResultLocalModel) {
+        val resultToUpdate = results.find { it.id == newResult.id }
+        if (resultToUpdate == null) {
+            results.add(newResult)
+        } else {
+            val indexToUpdate = results.indexOf(resultToUpdate)
+            results[indexToUpdate] = newResult
+        }
+    }
+
+    fun deleteResult(result: ResultLocalModel) {
+        results.removeAll { it.id == result.id }
+    }
+
+    fun deleteAllResults() {
+        results.clear()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ProductLocalModel
+
+        if (id != other.id) return false
+        if (article != other.article) return false
+        if (description != other.description) return false
+        if (quantity != other.quantity) return false
+        if (articleScanRequired != other.articleScanRequired) return false
+        if (hasSerialNumber != other.hasSerialNumber) return false
+        if (serialNumberScanRequired != other.serialNumberScanRequired) return false
+        if (equalSerialNumbersAreOk != other.equalSerialNumbersAreOk) return false
+        if (results != other.results) return false
+        if (serialNumberPattern != other.serialNumberPattern) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + article.hashCode()
+        result = 31 * result + description.hashCode()
+        result = 31 * result + quantity
+        result = 31 * result + articleScanRequired.hashCode()
+        result = 31 * result + hasSerialNumber.hashCode()
+        result = 31 * result + serialNumberScanRequired.hashCode()
+        result = 31 * result + equalSerialNumbersAreOk.hashCode()
+        result = 31 * result + results.hashCode()
+        result = 31 * result + (serialNumberPattern?.hashCode() ?: 0)
+        return result
+    }
+}
