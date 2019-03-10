@@ -58,7 +58,7 @@ class InvoiceLocalDataSourceTest {
             .test()
             .assertNoErrors()
             .assertValue {retrievedInvoice: List<InvoiceLocalModel> ->
-                retrievedInvoice[0].load()
+                TODO("Equals fails because of different classes!")
                 retrievedInvoice[0] == invoice1}
 
     }
