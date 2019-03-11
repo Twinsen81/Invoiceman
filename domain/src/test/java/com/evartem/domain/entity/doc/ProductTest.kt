@@ -146,7 +146,7 @@ class ProductTest {
         val result2 = product1.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
         val result3 = product1.addResult(ResultStatus.COMPLETED, product1SerialNumber3)
 
-        // WHEN delete and add results
+        // WHEN delete and add results (shuffle)
         product1.deleteResult(result2.id)
         product1.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
         product1.deleteResult(result3.id)
