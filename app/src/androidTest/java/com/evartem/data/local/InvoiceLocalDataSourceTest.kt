@@ -9,19 +9,25 @@ import com.evartem.invoiceman.TheApp
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import org.junit.After
-import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class InvoiceLocalDataSourceTest {
+
+    @Rule
+    @JvmField
+    val exception: ExpectedException = ExpectedException.none()
 
     private lateinit var realm: Realm
     private lateinit var localDataSource: InvoiceLocalDataSource
 
     private lateinit var invoice1: InvoiceLocalModel
     private lateinit var invoice2: InvoiceLocalModel
+    private lateinit var result1: ResultLocalModel
 
     @Before
     fun setup() {
@@ -58,9 +64,9 @@ class InvoiceLocalDataSourceTest {
         localDataSource.getInvoices()
             .test()
             .assertNoErrors()
-            .assertValue {retrievedInvoice: List<InvoiceLocalModel> ->
-                retrievedInvoice[0] == invoice1}
-
+            .assertValue { retrievedInvoice: List<InvoiceLocalModel> ->
+                retrievedInvoice[0] == invoice1
+            }
     }
 
     @Test
@@ -95,39 +101,133 @@ class InvoiceLocalDataSourceTest {
         assertTrue(false)
     }
 
+    @Test
+    fun insertingResultWithUnknownInvoiceShouldFail() {
+        // GIVEN an invoice in the data source, and a new result for that invoice
+        localDataSource.insertOrUpdateInvoice(invoice1)
+        val newResult = ResultLocalModel(2, ResultStatusLocalModel(), "S0123456789")
+
+        // WHEN insert the result into a non-existent invoice
+        // SHOULD throw an IllegalArgumentException
+        exception.expect(IllegalArgumentException::class.java)
+        localDataSource.insertOrUpdateResult("no-such-id", 1, newResult)
+    }
 
     @Test
-    fun insertingResultWithUnknownInvoiceShouldFail() {assertTrue(false)}
+    fun insertingResultWithUnknownProductShouldFail() {
+        // GIVEN an invoice in the data source, and a new result for that invoice
+        localDataSource.insertOrUpdateInvoice(invoice1)
+        val newResult = ResultLocalModel(2, ResultStatusLocalModel(), "S0123456789")
 
-    @Test
-    fun insertingResultWithUnknownProductShouldFail() {assertTrue(false)}
+        // WHEN insert the result into a non-existent product
+        // SHOULD throw an IllegalArgumentException
+        exception.expect(IllegalArgumentException::class.java)
+        localDataSource.insertOrUpdateResult(invoice1.id, 9999, newResult)
+    }
 
     @Test
     fun updatingResultShouldBeSuccessful() {
         // GIVEN an invoice in the data source with a result
+        localDataSource.insertOrUpdateInvoice(invoice1)
+
         // WHEN update the result's data and insert into the data source again
+        val updatedResult = ResultLocalModel(1, ResultStatusLocalModel(1), null, "Not found")
+        localDataSource.insertOrUpdateResult(invoice1.id, 1, updatedResult)
+
         // SHOULD be able to retrieve the invoice with the updated result
-        assertTrue(false)
+        localDataSource.getInvoices()
+            .test()
+            .assertNoErrors()
+            .assertValue { retrievedInvoice: List<InvoiceLocalModel> ->
+                retrievedInvoice[0].products
+                    .first { product -> product.id == 1 }
+                    .results.first { result -> result.id == 1 } == updatedResult
+            }
     }
 
     @Test
-    fun deletingResultShouldBeSuccessful() {assertTrue(false)}
+    fun deletingResultShouldBeSuccessful() {
+        // GIVEN an invoice in the data source with some results
+        localDataSource.insertOrUpdateInvoice(invoice1)
+
+        // WHEN deleting a result form the invoice
+        localDataSource.deleteResult(invoice1.id, 1, result1)
+
+        // SHOULD retrieve the invoice without the deleted result
+        localDataSource.getInvoices()
+            .test()
+            .assertNoErrors()
+            .assertValue { retrievedInvoice: List<InvoiceLocalModel> ->
+                retrievedInvoice[0].products
+                    .first { product -> product.id == 1 }
+                    .results.none { result -> result.id == result1.id }
+            }
+    }
 
     @Test
-    fun deletingResultWithUnknownInvoiceShouldFail() {assertTrue(false)}
+    fun deletingResultWithUnknownInvoiceShouldFail() {
+        // GIVEN an invoice in the data source with some results
+        localDataSource.insertOrUpdateInvoice(invoice1)
+
+        // WHEN delete a result from a non-existent invoice
+        // SHOULD throw an IllegalArgumentException
+        exception.expect(IllegalArgumentException::class.java)
+        localDataSource.deleteResult("no-such-id", 1, result1)
+    }
 
     @Test
-    fun deletingResultWithUnknownProductShouldFail() {assertTrue(false)}
+    fun deletingResultWithUnknownProductShouldFail() {
+        // GIVEN an invoice in the data source with some results
+        localDataSource.insertOrUpdateInvoice(invoice1)
+
+        // WHEN delete a result from a non-existent product
+        // SHOULD throw an IllegalArgumentException
+        exception.expect(IllegalArgumentException::class.java)
+        localDataSource.deleteResult(invoice1.id, 9999, result1)
+    }
 
     @Test
-    fun deletingAllResultsShouldBeSuccessful() {assertTrue(false)}
+    fun deletingAllResultsShouldBeSuccessful() {
+        // GIVEN an invoice in the data source with some results
+        localDataSource.insertOrUpdateInvoice(invoice1)
+
+        // WHEN delete all results from the invoice for a product
+        localDataSource.deleteAllResults(invoice1.id, 1)
+
+        // SHOULD retrieve the invoice with the product containing no results
+        localDataSource.getInvoices()
+            .test()
+            .assertNoErrors()
+            .assertValue { retrievedInvoice: List<InvoiceLocalModel> ->
+                retrievedInvoice[0].products
+                    .first { product -> product.id == 1 }
+                    .results.isEmpty()
+            }
+    }
 
     @Test
-    fun deletingAllResultsWithUnknownInvoiceShouldFail() {assertTrue(false)}
+    fun deletingAllResultsWithUnknownInvoiceShouldFail() {
+        // GIVEN an invoice in the data source with some results
+        localDataSource.insertOrUpdateInvoice(invoice1)
+
+        // WHEN delete all results from a non-existent invoice
+        // SHOULD throw an IllegalArgumentException
+        exception.expect(IllegalArgumentException::class.java)
+        localDataSource.deleteAllResults("no-such-id", 1)
+    }
 
     @Test
-    fun deletingAllResultsWithUnknownProductShouldFail() {assertTrue(false)}
+    fun deletingAllResultsWithUnknownProductShouldFail() {
+        // GIVEN an invoice in the data source with some results
+        localDataSource.insertOrUpdateInvoice(invoice1)
 
+        // WHEN delete all results from a non-existent product
+        // SHOULD throw an IllegalArgumentException
+        exception.expect(IllegalArgumentException::class.java)
+        localDataSource.deleteAllResults(invoice1.id, 9999)
+    }
+
+    //region HELPER METHODS
     private fun createTestInvoice1() {
 
         val product1 = ProductLocalModel(1, "6ES7322-1BL00-0AA0", "32 DI module", 3)
@@ -137,7 +237,8 @@ class InvoiceLocalDataSourceTest {
         val product1SerialNumber2 = "SABC4567890"
         val product1SerialNumber3 = "345678"
 
-        product1.insertOrUpdateResult(ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber1))
+        result1 = ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber1)
+        product1.insertOrUpdateResult(result1)
         product1.insertOrUpdateResult(ResultLocalModel(2, ResultStatusLocalModel(), product1SerialNumber2))
         product1.insertOrUpdateResult(
             ResultLocalModel(
