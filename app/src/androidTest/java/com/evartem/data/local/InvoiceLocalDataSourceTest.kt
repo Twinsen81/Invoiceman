@@ -19,8 +19,8 @@ class InvoiceLocalDataSourceTest {
     private lateinit var realm: Realm
     private lateinit var localDataSource: InvoiceLocalDataSource
 
-    lateinit var invoice1: InvoiceLocalModel
-    lateinit var invoice2: InvoiceLocalModel
+    private lateinit var invoice1: InvoiceLocalModel
+    private lateinit var invoice2: InvoiceLocalModel
 
     @Before
     fun setup() {
@@ -53,12 +53,11 @@ class InvoiceLocalDataSourceTest {
         // WHEN insert it into the local data source
         localDataSource.insertOrUpdateInvoice(invoice1)
 
-        // SHOULD be able to retrieve it late with the same data
+        // SHOULD be able to retrieve it later with the same data
         localDataSource.getInvoices()
             .test()
             .assertNoErrors()
             .assertValue {retrievedInvoice: List<InvoiceLocalModel> ->
-                TODO("Equals fails because of different classes!")
                 retrievedInvoice[0] == invoice1}
 
     }
