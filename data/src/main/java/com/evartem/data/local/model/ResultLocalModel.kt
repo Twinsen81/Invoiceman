@@ -4,7 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class ResultLocalModel(
-    @PrimaryKey var id: Int = 0,
+    var id: Int = 0,
     var status: ResultStatusLocalModel? = null,
     var serial: String? = null,
     var comment: String? = null
@@ -12,7 +12,7 @@ open class ResultLocalModel(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        //if (javaClass != other?.javaClass) return false // Will always be false, since Realm changes the class type
 
         other as ResultLocalModel
 

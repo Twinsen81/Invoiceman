@@ -13,11 +13,20 @@ open class InvoiceLocalModel(
     var processedByUser: String? = null,
     var scanCopyUrl: String? = null,
     var comment: String? = null
-): RealmObject() {
+) : RealmObject() {
+
+    /**
+     * Realm does not persist the order of a list.
+     * Thus, the lists should be sorted after retrieved from Realm for successful comparison with other invoices via [equals]
+     */
+    fun sortProducts() {
+        products.sortWith(compareBy { it.id })
+        products.forEach { it.sortResults() }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        //if (javaClass != other?.javaClass) return false // Will always be false, since Realm changes the class type
 
         other as InvoiceLocalModel
 

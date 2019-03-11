@@ -5,16 +5,20 @@ import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.data.local.model.ResultLocalModel
 import io.reactivex.Single
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import io.realm.kotlin.where
 
 class InvoiceLocalDataSource {
 
+    /**
+     * Returns invoices that were saved locally on the device
+     */
     fun getInvoices(): Single<List<InvoiceLocalModel>> {
         var invoices: List<InvoiceLocalModel> = listOf()
         Realm.getDefaultInstance().use { realm ->
-            invoices = realm.where<InvoiceLocalModel>().findAll()
+            // A detached from Realm copy of invoices that won't be updated by Realm anymore
+            invoices = realm.copyFromRealm(realm.where<InvoiceLocalModel>().findAll())
         }
+        invoices.forEach { it.sortProducts() } // Realm does not restore order of items in a list -> sort manually to restore the ascending order
         return Single.just(invoices)
     }
 
@@ -59,7 +63,7 @@ class InvoiceLocalDataSource {
                 invoice?.products?.findLast { product -> product.id == productId }
                     ?: throw IllegalArgumentException("Unable to find the product with id=$productId for invoice id=$invoiceId")
 
-           block(product)
+            block(product)
             realm.executeTransaction {
                 it.insertOrUpdate(invoice)
             }

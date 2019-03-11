@@ -5,7 +5,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class ProductLocalModel(
-    @PrimaryKey var id: Int = 0,
+    var id: Int = 0,
     var article: String = "",
     var description: String = "",
     var quantity: Int = 0,
@@ -35,9 +35,14 @@ open class ProductLocalModel(
         results.clear()
     }
 
+
+    fun sortResults() {
+        results.sortWith(compareBy {it.id})
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        //if (javaClass != other?.javaClass) return false // Will always be false, since Realm changes the class type
 
         other as ProductLocalModel
 
