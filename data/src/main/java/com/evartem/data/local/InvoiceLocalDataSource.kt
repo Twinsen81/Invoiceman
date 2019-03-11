@@ -22,18 +22,18 @@ class InvoiceLocalDataSource {
         return Single.just(invoices)
     }
 
-    fun insertOrUpdateInvoices(invoices: List<InvoiceLocalModel>) {
-        Realm.getDefaultInstance().use { realm ->
-            realm.executeTransaction {
-                it.insertOrUpdate(invoices)
-            }
-        }
-    }
-
     fun insertOrUpdateInvoice(invoice: InvoiceLocalModel) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 it.insertOrUpdate(invoice)
+            }
+        }
+    }
+
+    fun insertOrUpdateInvoice(invoices: List<InvoiceLocalModel>) {
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction {
+                it.insertOrUpdate(invoices)
             }
         }
     }
