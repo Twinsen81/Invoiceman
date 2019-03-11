@@ -24,8 +24,6 @@ class InvoiceLocalDataSource {
                 it.insertOrUpdate(invoices)
             }
         }
-
-        RealmConfiguration.Builder().inMemory().name("test-realm").build()
     }
 
     fun insertOrUpdateInvoice(invoice: InvoiceLocalModel) {
