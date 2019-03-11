@@ -9,6 +9,7 @@ import com.evartem.invoiceman.TheApp
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,12 +49,12 @@ class InvoiceLocalDataSourceTest {
     }
 
     @Test
-    fun inserted_invoice_successfully_retrieved() {
+    fun insertedInvoiceShouldBeSuccessfullyRetrieved() {
         // GIVEN an invoice
         // WHEN insert it into the local data source
         localDataSource.insertOrUpdateInvoice(invoice1)
 
-        // SHOULD be able to retrieve it later with the same data
+        // SHOULD be able to retrieve it with the same data
         localDataSource.getInvoices()
             .test()
             .assertNoErrors()
@@ -61,6 +62,71 @@ class InvoiceLocalDataSourceTest {
                 retrievedInvoice[0] == invoice1}
 
     }
+
+    @Test
+    fun insertedListOfInvoicesShouldBeSuccessfullyRetrieved() {
+        // GIVEN a list of invoices
+        // WHEN insert that list into the local data source
+        // SHOULD be able to retrieve it with the same data
+        assertTrue(false)
+    }
+
+    @Test
+    fun updatingInvoiceShouldBeSuccessful() {
+        // GIVEN an invoice in the data source
+        // WHEN update its' data and insert into the data source again
+        // SHOULD be able to retrieve it with the updated data
+        assertTrue(false)
+    }
+
+    @Test
+    fun updatingListOfInvoicesShouldBeSuccessful() {
+        // GIVEN a list of invoices in the data source
+        // WHEN update it's data and insert into the data source again
+        // SHOULD be able to retrieve it with the updated data
+        assertTrue(false)
+    }
+
+    @Test
+    fun insertedResultShouldBeSuccessfullyRetrieved() {
+        // GIVEN an invoice in the data source, and a new result for that invoice
+        // WHEN insert the result into the invoice
+        // SHOULD be able to retrieve the invoice with the new result
+        assertTrue(false)
+    }
+
+
+    @Test
+    fun insertingResultWithUnknownInvoiceShouldFail() {assertTrue(false)}
+
+    @Test
+    fun insertingResultWithUnknownProductShouldFail() {assertTrue(false)}
+
+    @Test
+    fun updatingResultShouldBeSuccessful() {
+        // GIVEN an invoice in the data source with a result
+        // WHEN update the result's data and insert into the data source again
+        // SHOULD be able to retrieve the invoice with the updated result
+        assertTrue(false)
+    }
+
+    @Test
+    fun deletingResultShouldBeSuccessful() {assertTrue(false)}
+
+    @Test
+    fun deletingResultWithUnknownInvoiceShouldFail() {assertTrue(false)}
+
+    @Test
+    fun deletingResultWithUnknownProductShouldFail() {assertTrue(false)}
+
+    @Test
+    fun deletingAllResultsShouldBeSuccessful() {assertTrue(false)}
+
+    @Test
+    fun deletingAllResultsWithUnknownInvoiceShouldFail() {assertTrue(false)}
+
+    @Test
+    fun deletingAllResultsWithUnknownProductShouldFail() {assertTrue(false)}
 
     private fun createTestInvoice1() {
 
