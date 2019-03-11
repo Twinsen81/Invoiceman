@@ -63,9 +63,8 @@ class InvoiceLocalDataSource {
                 invoice?.products?.findLast { product -> product.id == productId }
                     ?: throw IllegalArgumentException("Unable to find the product with id=$productId for invoice id=$invoiceId")
 
-            block(product)
             realm.executeTransaction {
-                it.insertOrUpdate(invoice)
+                block(product)
             }
         }
     }
