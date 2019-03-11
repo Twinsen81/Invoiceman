@@ -15,14 +15,14 @@ ext {
     retrofit = '2.5.0'
     okHttp = '3.13.1'
     moshi = '1.8.0'
-    room = '1.1.0'
     //endregion
 
     //region VERSIONS: Testing
     jUnit = '4.12'
     mockito = '2.24.5'
-    espresso = '3.1.2-alpha01'
-    testRunner = '1.1.2-alpha01'
+    espresso = '3.1.0'
+    testCore = '1.0.0'
+    testRunner = '1.1.0'
     //endregion
 
     //region DOMAIN
@@ -40,15 +40,14 @@ ext {
     //region DATA
     dataDependencies = [
             project(':domain'),
+            "org.jetbrains.kotlin:kotlin-reflect:$compiler.kotlin", // Explicit dependency for Realm, since it uses an older version and that generates a warning
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
             "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
             "com.squareup.okhttp3:logging-interceptor:$okHttp",
             "com.squareup.retrofit2:retrofit:$retrofit",
             "com.squareup.retrofit2:converter-moshi:$retrofit",
             "com.squareup.retrofit2:adapter-rxjava2:$retrofit",
-            "com.squareup.moshi:moshi-kotlin:$moshi",
-            "android.arch.persistence.room:runtime:$room",
-            "android.arch.persistence.room:rxjava2:$room"
+            "com.squareup.moshi:moshi-kotlin:$moshi"
     ]
 
     dataTestDependencies = [
@@ -60,6 +59,7 @@ ext {
     //region APP
     appDependencies = [
             project(':domain'),
+            project(':data'),
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
             "androidx.appcompat:appcompat:$appCompat",
             "androidx.core:core-ktx:$ktx",
@@ -73,8 +73,10 @@ ext {
     ]
 
     appInstrumentationTestDependencies = [
-            "androidx.test:runner:$testRunner",
-            "androidx.test.espresso:espresso-core:$espresso"
+            "androidx.test:core:$testCore",
+            "androidx.test.ext:junit:$testRunner",
+            "androidx.test.espresso:espresso-core:$espresso",
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin"
     ]
     //endregion
 }

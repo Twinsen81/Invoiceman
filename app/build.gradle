@@ -1,11 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'realm-android'
+
+def ext = rootProject.extensions.ext
 
 android {
-    def ext = rootProject.extensions.ext
-
     compileSdkVersion ext.android.compileSdk
     defaultConfig {
         applicationId ext.application.id
@@ -26,9 +28,12 @@ android {
         outputFormat = 'html'
         outputDirectory = "$buildDir/kdoc"
     }
+
+    compileOptions {
+        sourceCompatibility = ext.compiler.java
+        targetCompatibility = ext.compiler.java
+    }
 }
-
-
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
