@@ -1,32 +1,33 @@
 version: 2
 jobs:
-    working_directory: ~/code
+  build:
+  working_directory: ~/code
 
-    docker:
-    - image: circleci/android:api-28-alpha
-    environment:
-      JVM_OPTS: -Xmx3200m
+  docker:
+  - image: circleci/android:api-28-alpha
+  environment:
+    JVM_OPTS: -Xmx3200m
 
-    steps:
-    - checkout
+  steps:
+  - checkout
 
-    - restore_cache:
-        key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-    - run:
-        name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-        command: sudo chmod +x ./gradlew
-    - run:
-        name: Download Dependencies
-        command: ./gradlew androidDependencies
+  - restore_cache:
+      key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+  - run:
+      name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+      command: sudo chmod +x ./gradlew
+  - run:
+      name: Download Dependencies
+      command: ./gradlew androidDependencies
 
-    - save_cache:
-        paths:
-          - ~/.gradle
-        key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+  - save_cache:
+      paths:
+      - ~/.gradle
+      key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 
-    - run:
-        name: Gradle build (debug)
-        command: ./gradlew -PciBuild=true :domain:assemble assembleDebug assembleAndroidTest
-    - run:
-        name: Run unit tests
-        command: ./gradlew -PciBuild=true :domain:test testDebugUnitTest
+  - run:
+      name: Gradle build (debug)
+      command: ./gradlew -PciBuild=true :domain:assemble assembleDebug assembleAndroidTest
+  - run:
+      name: Run unit tests
+      command: ./gradlew -PciBuild=true :domain:test testDebugUnitTest
