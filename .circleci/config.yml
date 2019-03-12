@@ -52,7 +52,8 @@ references:
   export_gcloud_key: &export_gcloud_key
     run:
       name: Export Google Cloud Service key environment variable
-      command: echo 'export GCLOUD_SERVICE_KEY="$GCLOUD_SERVICE_KEY"' >> $BASH_ENV
+      command: echo ${GCLOUD_SERVICE_KEY} > ${HOME}/client-secret.json
+      #command: echo 'export GCLOUD_SERVICE_KEY="$GCLOUD_SERVICE_KEY"' >> $BASH_ENV
   decode_gcloud_key: &decode_gcloud_key
     run:
       name: Decode Google Cloud credentials
@@ -114,7 +115,7 @@ jobs:
     steps:
     - *attach_debug_workspace
     - *export_gcloud_key
-    - *decode_gcloud_key
+    #- *decode_gcloud_key
     - run:
         name: Set Google Cloud target project
         command: gcloud config set project invoiceman-tw81
