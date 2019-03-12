@@ -111,7 +111,7 @@ class ProductTest {
         product1.updateResult(result2)
 
         // SHOULD successfully update it in the results list
-        assertTrue(product1.getResults().filter { it.serial == result2.serial && it.id == result2.id}.count() == 1)
+        assertTrue(product1.getResults().filter { it.serial == result2.serial && it.id == result2.id }.count() == 1)
     }
 
     @Test
@@ -230,5 +230,4 @@ class ProductTest {
         exception.expect(IllegalArgumentException::class.java)
         product.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
     }
-
 }
