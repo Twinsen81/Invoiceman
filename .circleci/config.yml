@@ -1,6 +1,5 @@
 version: 2
 jobs:
-  build:git config credential.helper
     working_directory: ~/code
 
     docker:
