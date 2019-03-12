@@ -1,5 +1,7 @@
 version: 2
 
+references:
+
   workspace: &workspace
     ~/workspace
   attach_debug_workspace: &attach_debug_workspace
