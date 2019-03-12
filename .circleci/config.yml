@@ -30,6 +30,7 @@ jobs:
 
   test_unit:
     <<: *defaults
+    steps:
     - run:
         name: Run unit tests
         command: ./gradlew -PciBuild=true :domain:test testDebugUnitTest
