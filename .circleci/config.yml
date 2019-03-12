@@ -29,6 +29,11 @@ references:
       paths:
         - app/build
         - domain/build
+  persist_firebase_workspace: &persist_firebase_workspace
+    persist_to_workspace:
+      root: *workspace
+      paths:
+        - firebase
 
 # Default config for Android
 
@@ -125,6 +130,13 @@ jobs:
     - run:
         name: Run instrumented test on Firebase Test Lab
         command: gcloud firebase test android run --no-auto-google-login --type instrumentation --app app/build/outputs/apk/debug/app-debug.apk --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus5X,version=26,locale=en_US,orientation=portrait --environment-variables coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+    - run:
+        name: Create directory to store test results
+        command: mkdir firebase
+    - run:
+        name: Download instrumented test results from Firebase Test Lab
+        command: gsutil -m cp -r -U "`gsutil ls gs://test-lab-v2f30kquf5168-yxw0xibwdda02 | tail -1`*" /root/workspace/firebase/
+    - *persist_firebase_workspace
 
 # Workflows
 
