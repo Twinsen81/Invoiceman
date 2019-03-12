@@ -1,11 +1,24 @@
 version: 2
 
-defaults: &defaults
-  working_directory: ~/code
-  docker:
-  - image: circleci/android:api-28-alpha
-  environment:
-    JVM_OPTS: -Xmx3200m
+  workspace: &workspace
+    ~/workspace
+  attach_debug_workspace: &attach_debug_workspace
+    attach_workspace:
+      at: *workspace
+  persist_debug_workspace: &persist_debug_workspace
+    persist_to_workspace:
+      root: *workspace
+      paths:
+        - app/build
+        - domain/build
+
+  defaults: &defaults
+    working_directory: *workspace
+    docker:
+    - image: circleci/android:api-28-alpha
+    environment:
+      TERM: dumb
+      JVM_OPTS: -Xmx3200m
 
 jobs:
   build_debug:
@@ -27,6 +40,7 @@ jobs:
     - run:
         name: Gradle build (debug)
         command: ./gradlew -PciBuild=true :domain:assemble assembleDebug assembleAndroidTest
+    - *persist_debug_workspace
 
   test_unit:
     <<: *defaults
@@ -50,6 +64,4 @@ workflows:
   workflow:
     jobs:
     - build_debug
-    - test_unit:
-        requires:
-          - build_debug
+    - test_unit
