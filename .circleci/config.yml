@@ -85,4 +85,4 @@ workflows:
     - build_debug
     - test_unit:
         requires:
-          - build_debug
+        - build_debug
