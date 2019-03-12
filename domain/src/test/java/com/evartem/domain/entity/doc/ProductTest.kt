@@ -231,4 +231,9 @@ class ProductTest {
         product.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
     }
 
+    @Test
+    fun shouldFail() {
+        assertTrue(false)
+    }
+
 }
