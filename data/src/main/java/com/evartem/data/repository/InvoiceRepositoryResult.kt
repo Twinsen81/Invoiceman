@@ -1,24 +1,25 @@
 package com.evartem.data.repository
 
 import com.evartem.data.local.model.InvoiceLocalModel
+import com.evartem.domain.gateway.InvoiceGatewayResult
 
-sealed class InvoiceRepositoryResult {
+sealed class InvoiceRepositoryResult(
+    val response: InvoiceGatewayResult.ResponseCode,
+    val networkError: InvoiceGatewayResult.NetworkError? = null
+) {
 
-    data class InvoicesRequestResult(val invoices: List<InvoiceLocalModel>, val response: ResponseCode,
-                                     val networkError: NetworkError? = null) : InvoiceRepositoryResult()
+    class InvoicesRequestResult(
+        val invoices: List<InvoiceLocalModel>, response: InvoiceGatewayResult.ResponseCode,
+        networkError: InvoiceGatewayResult.NetworkError? = null
+    ) : InvoiceRepositoryResult(response, networkError)
 
-    data class ProcessingRequestResult(val response: ResponseCode, val networkError: NetworkError? = null) : InvoiceRepositoryResult()
+    class ProcessingRequestResult(
+        response: InvoiceGatewayResult.ResponseCode,
+        networkError: InvoiceGatewayResult.NetworkError? = null
+    ) : InvoiceRepositoryResult(response, networkError)
 
-    data class SubmitInvoiceResult(val response: ResponseCode, val networkError: NetworkError? = null) : InvoiceRepositoryResult()
-
-    enum class ResponseCode {
-        SUCCESS,
-        DENIED_NETWORK_ERROR,
-        DENIED_PERMISSIONS,
-        DENIED_TAKEN,
-        DENIED_NOT_FOUND,
-        DENIED_INCONSISTENT_DATA,
-    }
-
-    data class NetworkError(val code: Int, val message: String)
+    class SubmitInvoiceResult(
+        response: InvoiceGatewayResult.ResponseCode,
+        networkError: InvoiceGatewayResult.NetworkError? = null
+    ) : InvoiceRepositoryResult(response, networkError)
 }
