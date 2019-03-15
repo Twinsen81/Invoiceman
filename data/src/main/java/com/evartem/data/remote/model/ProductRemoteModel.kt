@@ -9,6 +9,6 @@ data class ProductRemoteModel(
     val hasSerialNumber: Boolean = true,
     val serialNumberScanRequired: Boolean = true,
     val equalSerialNumbersAreOk: Boolean = false,
-    private val results: List<ResultRemoteModel> = listOf(),
+    val results: List<ResultRemoteModel> = listOf(),
     val serialNumberPattern: String? = null
 )

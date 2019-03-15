@@ -9,6 +9,9 @@ import io.realm.kotlin.where
 
 class InvoiceLocalDataSource {
 
+    val isEmpty
+        get() = Realm.getDefaultInstance().isEmpty
+
     /**
      * Returns invoices that were saved locally on the device
      */

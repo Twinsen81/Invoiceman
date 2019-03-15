@@ -2,21 +2,24 @@ package com.evartem.domain.gateway
 
 import com.evartem.domain.entity.doc.Invoice
 
-sealed class InvoiceGatewayResult {
+sealed class InvoiceGatewayResult(val response: ResponseCode,
+                                     val networkError: NetworkError? = null) {
 
-    data class InvoicesRequestResult(val response: ResponseCode, val invoices: List<Invoice>) : InvoiceGatewayResult()
+    class InvoicesRequestResult(val invoices: List<Invoice>, response: ResponseCode,
+                                networkError: NetworkError? = null) : InvoiceGatewayResult(response, networkError)
 
-    data class ProcessingRequestResult(val response: ResponseCode) : InvoiceGatewayResult()
+    class ProcessingRequestResult(response: ResponseCode, networkError: NetworkError? = null) : InvoiceGatewayResult(response, networkError)
 
-    data class SubmitInvoiceResult(val response: ResponseCode) : InvoiceGatewayResult()
+    class SubmitInvoiceResult(response: ResponseCode, networkError: NetworkError? = null) : InvoiceGatewayResult(response, networkError)
 
     enum class ResponseCode {
         SUCCESS,
+        DENIED_NETWORK_ERROR,
         DENIED_PERMISSIONS,
         DENIED_TAKEN,
         DENIED_NOT_FOUND,
-        DENIED_INCONSISTENT_DATA
+        DENIED_INCONSISTENT_DATA,
     }
 
-    data class NetworkError(val code: Int, val message: String) : InvoiceGatewayResult()
+    data class NetworkError(val code: Int, val message: String)
 }

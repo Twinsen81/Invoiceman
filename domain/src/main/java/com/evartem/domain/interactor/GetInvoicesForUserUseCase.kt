@@ -6,11 +6,11 @@ import com.evartem.domain.gateway.InvoiceGatewayResult
 import io.reactivex.Observable
 
 class GetInvoicesForUserUseCase(val schedulers: Schedulers, val gateway: InvoiceGateway):
-    UseCase<Pair<User, Boolean>, InvoiceGatewayResult.InvoicesRequestResult>(schedulers) {
+    UseCase<Pair<User, Boolean>, InvoiceGatewayResult>(schedulers) {
 
-    override fun buildObservable(param: Pair<User, Boolean>?): Observable<InvoiceGatewayResult.InvoicesRequestResult> {
+    override fun buildObservable(param: Pair<User, Boolean>?): Observable<InvoiceGatewayResult> {
         requireNotNull(param)
-        return gateway.getInvoicesForUser(param.first, param.second).toObservable()
+        return gateway.getInvoicesForUser(param.first, param.second)
     }
 }
 
