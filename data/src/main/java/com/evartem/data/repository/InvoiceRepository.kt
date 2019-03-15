@@ -42,12 +42,12 @@ class InvoiceRepository(
 
         return Observable.zip(localResult, remoteResult,
             BiFunction { local: InvoiceRepositoryResult, remote: InvoiceRepositoryResult ->
-                combineLocalAndRemoteResults(local, remote, userId)
+                joinLocalAndRemoteResults(local, remote, userId)
             })
     }
 
     /**
-     * Combines invoices from two data sources: local cached list and a response from the server.
+     * Joins invoices from two data sources: local cached list and a response from the server.
      * Invoices from the server overwrite locally stored invoices unless those are being processed
      * by the user.
      *
@@ -57,7 +57,7 @@ class InvoiceRepository(
      * @param remote invoices (wrapped in InvoiceRepositoryResult) received from the server
      * @param userId the current user's ID
      */
-    private fun combineLocalAndRemoteResults(
+    private fun joinLocalAndRemoteResults(
         local: InvoiceRepositoryResult, remote: InvoiceRepositoryResult, userId: String
     ): InvoiceRepositoryResult {
 
@@ -67,9 +67,10 @@ class InvoiceRepository(
 
         // Keep local invoices that are:
         localInvoices.filter { localInvoice ->
-            localInvoice.processedByUser == userId || // being processed by this user
-                    (localInvoice.processedByUser != userId && remoteInvoices // not being processed but are available in the remote list
-                        .any { remoteInvoice -> localInvoice.id == remoteInvoice.id })
+            localInvoice.processedByUser == userId || // 1) being processed by this user
+                    // 2) not being processed but are not present in the remote list (e.g. the server is down)
+                    (localInvoice.processedByUser != userId && remoteInvoices
+                        .none { remoteInvoice -> localInvoice.id == remoteInvoice.id })
         }.toCollection(unitedInvoices)
 
         // Add remote invoices that are not yet stored locally
