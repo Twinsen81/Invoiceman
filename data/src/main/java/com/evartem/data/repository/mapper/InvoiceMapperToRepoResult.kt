@@ -13,6 +13,9 @@ import retrofit2.Response
 
 class InvoiceMapperToRepoResult {
 
+    val emptyResult
+        get() = InvoiceRepositoryResult.InvoicesRequestResult(listOf(), InvoiceGatewayResult.ResponseCode.SUCCESS)
+
     fun localToResult(localModel: List<InvoiceLocalModel>): InvoiceRepositoryResult =
         InvoiceRepositoryResult.InvoicesRequestResult(localModel, InvoiceGatewayResult.ResponseCode.SUCCESS)
 
