@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Invoiceman</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="main_settings">Settings</string>
+    <string name="main_logout">Logout</string>
 </resources>
