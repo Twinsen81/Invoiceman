@@ -13,5 +13,9 @@ abstract class BaseFragment: Fragment() {
             onConfigureBottomAppBar(it.getBottomAppBar(), it.getFloatingActionButton())
         }
     }
+
     protected abstract fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton)
+
+    protected fun randomGradientChart(peaksNumber: IntRange = 12..16, peaksHeight: IntRange = 5..45) : Array<Float> =
+        (1..peaksNumber.random()).map { peaksHeight.random().toFloat() }.toTypedArray()
 }

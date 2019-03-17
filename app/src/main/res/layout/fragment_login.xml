@@ -7,17 +7,17 @@
         tools:context=".login.LoginFragment">
 
     <com.fdev.backgroundchart.GradientChart
-            android:id="@+id/gradientChart"
+            android:id="@+id/login_gradientChart"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:plusColorStart="#868686"
-            app:plusColorEnd="#ACACAC"
-            app:minusColorStart="#858585"
-            app:minusColorEnd="#727272"
+            app:plusColorStart="@color/gradChartPlusColorStart"
+            app:plusColorEnd="@color/gradChartPlusColorEnd"
+            app:minusColorStart="@color/gradChartMinusColorStart"
+            app:minusColorEnd="@color/gradChartMinusColorEnd"
             app:zoom="10"
             app:isBezier="true"/>
 

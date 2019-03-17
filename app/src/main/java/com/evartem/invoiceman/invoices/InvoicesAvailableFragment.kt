@@ -4,36 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.getDrawable
 import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.main.BaseFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.fragment_invoices_available.*
 
-class InvoiceListFragment : BaseFragment() {
+class InvoicesAvailableFragment : BaseFragment() {
 
-    companion object {
-        fun newInstance() = InvoiceListFragment()
-    }
-
-    private lateinit var viewModel: InvoiceListViewModel
+    private lateinit var viewModel: InvoicesViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_invoice_list, container, false)
+        return inflater.inflate(R.layout.fragment_invoices_available, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(InvoiceListViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(InvoicesViewModel::class.java)
+
+        invoices_available_gradientChart.chartValues = randomGradientChart()
     }
 
-    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
-        bottomAppBar.navigationIcon = getDrawable(context!!, R.drawable.ic_menu)
-        bottomAppBar.visibility = View.VISIBLE
-        fab.visibility = View.GONE
-
-    }
+    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) = Unit
 }

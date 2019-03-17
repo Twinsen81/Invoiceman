@@ -2,4 +2,6 @@
     <string name="app_name">Invoiceman</string>
     <string name="main_settings">Settings</string>
     <string name="main_logout">Logout</string>
+    <string name="invoices_tab_available">AVAILABLE</string>
+    <string name="invoices_tab_in_progress">IN PROGRESS</string>
 </resources>
