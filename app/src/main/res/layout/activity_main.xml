@@ -26,6 +26,7 @@
                 app:navigationIcon="@drawable/ic_menu"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:visibility="gone"
                 android:id="@+id/fab"
                 style="@style/Widget.MaterialComponents.FloatingActionButton"
                 android:layout_width="wrap_content"

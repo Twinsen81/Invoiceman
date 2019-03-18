@@ -17,7 +17,8 @@
             app:minusColorStart="@color/gradChartMinusColorStart"
             app:minusColorEnd="@color/gradChartMinusColorEnd"
             app:zoom="10"
-            app:isBezier="true"/>
+            app:isBezier="true"
+            />
 
     <TextView
             android:layout_width="wrap_content"

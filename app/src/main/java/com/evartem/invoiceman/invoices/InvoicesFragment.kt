@@ -18,9 +18,7 @@ class InvoicesFragment : BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_invoices, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.fragment_invoices, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -29,17 +27,28 @@ class InvoicesFragment : BaseFragment() {
         setupTabs()
     }
 
+/*
+    private val pages = listOf(
+        Pair(R.string.invoices_tab_available, InvoicesAvailableFragment()),
+        Pair(R.string.invoices_tab_in_progress, InvoicesInProgressFragment())
+    )
+*/
+
     private fun setupTabs() {
-        invoicesViewPager.adapter = InvoicesPagerAdapter(fragmentManager!!, context!!)
+        val pages = listOf(
+            Pair(resources.getString(R.string.invoices_tab_available), InvoicesAvailableFragment()),
+            Pair(resources.getString(R.string.invoices_tab_in_progress), InvoicesInProgressFragment())
+        )
+
+        invoicesViewPager.adapter = InvoicesPagerAdapter(childFragmentManager, pages)
         invoicesTabs.setupWithViewPager(invoicesViewPager)
-        //invoicesTabs.setTabTextColors(Color.WHITE, Color.GREEN)
 
     }
 
     override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
+        //fab.visibility = View.GONE
         bottomAppBar.navigationIcon = getDrawable(context!!, R.drawable.ic_menu)
         bottomAppBar.visibility = View.VISIBLE
-        fab.visibility = View.GONE
-
+        fab.hide()
     }
 }

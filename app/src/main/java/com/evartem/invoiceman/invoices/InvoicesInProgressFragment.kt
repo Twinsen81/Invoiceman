@@ -17,9 +17,7 @@ class InvoicesInProgressFragment: BaseFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_invoices_inprogress, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.fragment_invoices_inprogress, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -30,7 +28,4 @@ class InvoicesInProgressFragment: BaseFragment() {
 
     override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) = Unit
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 }

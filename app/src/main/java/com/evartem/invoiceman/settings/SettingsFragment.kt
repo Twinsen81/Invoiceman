@@ -15,10 +15,7 @@ class SettingsFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.fragment_settings, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -26,8 +23,6 @@ class SettingsFragment : BaseFragment() {
 
     override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
         bottomAppBar.navigationIcon = null
-        bottomAppBar.fabAlignmentMode = BottomAppBar.FAB_ALIGNMENT_MODE_END
-        fab.setImageDrawable(getDrawable(context!!, R.drawable.ic_go_back))
-        fab.visibility = View.VISIBLE
+        fab.show()
     }
 }
