@@ -14,12 +14,12 @@ class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository,
 {
     override fun getInvoicesForUser(userId: User, refresh: Boolean): Observable<InvoiceGatewayResult> =
         invoiceRepository.getInvoicesForUser(userId.id, refresh)
+            .map { invoiceMapper.toGateway(it) }
             .onErrorReturn { exception ->
-                InvoiceRepositoryResult.InvoicesRequestResult(listOf(), InvoiceGatewayResult.ResponseCode.APP_ERROR,
+                InvoiceGatewayResult.InvoicesRequestResult(listOf(), InvoiceGatewayResult.ResponseCode.APP_ERROR,
                     InvoiceGatewayResult.NetworkError(0, exception.message ?: "Unknown error")
                 )
             }
-            .map { invoiceMapper.toGateway(it) }
 
     override fun requestInvoiceForProcessing(userId: User, invoice: Invoice): Observable<InvoiceGatewayResult> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
