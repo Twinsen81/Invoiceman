@@ -18,6 +18,7 @@ ext {
     moshi = '1.8.0'
     backgroundChart = '1.0.1-alpha'
     leakCanary = '1.6.3'
+    timber = '4.7.1'
     //endregion
 
     //region VERSIONS: Testing
@@ -50,7 +51,8 @@ ext {
             "com.squareup.retrofit2:retrofit:$retrofit",
             "com.squareup.retrofit2:converter-moshi:$retrofit",
             "com.squareup.retrofit2:adapter-rxjava2:$retrofit",
-            "com.squareup.moshi:moshi-kotlin:$moshi"
+            "com.squareup.moshi:moshi-kotlin:$moshi",
+            "com.jakewharton.timber:timber:$timber"
     ]
 
     dataTestDependencies = [
@@ -74,7 +76,8 @@ ext {
             "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0",
             "android.arch.navigation:navigation-fragment-ktx:$navigation",
             "android.arch.navigation:navigation-ui-ktx:$navigation",
-            "android.arch.navigation:navigation-fragment:$navigation"
+            "android.arch.navigation:navigation-fragment:$navigation",
+            "com.jakewharton.timber:timber:$timber"
     ]
 
     appTestDependencies = [

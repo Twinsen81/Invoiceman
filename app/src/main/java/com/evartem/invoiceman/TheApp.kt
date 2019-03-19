@@ -2,6 +2,7 @@ package com.evartem.invoiceman
 
 import android.app.Application
 import com.squareup.leakcanary.LeakCanary
+import timber.log.Timber
 
 class TheApp : Application() {
 
@@ -15,6 +16,9 @@ class TheApp : Application() {
             return
         }
         LeakCanary.install(this)
+
+        if (BuildConfig.DEBUG)
+            Timber.plant(Timber.DebugTree())
     }
 
     companion object {
