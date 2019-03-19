@@ -40,4 +40,7 @@ dependencies {
     implementation appDependencies
     testImplementation appTestDependencies
     androidTestImplementation appInstrumentationTestDependencies
+    debugImplementation appDebugDependencies
+    releaseImplementation appReleaseDependencies
+    debugImplementation appDebugDependencies
 }
