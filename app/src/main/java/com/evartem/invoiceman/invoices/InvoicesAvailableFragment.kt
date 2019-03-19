@@ -15,9 +15,8 @@ class InvoicesAvailableFragment : BaseFragment() {
 
     private lateinit var viewModel: InvoicesViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_invoices_available, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_invoices_available, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -27,4 +26,9 @@ class InvoicesAvailableFragment : BaseFragment() {
     }
 
     override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) = Unit
+
+    private fun render(uiState: InvoicesUiState) {
+        invoices_available_text.text = "INVOICES: ${uiState.invoices.size}"
+        invoices_available_loading.visibility = if (uiState.loadingIndicator) View.VISIBLE else View.GONE
+    }
 }

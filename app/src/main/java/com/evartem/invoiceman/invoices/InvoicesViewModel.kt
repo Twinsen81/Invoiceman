@@ -1,7 +1,10 @@
 package com.evartem.invoiceman.invoices
 
-import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel
 
 class InvoicesViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+
+    override fun onCleared() {
+        super.onCleared()
+    }
 }
