@@ -1,9 +1,10 @@
-package com.evartem.invoiceman.main
+package com.evartem.invoiceman.navigation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.evartem.invoiceman.R
+import com.evartem.invoiceman.navigation.BottomNavigationDrawerFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*

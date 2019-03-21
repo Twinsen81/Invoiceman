@@ -100,12 +100,14 @@ ext {
 
             // RxJava, RxBinding
             "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+            "com.jakewharton.rxbinding3:rxbinding:$rxBinding",
             "com.jakewharton.rxbinding3:rxbinding-core:$rxBinding",
             "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxBinding",
             "com.jakewharton.rxbinding3:rxbinding-recyclerview:$rxBinding",
             "com.jakewharton.rxbinding3:rxbinding-slidingpanelayout:$rxBinding",
             "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:$rxBinding",
             "com.jakewharton.rxbinding3:rxbinding-viewpager:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-material:$rxBinding",
 
             // Misc
             "com.jakewharton.timber:timber:$timber",

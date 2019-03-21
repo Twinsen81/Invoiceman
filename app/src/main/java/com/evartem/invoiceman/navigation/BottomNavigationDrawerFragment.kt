@@ -1,4 +1,4 @@
-package com.evartem.invoiceman.main
+package com.evartem.invoiceman.navigation
 
 import android.os.Bundle
 import android.view.LayoutInflater

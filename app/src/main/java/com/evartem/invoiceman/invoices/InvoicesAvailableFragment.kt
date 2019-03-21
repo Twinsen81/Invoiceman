@@ -1,17 +1,16 @@
 package com.evartem.invoiceman.invoices
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
-import com.evartem.invoiceman.main.BaseFragment
+import com.evartem.invoiceman.base.BaseFragment
+import com.evartem.invoiceman.util.getRandomPeaksForGradientChart
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -32,10 +31,10 @@ class InvoicesAvailableFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this).get(InvoicesViewModel::class.java)
+        viewModel = ViewModelProviders.of(parentFragment!!).get(InvoicesViewModel::class.java)
         subscribeToViewModel()
 
-        invoices_available_gradientChart.chartValues = randomGradientChart()
+        invoices_available_gradientChart.chartValues = getRandomPeaksForGradientChart()
     }
 
     override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) = Unit
@@ -45,29 +44,35 @@ class InvoicesAvailableFragment : BaseFragment() {
         invoices_available_loading.visibility = if (uiState.loadingIndicator) View.VISIBLE else View.GONE
     }
 
-    private fun renderEffect(uiEffect: InvoicesUiEffect) {
+  /*  private fun renderEffect(uiEffect: InvoicesUiEffect) {
         if (uiEffect is InvoicesUiEffect.NetworkError)
             Toast.makeText(context, uiEffect.message, Toast.LENGTH_LONG).show()
     }
-
+*/
     private fun subscribeToViewModel() {
         viewModel.uiState
-            .doOnNext { Timber.d("New state: $it") }
-            .subscribe(::render) { Timber.wtf("Critical app error while precessing UI state") }
+            .doOnNext { Timber.d("MVI-New state: $it") }
+            .subscribe(::render) { Timber.wtf("MVI-Critical app error while precessing UI state") }
             .addTo(viewModelDisposables)
 
-        viewModel.uiEffects
-            .doOnNext { Timber.d("New effect: $it") }
-            .subscribe(::renderEffect) { Timber.wtf("Critical app error while preocessing UI effect") }
-            .addTo(viewModelDisposables)
+/*        viewModel.uiEffects
+            .doOnNext { Timber.d("MVI-New effect: $it") }
+            .subscribe(::renderEffect) { Timber.wtf("MVI-Critical app error while processing UI effect") }
+            .addTo(viewModelDisposables)*/
     }
 
     private fun subscribeToUiEvents() {
+        val refreshScreenEvent = invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent }
+        val searchEvent = invoices_available_searchButton.clicks()
+            .map { invoices_available_searchText.text.trim() }
+            .filter { text -> text.isNotBlank() }
+            .map { InvoicesEvent.SearchInvoiceEvent(it.toString()) }
 
-        val refreshScreenEvent = RxView.clicks
-        object RefreshScreenEvent : InvoicesEvent()
-        data class SearchInvoiceEvent(val searchQuery: String) : InvoicesEvent()
-
+        uiDisposable = Observable.merge(
+            refreshScreenEvent,
+            searchEvent
+        ).subscribe(viewModel::addEvent)
+            { Timber.wtf("MVI-Critical app error while processing the user's input") }
     }
 
     override fun onPause() {

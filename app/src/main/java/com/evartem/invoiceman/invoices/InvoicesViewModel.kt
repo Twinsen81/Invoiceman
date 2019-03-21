@@ -23,12 +23,14 @@ class InvoicesViewModel: ViewModel() {
     fun addEvent(event: InvoicesEvent) = events.onNext(event)
 
     private fun processEvents() {
+        Timber.d("MVI-Init")
+
         eventsDisposable = events
             .startWith(InvoicesEvent.LoadScreenEvent)
-            .doOnNext { Timber.d("Event: $it") }
+            .doOnNext { Timber.d("MVI-Event: $it") }
             .flatMap { event -> eventToResult(event) }
-            .doOnNext { Timber.d("Result: $it") }
-            .filter { result -> processAsUiEffect(result) }
+            .doOnNext { Timber.d("MVI-Result: $it") }
+            .filter { result -> !processAsUiEffect(result) }
             .scan(InvoicesUiState()) {
                 previousUiState, newResult -> reduceUiState(previousUiState, newResult)
             }
@@ -41,20 +43,20 @@ class InvoicesViewModel: ViewModel() {
 
     private fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
         when (event) {
-            is InvoicesEvent.LoadScreenEvent -> onLoadScreen()
-            is InvoicesEvent.RefreshScreenEvent -> onRefreshScreen()
+            is InvoicesEvent.LoadScreenEvent -> onLoadScreenEvent()
+            is InvoicesEvent.RefreshScreenEvent -> onRefreshScreenEvent()
             is InvoicesEvent.SearchInvoiceEvent -> onSearchInvoiceEvent(event)
         }
 
-    private fun onLoadScreen(): Observable<InvoicesViewModelResult> =
+    private fun onLoadScreenEvent(): Observable<InvoicesViewModelResult> =
         Observable.just(InvoicesViewModelResult.AllInvoicesResult(
             InvoiceGatewayResult.InvoicesRequestResult(listOf(),
                 InvoiceGatewayResult.ResponseCode.DENIED_INCONSISTENT_DATA)))
 
-    private fun onRefreshScreen(): Observable<InvoicesViewModelResult> =
+    private fun onRefreshScreenEvent(): Observable<InvoicesViewModelResult> =
         Observable.just(InvoicesViewModelResult.AllInvoicesResult(
             InvoiceGatewayResult.InvoicesRequestResult(listOf(),
-                InvoiceGatewayResult.ResponseCode.DENIED_NOT_FOUND)))
+                InvoiceGatewayResult.ResponseCode.DENIED_NETWORK_ERROR)))
 
     private fun onSearchInvoiceEvent(event: InvoicesEvent.SearchInvoiceEvent): Observable<InvoicesViewModelResult> =
         Observable.just(InvoicesViewModelResult.SearchResult(event.searchQuery,
@@ -64,7 +66,7 @@ class InvoicesViewModel: ViewModel() {
 
     private fun reduceUiState(previousState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
         return InvoicesUiState(if (newResult is InvoicesViewModelResult.SearchResult) newResult.searchQuery else "",
-            newResult.gatewayResult == InvoiceGatewayResult.ResponseCode.DENIED_NOT_FOUND)
+            newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NOT_FOUND)
     }
 
     private fun processAsUiEffect(result: InvoicesViewModelResult): Boolean {
