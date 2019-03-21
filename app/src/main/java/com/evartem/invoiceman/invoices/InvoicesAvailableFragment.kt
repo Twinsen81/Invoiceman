@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
-import com.evartem.invoiceman.base.BaseFragment
+import com.evartem.invoiceman.base.AppBarFragment
 import com.evartem.invoiceman.util.getRandomPeaksForGradientChart
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -18,7 +18,8 @@ import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import timber.log.Timber
 
-class InvoicesAvailableFragment : BaseFragment() {
+//TODO: Layout = MOVE appBar to Fragment
+class InvoicesAvailableFragment : AppBarFragment() {
 
     private lateinit var viewModel: InvoicesViewModel
 

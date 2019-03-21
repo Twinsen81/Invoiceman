@@ -6,7 +6,8 @@ import com.evartem.invoiceman.navigation.MainActivity
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-abstract class BaseFragment : Fragment() {
+//TODO: Layout = MOVE appBar to Fragment
+abstract class AppBarFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 

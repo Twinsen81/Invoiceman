@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
-import com.evartem.invoiceman.base.BaseFragment
+import com.evartem.invoiceman.base.AppBarFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.disposables.CompositeDisposable
@@ -16,7 +16,7 @@ import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.fragment_invoices.*
 import timber.log.Timber
 
-class InvoicesFragment : BaseFragment() {
+class InvoicesFragment : AppBarFragment() {
 
     private lateinit var viewModel: InvoicesViewModel
 
