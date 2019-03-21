@@ -11,17 +11,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class SettingsFragment : AppBarFragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_settings, container, false)
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_settings, container, false)
 
     override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
         bottomAppBar.navigationIcon = null
+        bottomAppBar.visibility = View.VISIBLE
         fab.show()
     }
 }

@@ -8,29 +8,23 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.getDrawable
 import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
-import com.evartem.invoiceman.base.AppBarFragment
+import com.evartem.invoiceman.base.MviFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices.*
-import timber.log.Timber
 
-class InvoicesFragment : AppBarFragment() {
+class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
     private lateinit var viewModel: InvoicesViewModel
 
-    private var viewModelDisposables: CompositeDisposable = CompositeDisposable()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.fragment_invoices, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        viewModel = ViewModelProviders.of(this).get(InvoicesViewModel::class.java)
+        return inflater.inflate(R.layout.fragment_invoices, container, false)
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        viewModel = ViewModelProviders.of(this).get(InvoicesViewModel::class.java)
-        subscribeToViewModel()
 
         setupTabs()
     }
@@ -51,21 +45,14 @@ class InvoicesFragment : AppBarFragment() {
         fab.hide()
     }
 
-    private fun renderEffect(uiEffect: InvoicesUiEffect) {
-      if (uiEffect is InvoicesUiEffect.NetworkError)
-          Toast.makeText(context, uiEffect.message, Toast.LENGTH_LONG).show()
+    override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) {
+        if (uiEffect is InvoicesUiEffect.NetworkError)
+            Toast.makeText(context, uiEffect.message, Toast.LENGTH_LONG).show()
     }
 
-    private fun subscribeToViewModel() {
-        viewModel.uiEffects
-            .doOnNext { Timber.d("MVI-New effect: $it") }
-            .subscribe(::renderEffect) { Timber.wtf("MVI-Critical app error while processing UI effect") }
-            .addTo(viewModelDisposables)
-    }
+    override fun getUiStateObservable(): Observable<InvoicesUiState>? = null
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModelDisposables.clear()
-    }
+    override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
 
+    override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
 }

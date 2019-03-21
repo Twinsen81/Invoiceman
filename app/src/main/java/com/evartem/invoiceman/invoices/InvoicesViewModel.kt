@@ -48,7 +48,7 @@ class InvoicesViewModel :
             )
         )
 
-    override fun reduceUiState(previousState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
+    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
         return InvoicesUiState(
             if (newResult is InvoicesViewModelResult.SearchResult) newResult.searchQuery else "",
             newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NOT_FOUND

@@ -7,22 +7,20 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
-abstract class MviViewModel<UiState, UiEffect, UiEvent, ViewModelResult>(private val startingEvent: UiEvent,
-                                                                       private val startingUiState: UiState): ViewModel()  {
+abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
+    (private val startingEvent: Event, private val startingUiState: UiState) : ViewModel() {
 
-    private val uiState: BehaviorSubject<UiState> = BehaviorSubject.create()
-    private val uiEffects: PublishSubject<UiEffect> = PublishSubject.create()
+    val uiState: BehaviorSubject<UiState> = BehaviorSubject.create()
+    val uiEffects: PublishSubject<UiEffect> = PublishSubject.create()
 
-    private val events: PublishSubject<UiEvent> = PublishSubject.create()
+    private val events: PublishSubject<Event> = PublishSubject.create()
     private lateinit var eventsDisposable: Disposable
 
     init {
         processEvents()
     }
 
-    fun addEvent(event: UiEvent) = events.onNext(event)
-
-    protected fun addUiEffect(effect: UiEffect) = uiEffects.onNext(effect)
+    fun addEvent(event: Event) = events.onNext(event)
 
     private fun processEvents() {
         Timber.d("MVI-Init")
@@ -33,14 +31,10 @@ abstract class MviViewModel<UiState, UiEffect, UiEvent, ViewModelResult>(private
             .flatMap { event -> eventToResult(event) }
             .doOnNext { Timber.d("MVI-Result: $it") }
             .filter { result -> !processAsUiEffect(result) }
-            .scan(startingUiState) {
-                    previousUiState, newResult -> reduceUiState(previousUiState, newResult)
+            .scan(startingUiState) { previousUiState, newResult ->
+                reduceUiState(previousUiState, newResult)
             }
-            .subscribe {
-                uiState.onNext(it)
-            }
-
-        //TODO: Add error processing to the stream - onErrorReturn
+            .subscribe(uiState::onNext) { Timber.wtf("MVI-Critical app error while an event") }
     }
 
     private fun processAsUiEffect(result: ViewModelResult): Boolean {
@@ -52,9 +46,9 @@ abstract class MviViewModel<UiState, UiEffect, UiEvent, ViewModelResult>(private
         return false
     }
 
-    protected abstract fun eventToResult(event: UiEvent): Observable<ViewModelResult>
+    protected abstract fun eventToResult(event: Event): Observable<ViewModelResult>
 
-    protected abstract fun reduceUiState(previousState: UiState, newResult: ViewModelResult): UiState
+    protected abstract fun reduceUiState(previousUiState: UiState, newResult: ViewModelResult): UiState
 
     protected abstract fun getUiEffect(newResult: ViewModelResult): UiEffect?
 
@@ -62,5 +56,4 @@ abstract class MviViewModel<UiState, UiEffect, UiEvent, ViewModelResult>(private
         super.onCleared()
         eventsDisposable.dispose()
     }
-
 }
