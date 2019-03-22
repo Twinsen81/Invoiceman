@@ -57,6 +57,7 @@ class InvoiceRepository(
      * @param remote invoices (wrapped in InvoiceRepositoryResult) received from the server
      * @param userId the current user's ID
      */
+
     private fun joinLocalAndRemoteResults(
         local: InvoiceRepositoryResult, remote: InvoiceRepositoryResult, userId: String
     ): InvoiceRepositoryResult {
