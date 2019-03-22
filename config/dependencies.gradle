@@ -29,49 +29,10 @@ ext {
     espresso = '3.1.0'
     testCore = '1.0.0'
     testRunner = '1.1.0'
+    restMock = '0.3.3'
     //endregion
 
-    //region DOMAIN
-    domainDependencies = [
-            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
-            "io.reactivex.rxjava2:rxkotlin:$rxKotlin"
-    ]
 
-    domainTestDependencies = [
-            "junit:junit:$jUnit",
-            "org.mockito:mockito-core:$mockito"
-    ]
-    //endregion
-
-    //region DATA
-    dataDependencies = [
-
-            // Modules
-            project(':domain'),
-
-            // Kotlin
-            "org.jetbrains.kotlin:kotlin-reflect:$compiler.kotlin", // Explicit dependency for Realm, since it uses an older version and that generates a warning
-            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
-
-            // RxJava
-            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
-
-            // Retrofit & Company
-            "com.squareup.okhttp3:logging-interceptor:$okHttp",
-            "com.squareup.retrofit2:retrofit:$retrofit",
-            "com.squareup.retrofit2:converter-moshi:$retrofit",
-            "com.squareup.retrofit2:adapter-rxjava2:$retrofit",
-            "com.squareup.moshi:moshi-kotlin:$moshi",
-
-            // Misc
-            "com.jakewharton.timber:timber:$timber"
-    ]
-
-    dataTestDependencies = [
-            "junit:junit:$jUnit",
-            "org.mockito:mockito-core:$mockito"
-    ]
-    //endregion
 
     //region APP
     appDependencies = [
@@ -135,6 +96,64 @@ ext {
 
     appReleaseDependencies = [
             "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanary"
+    ]
+    //endregion
+
+    //region DOMAIN
+    domainDependencies = [
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin"
+    ]
+
+    domainTestDependencies = [
+            "junit:junit:$jUnit",
+            "org.mockito:mockito-core:$mockito"
+    ]
+    //endregion
+
+    //region BACKENDSIM
+    backendsimDependencies = [
+
+            // Modules
+            project(':domain'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-reflect:$compiler.kotlin", // Explicit dependency for Realm, since it uses an older version and that generates a warning
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+
+            // Misc
+            "com.squareup.moshi:moshi-kotlin:$moshi",
+            "com.github.andrzejchm.RESTMock:android:$restMock",
+            "com.jakewharton.timber:timber:$timber"
+    ]
+
+    //region DATA
+    dataDependencies = [
+
+            // Modules
+            project(':domain'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-reflect:$compiler.kotlin", // Explicit dependency for Realm, since it uses an older version and that generates a warning
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+
+            // RxJava
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+
+            // Retrofit & Company
+            "com.squareup.okhttp3:logging-interceptor:$okHttp",
+            "com.squareup.retrofit2:retrofit:$retrofit",
+            "com.squareup.retrofit2:converter-moshi:$retrofit",
+            "com.squareup.retrofit2:adapter-rxjava2:$retrofit",
+            "com.squareup.moshi:moshi-kotlin:$moshi",
+
+            // Misc
+            "com.jakewharton.timber:timber:$timber"
+    ]
+
+    dataTestDependencies = [
+            "junit:junit:$jUnit",
+            "org.mockito:mockito-core:$mockito"
     ]
     //endregion
 }
