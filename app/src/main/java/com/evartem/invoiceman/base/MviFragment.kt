@@ -19,8 +19,6 @@ import timber.log.Timber
 abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     private var disposables: CompositeDisposable = CompositeDisposable()
-    //private var uiDisposables: CompositeDisposable = CompositeDisposable()
-//    private var uiDisposable: Disposable? = null
     private val uiEvents: MutableList<Observable<Event>> = mutableListOf()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -84,11 +82,9 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     private fun subscribeToUiEvents() {
         if (uiEvents.size > 0) {
-//            uiDisposable =
-                Observable.merge(uiEvents).subscribe(getUiEventsConsumer()) //Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
+                Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
                 { Timber.wtf("MVI-Critical app error while processing the user's input") }
                     .addTo(disposables)
-//            Timber.d("MVI-Fragment: subscribing to events, DISP:${uiDisposable!!.hashCode()}, disposed: ${uiDisposable!!.isDisposed}")
         }
     }
 
@@ -100,11 +96,6 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     override fun onPause() {
         super.onPause()
-//        Timber.d("MVI-Fragment: onPause, DISPui:${uiDisposable?.hashCode()}, disposed: ${uiDisposable?.isDisposed}")
-        //Timber.d("MVI-Fragment: onPause, DISPvm:${disposables?.hashCode()}, disposed: ${disposables?.isDisposed}")
-//        uiDisposable?.dispose()
-//        uiDisposable = null
-        //uiDisposables.clear()
         uiEvents.clear()
         disposables.clear()
     }
