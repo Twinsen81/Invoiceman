@@ -5,22 +5,30 @@ import kotlin.random.Random
 
 object RandomProductGenerator {
 
-    fun getProducts(number: Int): MutableList<Product> {
-    }
+    fun getProducts(number: Int): MutableList<Product> =
+        (1..number).map { getProduct(it) }.toMutableList()
 
     private fun getProduct(id: Int): Product {
         val (article, description) = articleAndDescription
-        return Product(id,article, description, quantity, Random.nextBoolean(), Random.nextBoolean(), Random.nextBoolean(), Random.nextBoolean(),
-            serialNumberPattern = serialPattern)
+        val hasSerialNumber = Random.nextBoolean()
+        return Product(
+            id, article, description, quantity,
+            Random.nextBoolean(), hasSerialNumber,
+            if (hasSerialNumber) Random.nextBoolean() else false,
+            if (hasSerialNumber) Random.nextBoolean() else false,
+            serialNumberPattern = if (hasSerialNumber) serialPattern else null
+        )
     }
 
     private val quantity get() = (1..3).random()
 
-    private val serialPattern get() = listOf(
-        "S[A-Z\\d]{10}", null
+    private val serialPattern
+        get() = listOf(
+            "S[A-Z\\d]{10}", null
         ).let { it[(0 until it.size).random()] }
 
-    val articleAndDescription get() = listOf(
+    val articleAndDescription
+        get() = listOf(
             Pair(
                 "6ES7195-1GC00-0XA0",
                 "SIMATIC DP, mounting rail for ET 200M, 2000 mm long, for holding bus modules for removal and insertion function"
@@ -223,6 +231,4 @@ object RandomProductGenerator {
         ).let {
             it[(0 until it.size).random()]
         }
-
-
 }

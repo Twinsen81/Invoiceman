@@ -1,7 +1,6 @@
 package com.evartem.backendsim
 
 import com.evartem.backendsim.RandomInvoiceGenerator.getInvoices
-import com.evartem.backendsim.RandomInvoiceGenerator.getScanCopyUrl
 import com.evartem.domain.entity.doc.Invoice
 import java.util.*
 
@@ -45,10 +44,8 @@ object RandomInvoiceGenerator {
         ).let { it[(0 until it.size).random()] }
 
     fun getScanCopyUrl(seller: String, number: Int, date: String, numberOfProducts: Int) = listOf(
-        "https://via.placeholder.com/640x360/DADADA/000000?text=Invoice+%23$number+$date%0D%0ASeller%3A+${seller.replace(
-            " ",
-            "+"
-        )}%0D%0AProducts%3A+$numberOfProducts",
+        "https://via.placeholder.com/640x360/DADADA/000000?text=Invoice+%23$number+$date%0D%0ASeller%3A" +
+                "+${seller.replace(" ", "+")}%0D%0AProducts%3A+$numberOfProducts",
         null
     ).let { it[(0 until it.size).random()] }
 }

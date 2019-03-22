@@ -26,9 +26,10 @@ ext {
     //region VERSIONS: Testing
     jUnit = '4.12'
     mockito = '2.24.5'
-    espresso = '3.1.0'
+    espresso = '3.1.1'
     testCore = '1.0.0'
-    testRunner = '1.1.0'
+    testRunner = '1.1.0-alpha3'
+    //testJunit = '1.1.0'
     restMock = '0.3.3'
     //endregion
 
@@ -40,6 +41,7 @@ ext {
             // Modules
             project(':domain'),
             project(':data'),
+            project(':backendsim'),
 
             // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
@@ -83,10 +85,12 @@ ext {
     ]
 
     appInstrumentationTestDependencies = [
-            "androidx.test:core:$testCore",
-            "androidx.test.ext:junit:$testRunner",
-            "androidx.test.espresso:espresso-core:$espresso",
-            "io.reactivex.rxjava2:rxkotlin:$rxKotlin"
+            //"androidx.test:core:$testCore",
+            //"androidx.test.ext:junit:$testJunit",
+            "androidx.test:runner:$testRunner",
+            //"androidx.test.espresso:espresso-core:$espresso",
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+            "com.squareup.retrofit2:retrofit:$retrofit",
     ]
 
     appDebugDependencies = [
