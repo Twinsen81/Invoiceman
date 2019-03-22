@@ -149,4 +149,3 @@ workflows:
     - test_instrumented:
         requires:
           - build_debug
-

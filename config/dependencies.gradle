@@ -7,14 +7,20 @@ ext {
     ]
 
     //region VERSIONS: Libraries & frameworks
-    appCompat = '1.1.0-alpha02'
-    constraintlayout = '1.1.3'
+    // https://developer.android.com/jetpack/androidx/releases
+    appCompat = '1.1.0-alpha03'
+    constraintLayout = '1.1.3'
     ktx = '1.1.0-alpha04'
-    material = '1.1.0-alpha03'
+    material = '1.1.0-alpha04'
+    navigation = '1.0.0'
     rxKotlin = '2.3.0'
+    rxBinding = '3.0.0-alpha2'
     retrofit = '2.5.0'
     okHttp = '3.13.1'
     moshi = '1.8.0'
+    backgroundChart = '1.0.1-alpha'
+    leakCanary = '1.6.3'
+    timber = '4.7.1'
     //endregion
 
     //region VERSIONS: Testing
@@ -39,15 +45,26 @@ ext {
 
     //region DATA
     dataDependencies = [
+
+            // Modules
             project(':domain'),
+
+            // Kotlin
             "org.jetbrains.kotlin:kotlin-reflect:$compiler.kotlin", // Explicit dependency for Realm, since it uses an older version and that generates a warning
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+
+            // RxJava
             "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+
+            // Retrofit & Company
             "com.squareup.okhttp3:logging-interceptor:$okHttp",
             "com.squareup.retrofit2:retrofit:$retrofit",
             "com.squareup.retrofit2:converter-moshi:$retrofit",
             "com.squareup.retrofit2:adapter-rxjava2:$retrofit",
-            "com.squareup.moshi:moshi-kotlin:$moshi"
+            "com.squareup.moshi:moshi-kotlin:$moshi",
+
+            // Misc
+            "com.jakewharton.timber:timber:$timber"
     ]
 
     dataTestDependencies = [
@@ -58,13 +75,45 @@ ext {
 
     //region APP
     appDependencies = [
+
+            // Modules
             project(':domain'),
             project(':data'),
+
+            // Kotlin
             "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+
+            // AndroidX
+            "androidx.fragment:fragment:1.1.0-alpha05",
             "androidx.appcompat:appcompat:$appCompat",
             "androidx.core:core-ktx:$ktx",
+            "androidx.constraintlayout:constraintlayout:$constraintLayout",
+            "androidx.legacy:legacy-support-v4:1.0.0",
+            "androidx.lifecycle:lifecycle-extensions:2.1.0-alpha03",
+            "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0",
+
+            // Material
             "com.google.android.material:material:$material",
-            "androidx.constraintlayout:constraintlayout:$constraintlayout"
+
+            // Navigation
+            "android.arch.navigation:navigation-fragment-ktx:$navigation",
+            "android.arch.navigation:navigation-ui-ktx:$navigation",
+            "android.arch.navigation:navigation-fragment:$navigation",
+
+            // RxJava, RxBinding
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+            "com.jakewharton.rxbinding3:rxbinding:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-core:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-recyclerview:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-slidingpanelayout:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-viewpager:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-material:$rxBinding",
+
+            // Misc
+            "com.jakewharton.timber:timber:$timber",
+            "com.github.JastAir:Android-BackgroundChart:$backgroundChart",
     ]
 
     appTestDependencies = [
@@ -77,6 +126,15 @@ ext {
             "androidx.test.ext:junit:$testRunner",
             "androidx.test.espresso:espresso-core:$espresso",
             "io.reactivex.rxjava2:rxkotlin:$rxKotlin"
+    ]
+
+    appDebugDependencies = [
+            "com.squareup.leakcanary:leakcanary-android:$leakCanary",
+            "com.squareup.leakcanary:leakcanary-support-fragment:$leakCanary"
+    ]
+
+    appReleaseDependencies = [
+            "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanary"
     ]
     //endregion
 }

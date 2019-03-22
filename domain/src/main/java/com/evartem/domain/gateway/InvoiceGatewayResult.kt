@@ -19,6 +19,7 @@ sealed class InvoiceGatewayResult(val response: ResponseCode,
         DENIED_TAKEN,
         DENIED_NOT_FOUND,
         DENIED_INCONSISTENT_DATA,
+        APP_ERROR
     }
 
     data class NetworkError(val code: Int, val message: String)
