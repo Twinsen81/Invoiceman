@@ -11,7 +11,6 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_invoices.*
@@ -19,8 +18,9 @@ import timber.log.Timber
 
 abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
-    private var viewModelDisposables: CompositeDisposable = CompositeDisposable()
-    private var uiDisposable: Disposable? = null
+    private var disposables: CompositeDisposable = CompositeDisposable()
+    //private var uiDisposables: CompositeDisposable = CompositeDisposable()
+//    private var uiDisposable: Disposable? = null
     private val uiEvents: MutableList<Observable<Event>> = mutableListOf()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -69,12 +69,12 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
         getUiStateObservable()?.apply {
             doOnNext { Timber.d("MVI-New state: $it") }
                 .subscribe(::onRenderUiState) { Timber.wtf("MVI-Critical app error while precessing UI state") }
-                .addTo(viewModelDisposables)
+                .addTo(disposables)
         }
         getUiEffectObservable()?.apply {
             doOnNext { Timber.d("MVI-New effect: $it") }
                 .subscribe(::onRenderUiEffect) { Timber.wtf("MVI-Critical app error while processing UI effect") }
-                .addTo(viewModelDisposables)
+                .addTo(disposables)
         }
     }
 
@@ -83,9 +83,13 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
     protected abstract fun getUiEventsConsumer(): (Event) -> Unit
 
     private fun subscribeToUiEvents() {
-        uiDisposable = Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
-        { Timber.wtf("MVI-Critical app error while processing the user's input") }
-        Timber.d("MVI-Fragment: subscribing to events, $uiDisposable")
+        if (uiEvents.size > 0) {
+//            uiDisposable =
+                Observable.merge(uiEvents).subscribe(getUiEventsConsumer()) //Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
+                { Timber.wtf("MVI-Critical app error while processing the user's input") }
+                    .addTo(disposables)
+//            Timber.d("MVI-Fragment: subscribing to events, DISP:${uiDisposable!!.hashCode()}, disposed: ${uiDisposable!!.isDisposed}")
+        }
     }
 
     override fun onResume() {
@@ -96,13 +100,12 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        Timber.d("MVI-Fragment: onPause, $uiDisposable")
-        uiDisposable?.dispose()
-        uiDisposable = null
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModelDisposables.clear()
+//        Timber.d("MVI-Fragment: onPause, DISPui:${uiDisposable?.hashCode()}, disposed: ${uiDisposable?.isDisposed}")
+        //Timber.d("MVI-Fragment: onPause, DISPvm:${disposables?.hashCode()}, disposed: ${disposables?.isDisposed}")
+//        uiDisposable?.dispose()
+//        uiDisposable = null
+        //uiDisposables.clear()
+        uiEvents.clear()
+        disposables.clear()
     }
 }

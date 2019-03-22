@@ -36,7 +36,7 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
 
         addUiEvent(
             invoices_in_progress_searchButton.clicks()
-                .map { invoices_available_searchText.text.trim() }
+                .map { invoices_in_progress_searchText.text.trim() }
                 .filter { text -> text.isNotBlank() }
                 .map { InvoicesEvent.SearchInvoiceEvent(it.toString()) })
     }
