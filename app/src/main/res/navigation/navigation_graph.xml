@@ -10,7 +10,7 @@
                 app:exitAnim="@anim/nav_default_exit_anim"
                 app:popUpToInclusive="false" app:launchSingleTop="true"/>
     </fragment>
-    <fragment android:id="@+id/destination_invoiceList" android:name="com.evartem.invoiceman.invoices.InvoicesFragment"
+    <fragment android:id="@+id/destination_invoiceList" android:name="com.evartem.invoiceman.invoices.fragments.InvoicesFragment"
               android:label="List of invoices" tools:layout="@layout/fragment_invoices">
         <action android:id="@+id/action_settings"
                 app:destination="@id/destination_settings" app:popUpTo="@+id/destination_invoiceList"

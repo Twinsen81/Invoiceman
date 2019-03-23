@@ -43,7 +43,7 @@ object RandomInvoiceGenerator {
             "Do not accept if unsealed!", "Very fragile! Be careful!", "Send to block B for safekeeping", null
         ).let { it[(0 until it.size).random()] }
 
-    fun getScanCopyUrl(seller: String, number: Int, date: String, numberOfProducts: Int) = listOf(
+    private fun getScanCopyUrl(seller: String, number: Int, date: String, numberOfProducts: Int) = listOf(
         "https://via.placeholder.com/640x360/DADADA/000000?text=Invoice+%23$number+$date%0D%0ASeller%3A" +
                 "+${seller.replace(" ", "+")}%0D%0AProducts%3A+$numberOfProducts",
         null

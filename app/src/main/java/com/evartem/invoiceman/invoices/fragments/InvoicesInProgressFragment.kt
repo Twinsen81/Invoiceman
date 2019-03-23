@@ -1,4 +1,4 @@
-package com.evartem.invoiceman.invoices
+package com.evartem.invoiceman.invoices.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,18 +7,22 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
+import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
+import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
+import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
+import com.evartem.invoiceman.invoices.InvoicesViewModel
 import com.evartem.invoiceman.util.getRandomPeaksForGradientChart
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.fragment_invoices_available.*
+import kotlinx.android.synthetic.main.fragment_invoices_inprogress.*
 
-class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
+class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
     private lateinit var viewModel: InvoicesViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewModel = ViewModelProviders.of(parentFragment!!).get(InvoicesViewModel::class.java)
-        return inflater.inflate(R.layout.fragment_invoices_available, container, false)
+        return inflater.inflate(R.layout.fragment_invoices_inprogress, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -26,23 +30,23 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
         setupUiEvents()
 
-        invoices_available_gradientChart.chartValues = getRandomPeaksForGradientChart()
+        invoices_in_progress_gradientChart.chartValues = getRandomPeaksForGradientChart()
     }
 
     private fun setupUiEvents() {
 
-        addUiEvent(invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
+        addUiEvent(invoices_in_progress_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
 
         addUiEvent(
-            invoices_available_searchButton.clicks()
-                .map { invoices_available_searchText.text.trim() }
+            invoices_in_progress_searchButton.clicks()
+                .map { invoices_in_progress_searchText.text.trim() }
                 .filter { text -> text.isNotBlank() }
                 .map { InvoicesEvent.SearchInvoiceEvent(it.toString()) })
     }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
-        invoices_available_text.text = "INVOICES: ${uiState.searchRequest}, ${uiState.invoices.size}"
-        invoices_available_loading.visibility = if (uiState.loadingIndicator) View.VISIBLE else View.GONE
+        invoices_in_progress_text.text = "INVOICES: ${uiState.searchRequest}, ${uiState.invoices.size}"
+        invoices_in_progress_loading.visibility = if (uiState.loadingIndicator) View.VISIBLE else View.GONE
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState

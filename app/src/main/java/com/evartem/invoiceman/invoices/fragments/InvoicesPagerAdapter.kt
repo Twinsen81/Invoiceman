@@ -1,4 +1,4 @@
-package com.evartem.invoiceman.invoices
+package com.evartem.invoiceman.invoices.fragments
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

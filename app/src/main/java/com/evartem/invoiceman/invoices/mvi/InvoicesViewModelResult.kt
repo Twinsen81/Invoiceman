@@ -1,4 +1,4 @@
-package com.evartem.invoiceman.invoices
+package com.evartem.invoiceman.invoices.mvi
 
 import com.evartem.domain.gateway.InvoiceGatewayResult
 
