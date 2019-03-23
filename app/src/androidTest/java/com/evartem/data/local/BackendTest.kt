@@ -25,7 +25,7 @@ class BackendTest {
 
     fun printResponse(resp: retrofit2.Response<List<InvoiceRemoteModel>>?) {
         if (resp!!.isSuccessful)
-            print(resp.body())
+            print("!!!" + resp.body().toString())
     }
 
     @After
