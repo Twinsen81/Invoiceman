@@ -11,4 +11,6 @@
     <color name="gradChartPlusColorEnd">#D8D8D8</color>
     <color name="gradChartMinusColorStart">#858585</color>
     <color name="gradChartMinusColorEnd">#727272</color>
+
+    <color name="carViewBackColor">#DDFFFFFF</color>
 </resources>

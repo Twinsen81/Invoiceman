@@ -45,14 +45,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private fun setupRecyclerView() {
         invoices_available_recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         invoices_available_recyclerView.adapter = FastAdapter.with<InvoiceItem, ItemAdapter<InvoiceItem>>(itemsAdapter)
-        itemsAdapter.set(RandomInvoiceGenerator.getInvoices(3).map { InvoiceItem(it) })
-
-        // TODO: Just a bordered layout instead of CardView:
-        // TODO: https://stackoverflow.com/questions/8203606/android-how-to-draw-a-border-to-a-linearlayout
-        // TODO: Fix scrolling issue with the nav app bar
-        // TODO: The item's layout - nicer (+ smaller font for the products)
-        // https://www.photohdx.com/images/2017/04/clean-white-paper-background-texture.jpg
-        // TODO: performance! - opens too slowly! Random?
+        itemsAdapter.set(RandomInvoiceGenerator.getInvoices(5).map { InvoiceItem(it) })
     }
 
     private fun setupUiEvents() {

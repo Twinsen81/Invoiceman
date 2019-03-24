@@ -32,7 +32,7 @@ class InvoiceItem(val invoice: Invoice) : AbstractItem<InvoiceItem, InvoiceItem.
             }
 
             if (item.invoice.products.isNotEmpty()) {
-                itemView.invoice_products_card.visibility = View.VISIBLE
+                itemView.invoice_products_list.visibility = View.VISIBLE
 
                 itemView.invoice_product1_article.text = item.invoice.products[0].article
                 itemView.invoice_product1_description.text = item.invoice.products[0].description
@@ -46,7 +46,7 @@ class InvoiceItem(val invoice: Invoice) : AbstractItem<InvoiceItem, InvoiceItem.
                 } else
                     itemView.invoice_product2.visibility = View.GONE
             } else
-                itemView.invoice_products_card.visibility = View.GONE
+                itemView.invoice_products_list.visibility = View.GONE
         }
     }
 }
