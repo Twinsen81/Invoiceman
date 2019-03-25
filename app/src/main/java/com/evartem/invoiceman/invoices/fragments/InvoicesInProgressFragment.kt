@@ -4,26 +4,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
+import com.evartem.invoiceman.invoices.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
-import com.evartem.invoiceman.invoices.InvoicesViewModel
 import com.evartem.invoiceman.util.getRandomPeaksForGradientChart
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_inprogress.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
-    private lateinit var viewModel: InvoicesViewModel
+    private val viewModel by sharedViewModel<InvoicesViewModel>(from = { parentFragment!! })
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewModel = ViewModelProviders.of(parentFragment!!).get(InvoicesViewModel::class.java)
-        return inflater.inflate(R.layout.fragment_invoices_inprogress, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_invoices_inprogress, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

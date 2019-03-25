@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.backendsim.RandomInvoiceGenerator
@@ -18,6 +19,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -25,13 +27,12 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         const val INVOICE_ITEM_TYPE_BASIC = 1
     }
 
-    private lateinit var viewModel: InvoicesViewModel
+    private val viewModel by sharedViewModel<InvoicesViewModel>(from = {parentFragment!!})
+
     private val itemsAdapter = ItemAdapter<InvoiceItem>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewModel = ViewModelProviders.of(parentFragment!!).get(InvoicesViewModel::class.java)
-        return inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

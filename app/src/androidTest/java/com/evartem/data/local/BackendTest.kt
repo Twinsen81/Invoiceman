@@ -14,13 +14,14 @@ class BackendTest {
 
     @Before
     fun setup() {
+        TODO("REMOVE THIS TEST CLASS!")
         InvoiceBackendSimulation.startServer(2)
     }
 
     @Test
     fun response() {
-        val api = InvoiceApi(InvoiceBackendSimulation.getBaseUrl())
-        printResponse(api.getInvoicesForUser("abc").blockingGet())
+        //val api = InvoiceApi(InvoiceBackendSimulation.getBaseUrl())
+        //printResponse(api.getInvoicesForUser("abc").blockingGet())
     }
 
     fun printResponse(resp: retrofit2.Response<List<InvoiceRemoteModel>>?) {

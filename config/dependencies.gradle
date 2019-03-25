@@ -31,8 +31,8 @@ ext {
     espresso = '3.1.1'
     testCore = '1.0.0'
     testRunner = '1.1.0-alpha3'
-    //testJunit = '1.1.0'
     restMock = '0.3.3'
+    koin = '2.0.0-rc-1'
     //endregion
 
 
@@ -80,7 +80,10 @@ ext {
             // Misc
             "com.jakewharton.timber:timber:$timber",
             "com.github.JastAir:Android-BackgroundChart:$backgroundChart",
-            "com.mikepenz:fastadapter:$fastAdapter"
+            "com.mikepenz:fastadapter:$fastAdapter",
+            "org.koin:koin-android:$koin",
+            "org.koin:koin-androidx-viewmodel:$koin",
+            "org.koin:koin-androidx-scope:$koin"
     ]
 
     appTestDependencies = [

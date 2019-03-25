@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getDrawable
-import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.*
+import com.evartem.invoiceman.invoices.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
@@ -17,15 +16,14 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
-    private lateinit var viewModel: InvoicesViewModel
+    private val viewModel by viewModel<InvoicesViewModel>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewModel = ViewModelProviders.of(this).get(InvoicesViewModel::class.java)
-        return inflater.inflate(R.layout.fragment_invoices, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_invoices, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -35,16 +33,11 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
     private fun setupTabs() {
         val pages = listOf(
-            Pair(resources.getString(R.string.invoices_tab_available),
-                InvoicesAvailableFragment()
-            ),
-            Pair(resources.getString(R.string.invoices_tab_in_progress),
-                InvoicesInProgressFragment()
-            )
+            resources.getString(R.string.invoices_tab_available) to InvoicesAvailableFragment(),
+            resources.getString(R.string.invoices_tab_in_progress) to InvoicesInProgressFragment()
         )
 
-        invoicesViewPager.adapter =
-            InvoicesPagerAdapter(childFragmentManager, pages)
+        invoicesViewPager.adapter = InvoicesPagerAdapter(childFragmentManager, pages)
         invoicesTabs.setupWithViewPager(invoicesViewPager)
     }
 

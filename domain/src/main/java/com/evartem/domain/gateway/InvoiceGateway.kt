@@ -6,9 +6,9 @@ import io.reactivex.Observable
 
 interface InvoiceGateway {
 
-    fun getInvoicesForUser(userId: User, refresh: Boolean = false): Observable<InvoiceGatewayResult>
+    fun getInvoicesForUser(user: User, refresh: Boolean = false): Observable<InvoiceGatewayResult>
 
-    fun requestInvoiceForProcessing(userId: User, invoice: Invoice): Observable<InvoiceGatewayResult>
+    fun requestInvoiceForProcessing(user: User, invoice: Invoice): Observable<InvoiceGatewayResult>
 
-    fun submitInvoicesWithResults(userId: User, invoices: List<Invoice>): Observable<InvoiceGatewayResult>
+    fun submitInvoicesWithResults(user: User, invoices: List<Invoice>): Observable<InvoiceGatewayResult>
 }
