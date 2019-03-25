@@ -1,4 +1,4 @@
-package com.evartem.invoiceman.invoices
+package com.evartem.invoiceman.invoices.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,10 @@ import androidx.core.content.ContextCompat.getDrawable
 import androidx.lifecycle.ViewModelProviders
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
+import com.evartem.invoiceman.invoices.*
+import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
+import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
+import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
@@ -31,11 +35,16 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
     private fun setupTabs() {
         val pages = listOf(
-            Pair(resources.getString(R.string.invoices_tab_available), InvoicesAvailableFragment()),
-            Pair(resources.getString(R.string.invoices_tab_in_progress), InvoicesInProgressFragment())
+            Pair(resources.getString(R.string.invoices_tab_available),
+                InvoicesAvailableFragment()
+            ),
+            Pair(resources.getString(R.string.invoices_tab_in_progress),
+                InvoicesInProgressFragment()
+            )
         )
 
-        invoicesViewPager.adapter = InvoicesPagerAdapter(childFragmentManager, pages)
+        invoicesViewPager.adapter =
+            InvoicesPagerAdapter(childFragmentManager, pages)
         invoicesTabs.setupWithViewPager(invoicesViewPager)
     }
 

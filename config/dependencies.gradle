@@ -21,14 +21,90 @@ ext {
     backgroundChart = '1.0.1-alpha'
     leakCanary = '1.6.3'
     timber = '4.7.1'
+    fastAdapter = '3.3.1'
+    recyclerView = '1.0.0'
     //endregion
 
     //region VERSIONS: Testing
     jUnit = '4.12'
     mockito = '2.24.5'
-    espresso = '3.1.0'
+    espresso = '3.1.1'
     testCore = '1.0.0'
-    testRunner = '1.1.0'
+    testRunner = '1.1.0-alpha3'
+    //testJunit = '1.1.0'
+    restMock = '0.3.3'
+    //endregion
+
+
+
+    //region APP
+    appDependencies = [
+
+            // Modules
+            project(':domain'),
+            project(':data'),
+            project(':backendsim'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+
+            // AndroidX
+            "androidx.fragment:fragment:1.1.0-alpha05",
+            "androidx.appcompat:appcompat:$appCompat",
+            "androidx.core:core-ktx:$ktx",
+            "androidx.constraintlayout:constraintlayout:$constraintLayout",
+            "androidx.legacy:legacy-support-v4:1.0.0",
+            "androidx.lifecycle:lifecycle-extensions:2.1.0-alpha03",
+            "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0",
+            "androidx.recyclerview:recyclerview:$recyclerView",
+
+            // Material
+            "com.google.android.material:material:$material",
+
+            // Navigation
+            "android.arch.navigation:navigation-fragment-ktx:$navigation",
+            "android.arch.navigation:navigation-ui-ktx:$navigation",
+            "android.arch.navigation:navigation-fragment:$navigation",
+
+            // RxJava, RxBinding
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+            "com.jakewharton.rxbinding3:rxbinding:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-core:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-recyclerview:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-slidingpanelayout:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-viewpager:$rxBinding",
+            "com.jakewharton.rxbinding3:rxbinding-material:$rxBinding",
+
+            // Misc
+            "com.jakewharton.timber:timber:$timber",
+            "com.github.JastAir:Android-BackgroundChart:$backgroundChart",
+            "com.mikepenz:fastadapter:$fastAdapter"
+    ]
+
+    appTestDependencies = [
+            "junit:junit:$jUnit",
+            "org.mockito:mockito-core:$mockito"
+    ]
+
+    appInstrumentationTestDependencies = [
+            //"androidx.test:core:$testCore",
+            //"androidx.test.ext:junit:$testJunit",
+            "androidx.test:runner:$testRunner",
+            //"androidx.test.espresso:espresso-core:$espresso",
+            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
+            "com.squareup.retrofit2:retrofit:$retrofit",
+    ]
+
+    appDebugDependencies = [
+            "com.squareup.leakcanary:leakcanary-android:$leakCanary",
+            "com.squareup.leakcanary:leakcanary-support-fragment:$leakCanary"
+    ]
+
+    appReleaseDependencies = [
+            "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanary"
+    ]
     //endregion
 
     //region DOMAIN
@@ -42,6 +118,22 @@ ext {
             "org.mockito:mockito-core:$mockito"
     ]
     //endregion
+
+    //region BACKENDSIM
+    backendsimDependencies = [
+
+            // Modules
+            project(':domain'),
+
+            // Kotlin
+            "org.jetbrains.kotlin:kotlin-reflect:$compiler.kotlin", // Explicit dependency for Realm, since it uses an older version and that generates a warning
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
+
+            // Misc
+            "com.squareup.moshi:moshi-kotlin:$moshi",
+            "com.github.andrzejchm.RESTMock:android:$restMock",
+            "com.jakewharton.timber:timber:$timber"
+    ]
 
     //region DATA
     dataDependencies = [
@@ -70,71 +162,6 @@ ext {
     dataTestDependencies = [
             "junit:junit:$jUnit",
             "org.mockito:mockito-core:$mockito"
-    ]
-    //endregion
-
-    //region APP
-    appDependencies = [
-
-            // Modules
-            project(':domain'),
-            project(':data'),
-
-            // Kotlin
-            "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$compiler.kotlin",
-
-            // AndroidX
-            "androidx.fragment:fragment:1.1.0-alpha05",
-            "androidx.appcompat:appcompat:$appCompat",
-            "androidx.core:core-ktx:$ktx",
-            "androidx.constraintlayout:constraintlayout:$constraintLayout",
-            "androidx.legacy:legacy-support-v4:1.0.0",
-            "androidx.lifecycle:lifecycle-extensions:2.1.0-alpha03",
-            "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0",
-
-            // Material
-            "com.google.android.material:material:$material",
-
-            // Navigation
-            "android.arch.navigation:navigation-fragment-ktx:$navigation",
-            "android.arch.navigation:navigation-ui-ktx:$navigation",
-            "android.arch.navigation:navigation-fragment:$navigation",
-
-            // RxJava, RxBinding
-            "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
-            "com.jakewharton.rxbinding3:rxbinding:$rxBinding",
-            "com.jakewharton.rxbinding3:rxbinding-core:$rxBinding",
-            "com.jakewharton.rxbinding3:rxbinding-appcompat:$rxBinding",
-            "com.jakewharton.rxbinding3:rxbinding-recyclerview:$rxBinding",
-            "com.jakewharton.rxbinding3:rxbinding-slidingpanelayout:$rxBinding",
-            "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:$rxBinding",
-            "com.jakewharton.rxbinding3:rxbinding-viewpager:$rxBinding",
-            "com.jakewharton.rxbinding3:rxbinding-material:$rxBinding",
-
-            // Misc
-            "com.jakewharton.timber:timber:$timber",
-            "com.github.JastAir:Android-BackgroundChart:$backgroundChart",
-    ]
-
-    appTestDependencies = [
-            "junit:junit:$jUnit",
-            "org.mockito:mockito-core:$mockito"
-    ]
-
-    appInstrumentationTestDependencies = [
-            "androidx.test:core:$testCore",
-            "androidx.test.ext:junit:$testRunner",
-            "androidx.test.espresso:espresso-core:$espresso",
-            "io.reactivex.rxjava2:rxkotlin:$rxKotlin"
-    ]
-
-    appDebugDependencies = [
-            "com.squareup.leakcanary:leakcanary-android:$leakCanary",
-            "com.squareup.leakcanary:leakcanary-support-fragment:$leakCanary"
-    ]
-
-    appReleaseDependencies = [
-            "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanary"
     ]
     //endregion
 }

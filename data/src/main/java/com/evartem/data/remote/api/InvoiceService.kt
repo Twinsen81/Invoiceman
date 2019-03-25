@@ -4,9 +4,9 @@ import com.evartem.data.remote.model.InvoiceRemoteModel
 import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface InvoiceService {
-    @GET("Invoices/{userid}")
-    fun getInvoicesForUser(@Path("userid") userId: String): Single<Response<List<InvoiceRemoteModel>>>
+    @GET("/invoices")
+    fun getInvoicesForUser(@Query("userid") userId: String): Single<Response<List<InvoiceRemoteModel>>>
 }

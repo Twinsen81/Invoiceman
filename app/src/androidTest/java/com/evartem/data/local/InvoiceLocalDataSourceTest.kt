@@ -1,6 +1,6 @@
 package com.evartem.data.local
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.runner.AndroidJUnit4
 import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.data.local.model.ResultLocalModel

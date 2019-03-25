@@ -2,6 +2,10 @@ package com.evartem.invoiceman.invoices
 
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.invoiceman.base.MviViewModel
+import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
+import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
+import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModelResult
 import io.reactivex.Observable
 
 class InvoicesViewModel :

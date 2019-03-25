@@ -1,8 +1,7 @@
-apply plugin: 'com.android.library' // required by realm-android
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: 'realm-android'
 
 def ext = rootProject.extensions.ext
 
@@ -37,6 +36,5 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation dataDependencies
-    testImplementation dataTestDependencies
+    implementation backendsimDependencies
 }

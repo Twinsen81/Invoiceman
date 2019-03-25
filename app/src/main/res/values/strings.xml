@@ -4,4 +4,7 @@
     <string name="main_logout">Logout</string>
     <string name="invoices_tab_available">AVAILABLE</string>
     <string name="invoices_tab_in_progress">IN PROGRESS</string>
+    <string name="invoice_no">No:</string>
+    <string name="invoice_date">Date:</string>
+    <string name="invoice_quantity">Quantity:</string>
 </resources>
