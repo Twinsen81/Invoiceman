@@ -26,12 +26,7 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
     private fun onLoadScreenEvent(): Observable<InvoicesViewModelResult> =
         getInvoicesForUserUseCase.execute(Pair(user, true))
             .map {
-                InvoicesViewModelResult.AllInvoicesResult(
-                    InvoiceGatewayResult.InvoicesRequestResult(
-                        emptyList(),
-                        InvoiceGatewayResult.ResponseCode.SUCCESS
-                    )
-                )
+                InvoicesViewModelResult.AllInvoicesResult(it)
             }
 
     private fun onRefreshScreenEvent(): Observable<InvoicesViewModelResult> =
