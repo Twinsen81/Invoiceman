@@ -5,9 +5,7 @@ import com.evartem.data.gateway.InvoiceGatewayImpl
 import com.evartem.data.gateway.mapper.InvoiceMapperToGatewayResult
 import com.evartem.data.local.InvoiceLocalDataSource
 import com.evartem.data.remote.api.InvoiceService
-import com.evartem.data.remote.api.createHttpClient
 import com.evartem.data.remote.api.createInvoiceNetworkClient
-import com.evartem.data.remote.api.createMoshi
 import com.evartem.data.repository.InvoiceRepository
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.gateway.InvoiceGateway
@@ -21,7 +19,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-val invoicesViewModelModule: Module = module {
+val viewModelModule: Module = module {
     viewModel { InvoicesViewModel(user = get(), getInvoicesForUserUseCase = get()) }
 }
 

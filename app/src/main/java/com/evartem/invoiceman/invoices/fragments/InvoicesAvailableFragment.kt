@@ -20,6 +20,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import timber.log.Timber
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -46,12 +47,14 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private fun setupRecyclerView() {
         invoices_available_recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         invoices_available_recyclerView.adapter = FastAdapter.with<InvoiceItem, ItemAdapter<InvoiceItem>>(itemsAdapter)
-        itemsAdapter.set(RandomInvoiceGenerator.getInvoices(5).map { InvoiceItem(it) })
+        //itemsAdapter.set(RandomInvoiceGenerator.getInvoices(5).map { InvoiceItem(it) })
     }
 
     private fun setupUiEvents() {
 
-/*        addUiEvent(invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
+        Timber.d("MVI ($viewModel): setupUiEvents")
+
+/*    addUiEvent(invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
 
         addUiEvent(
             invoices_available_searchButton.clicks()
@@ -61,6 +64,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
+        if (uiState.invoices.isNotEmpty())
+            itemsAdapter.set(uiState.invoices.map { InvoiceItem(it) })
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState

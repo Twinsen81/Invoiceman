@@ -66,12 +66,12 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
     private fun subscribeToViewModel() {
         getUiStateObservable()?.apply {
             doOnNext { Timber.d("MVI-New state: $it") }
-                .subscribe(::onRenderUiState) { Timber.wtf("MVI-Critical app error while precessing UI state") }
+                .subscribe(::onRenderUiState) { Timber.wtf("MVI-Critical app error while precessing UI state: $it") }
                 .addTo(disposables)
         }
         getUiEffectObservable()?.apply {
             doOnNext { Timber.d("MVI-New effect: $it") }
-                .subscribe(::onRenderUiEffect) { Timber.wtf("MVI-Critical app error while processing UI effect") }
+                .subscribe(::onRenderUiEffect) { Timber.wtf("MVI-Critical app error while processing UI effect: $it") }
                 .addTo(disposables)
         }
     }

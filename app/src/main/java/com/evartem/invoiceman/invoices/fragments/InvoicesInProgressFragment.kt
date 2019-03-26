@@ -15,6 +15,7 @@ import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_inprogress.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import timber.log.Timber
 
 class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -33,7 +34,11 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
 
     private fun setupUiEvents() {
 
-        addUiEvent(invoices_in_progress_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
+        Timber.d("MVI ($viewModel): setupUiEvents")
+        addUiEvent(invoices_in_progress_refreshButton.clicks().map {
+            Timber.d("MVI ($viewModel): refresh click")
+            InvoicesEvent.LoadScreenEvent
+        })
 
         addUiEvent(
             invoices_in_progress_searchButton.clicks()

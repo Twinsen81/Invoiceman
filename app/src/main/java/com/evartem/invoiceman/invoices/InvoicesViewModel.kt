@@ -50,12 +50,14 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
             )
         )
 
-    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
-        return InvoicesUiState(
-            if (newResult is InvoicesViewModelResult.SearchResult) newResult.searchQuery else "",
-            newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NOT_FOUND
-        )
-    }
+    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState =
+        when (newResult)
+        {
+            is InvoicesViewModelResult.AllInvoicesResult -> InvoicesUiState(
+                "", false, (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices)
+            else -> previousUiState
+        }
+
 
     override fun getUiEffect(newResult: InvoicesViewModelResult): InvoicesUiEffect? {
         return if (newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NETWORK_ERROR) {
