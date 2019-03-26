@@ -25,8 +25,6 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        subscribeToViewModel()
-
         setupBottomAppBarAndFAB()
     }
 
@@ -64,11 +62,12 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     protected open fun onRenderUiEffect(uiEffect: UiEffect) = Unit
 
-    private fun subscribeToViewModel() {
+    protected fun subscribeToViewModel() {
         getUiStateObservable()?.apply {
             doOnNext { Timber.d("MVI-New state: $it") }
                 .subscribe({
                     try {
+                        Timber.d("Rendering Ui state: $it")
                         onRenderUiState(it)
                     } catch (ex: Throwable) {
                         Timber.wtf("MVI-Critical app error while rendering UI state:\n${Log.getStackTraceString(ex)}")
@@ -80,6 +79,7 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
             doOnNext { Timber.d("MVI-New effect: $it") }
                 .subscribe({
                     try {
+                        Timber.d("Rendering Ui effect: $it")
                         onRenderUiEffect(it)
                     } catch (ex: Throwable) {
                         Timber.wtf("MVI-Critical app error while rendering UI effect:\n${Log.getStackTraceString(ex)}")
@@ -96,7 +96,7 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
     private fun subscribeToUiEvents() {
         if (uiEvents.size > 0) {
             Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
-                { Timber.wtf("MVI-Critical app error while processing the user's input:\n${Log.getStackTraceString(it)}") }
+            { Timber.wtf("MVI-Critical app error while processing the user's input:\n${Log.getStackTraceString(it)}") }
                 .addTo(disposables)
         }
     }
@@ -112,3 +112,4 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
         disposables.clear()
     }
 }
+

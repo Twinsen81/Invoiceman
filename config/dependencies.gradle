@@ -23,6 +23,8 @@ ext {
     timber = '4.7.1'
     fastAdapter = '3.3.1'
     recyclerView = '1.0.0'
+    glide = '4.9.0'
+    koin = '2.0.0-rc-1'
     //endregion
 
     //region VERSIONS: Testing
@@ -32,10 +34,7 @@ ext {
     testCore = '1.0.0'
     testRunner = '1.1.0-alpha3'
     restMock = '0.3.3'
-    koin = '2.0.0-rc-1'
     //endregion
-
-
 
     //region APP
     appDependencies = [
@@ -77,13 +76,20 @@ ext {
             "com.jakewharton.rxbinding3:rxbinding-viewpager:$rxBinding",
             "com.jakewharton.rxbinding3:rxbinding-material:$rxBinding",
 
+            // Koin
+            "org.koin:koin-android:$koin",
+            "org.koin:koin-androidx-viewmodel:$koin",
+            "org.koin:koin-androidx-scope:$koin",
+
             // Misc
             "com.jakewharton.timber:timber:$timber",
             "com.github.JastAir:Android-BackgroundChart:$backgroundChart",
             "com.mikepenz:fastadapter:$fastAdapter",
-            "org.koin:koin-android:$koin",
-            "org.koin:koin-androidx-viewmodel:$koin",
-            "org.koin:koin-androidx-scope:$koin"
+            "com.github.bumptech.glide:glide:$glide"
+    ]
+
+    appKaptDependencies = [
+            "com.github.bumptech.glide:compiler:$glide"
     ]
 
     appTestDependencies = [

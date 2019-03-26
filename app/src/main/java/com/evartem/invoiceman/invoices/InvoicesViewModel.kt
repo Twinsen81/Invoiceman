@@ -9,13 +9,12 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModelResult
 import io.reactivex.Observable
-import org.koin.core.context.GlobalContext
-import org.koin.core.context.GlobalContext.get
+import timber.log.Timber
 
 class InvoicesViewModel(private val user: User, private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
         InvoicesEvent.LoadScreenEvent,
-        InvoicesUiState()
+        InvoicesUiState("init")
     ) {
 
     override fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
@@ -26,8 +25,8 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
         }
 
     private fun onLoadScreenEvent(): Observable<InvoicesViewModelResult> =
-           getInvoicesForUserUseCase.execute(Pair(user, true))
-               .map { InvoicesViewModelResult.AllInvoicesResult(it) }
+        getInvoicesForUserUseCase.execute(Pair(user, true))
+            .map { InvoicesViewModelResult.AllInvoicesResult(it) }
 
     private fun onRefreshScreenEvent(): Observable<InvoicesViewModelResult> =
         Observable.just(
@@ -50,14 +49,15 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
             )
         )
 
-    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState =
-        when (newResult)
-        {
+    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
+        Timber.d("Reducing: $previousUiState\n$newResult")
+        return when (newResult) {
             is InvoicesViewModelResult.AllInvoicesResult -> InvoicesUiState(
-                "", false, (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices)
+                "", false, (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices
+            )
             else -> previousUiState
         }
-
+    }
 
     override fun getUiEffect(newResult: InvoicesViewModelResult): InvoicesUiEffect? {
         return if (newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NETWORK_ERROR) {

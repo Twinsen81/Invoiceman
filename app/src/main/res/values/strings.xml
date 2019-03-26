@@ -7,4 +7,5 @@
     <string name="invoice_no">No:</string>
     <string name="invoice_date">Date:</string>
     <string name="invoice_quantity">Quantity:</string>
+    <string name="invoices_loading_text">Fetching invoices from the server…</string>
 </resources>

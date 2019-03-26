@@ -31,6 +31,12 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
 
     fun addEvent(event: Event) = events.onNext(event)
 
+    /**
+     * NOTE: the call to "scan" will make [uiState] emit its first value [startingUiState]
+     * even before the first result comes from [startingEvent]. Thus, the fragment will
+     * be initialized with [startingUiState] on its creation.
+     *
+     */
     @Synchronized
     private fun subscribeAndProcessEvents() {
         if (isInitialized) return else isInitialized = true
