@@ -13,6 +13,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+/*
 
 class InvoiceApi(baseUrl: String) : InvoiceService {
 
@@ -49,4 +50,4 @@ class InvoiceApi(baseUrl: String) : InvoiceService {
 
     override fun getInvoicesForUser(userId: String): Single<Response<List<InvoiceRemoteModel>>> =
         service.getInvoicesForUser(userId)
-}
+}*/

@@ -1,14 +1,18 @@
 package com.evartem.invoiceman.invoices
 
+import com.evartem.domain.entity.auth.User
 import com.evartem.domain.gateway.InvoiceGatewayResult
+import com.evartem.domain.interactor.GetInvoicesForUserUseCase
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModelResult
 import io.reactivex.Observable
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.GlobalContext.get
 
-class InvoicesViewModel :
+class InvoicesViewModel(private val user: User, private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
         InvoicesEvent.LoadScreenEvent,
         InvoicesUiState()
@@ -22,14 +26,8 @@ class InvoicesViewModel :
         }
 
     private fun onLoadScreenEvent(): Observable<InvoicesViewModelResult> =
-        Observable.just(
-            InvoicesViewModelResult.AllInvoicesResult(
-                InvoiceGatewayResult.InvoicesRequestResult(
-                    listOf(),
-                    InvoiceGatewayResult.ResponseCode.DENIED_INCONSISTENT_DATA
-                )
-            )
-        )
+           getInvoicesForUserUseCase.execute(Pair(user, true))
+               .map { InvoicesViewModelResult.AllInvoicesResult(it) }
 
     private fun onRefreshScreenEvent(): Observable<InvoicesViewModelResult> =
         Observable.just(
@@ -52,12 +50,14 @@ class InvoicesViewModel :
             )
         )
 
-    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
-        return InvoicesUiState(
-            if (newResult is InvoicesViewModelResult.SearchResult) newResult.searchQuery else "",
-            newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NOT_FOUND
-        )
-    }
+    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState =
+        when (newResult)
+        {
+            is InvoicesViewModelResult.AllInvoicesResult -> InvoicesUiState(
+                "", false, (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices)
+            else -> previousUiState
+        }
+
 
     override fun getUiEffect(newResult: InvoicesViewModelResult): InvoicesUiEffect? {
         return if (newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NETWORK_ERROR) {

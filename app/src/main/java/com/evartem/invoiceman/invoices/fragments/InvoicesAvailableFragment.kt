@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.backendsim.RandomInvoiceGenerator
@@ -18,6 +19,8 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import timber.log.Timber
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -25,13 +28,12 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         const val INVOICE_ITEM_TYPE_BASIC = 1
     }
 
-    private lateinit var viewModel: InvoicesViewModel
+    private val viewModel by sharedViewModel<InvoicesViewModel>(from = {parentFragment!!})
+
     private val itemsAdapter = ItemAdapter<InvoiceItem>()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewModel = ViewModelProviders.of(parentFragment!!).get(InvoicesViewModel::class.java)
-        return inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -45,12 +47,14 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private fun setupRecyclerView() {
         invoices_available_recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         invoices_available_recyclerView.adapter = FastAdapter.with<InvoiceItem, ItemAdapter<InvoiceItem>>(itemsAdapter)
-        itemsAdapter.set(RandomInvoiceGenerator.getInvoices(5).map { InvoiceItem(it) })
+        //itemsAdapter.set(RandomInvoiceGenerator.getInvoices(5).map { InvoiceItem(it) })
     }
 
     private fun setupUiEvents() {
 
-/*        addUiEvent(invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
+        Timber.d("MVI ($viewModel): setupUiEvents")
+
+/*    addUiEvent(invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
 
         addUiEvent(
             invoices_available_searchButton.clicks()
@@ -60,6 +64,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
+        if (uiState.invoices.isNotEmpty())
+            itemsAdapter.set(uiState.invoices.map { InvoiceItem(it) })
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState

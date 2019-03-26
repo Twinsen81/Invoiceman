@@ -10,31 +10,47 @@ import timber.log.Timber
 abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
     (private val startingEvent: Event, private val startingUiState: UiState) : ViewModel() {
 
-    val uiState: BehaviorSubject<UiState> = BehaviorSubject.create()
-    val uiEffects: PublishSubject<UiEffect> = PublishSubject.create()
-
     private val events: PublishSubject<Event> = PublishSubject.create()
-    private lateinit var eventsDisposable: Disposable
 
-    init {
-        processEvents()
-    }
+    @Volatile
+    private var isInitialized: Boolean = false
+
+    val uiState: BehaviorSubject<UiState> = BehaviorSubject.create()
+        get() {
+            if (!isInitialized) subscribeAndProcessEvents()
+            return field
+        }
+
+    val uiEffects: PublishSubject<UiEffect> = PublishSubject.create()
+        get() {
+            if (!isInitialized) subscribeAndProcessEvents()
+            return field
+        }
+
+    private lateinit var eventsDisposable: Disposable
 
     fun addEvent(event: Event) = events.onNext(event)
 
-    private fun processEvents() {
+    @Synchronized
+    private fun subscribeAndProcessEvents() {
+        if (isInitialized) return else isInitialized = true
+
         Timber.d("MVI-Init")
 
         eventsDisposable = events
             .startWith(startingEvent)
-            .doOnNext { Timber.d("MVI-Event: $it") }
+            .doOnNext { Timber.d("MVI-Event: ${it.toString()}") }
             .flatMap { event -> eventToResult(event) }
-            .doOnNext { Timber.d("MVI-Result: $it") }
+            .doOnNext { Timber.d("MVI-Result: ${it.toString()}") }
             .filter { result -> !processAsUiEffect(result) }
             .scan(startingUiState) { previousUiState, newResult ->
                 reduceUiState(previousUiState, newResult)
             }
-            .subscribe(uiState::onNext) { Timber.wtf("MVI-Critical app error while an event") }
+            .onErrorReturn { error ->
+                Timber.wtf("MVI-Critical app error while processing an event:\n${error.localizedMessage}")
+                startingUiState
+            }
+            .subscribe(uiState::onNext)
     }
 
     private fun processAsUiEffect(result: ViewModelResult): Boolean {

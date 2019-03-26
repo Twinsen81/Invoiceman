@@ -77,7 +77,7 @@ class InvoiceRepository(
         // Add remote invoices that are not yet stored locally
         remoteInvoices.filter { remoteInvoice ->
             localInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
-        }
+        }.toCollection(unitedInvoices)
 
         return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.response, remote.networkError)
     }
