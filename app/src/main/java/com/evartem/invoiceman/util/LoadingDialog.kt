@@ -15,7 +15,7 @@ class LoadingDialog(context: Context) {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_loading)
-        Glide.with(dialog.context).load(R.drawable.loading).into(dialog.loading_image)
+        Glide.with(dialog.context).load(R.drawable.loading_infinity).into(dialog.loading_image)
         return dialog
     }
 

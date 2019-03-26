@@ -44,7 +44,7 @@ class TheApp : Application() {
             )
         }
 
-        InvoiceBackendSimulation.startServer(3, 2)
+        InvoiceBackendSimulation.startServer(3, 9)
     }
 
     companion object {

@@ -9,12 +9,11 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModelResult
 import io.reactivex.Observable
-import timber.log.Timber
 
 class InvoicesViewModel(private val user: User, private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
         InvoicesEvent.LoadScreenEvent,
-        InvoicesUiState("init")
+        InvoicesUiState(loadingIndicator = true)
     ) {
 
     override fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
@@ -26,7 +25,14 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
 
     private fun onLoadScreenEvent(): Observable<InvoicesViewModelResult> =
         getInvoicesForUserUseCase.execute(Pair(user, true))
-            .map { InvoicesViewModelResult.AllInvoicesResult(it) }
+            .map {
+                InvoicesViewModelResult.AllInvoicesResult(
+                    InvoiceGatewayResult.InvoicesRequestResult(
+                        emptyList(),
+                        InvoiceGatewayResult.ResponseCode.SUCCESS
+                    )
+                )
+            }
 
     private fun onRefreshScreenEvent(): Observable<InvoicesViewModelResult> =
         Observable.just(
@@ -50,7 +56,6 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
         )
 
     override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
-        Timber.d("Reducing: $previousUiState\n$newResult")
         return when (newResult) {
             is InvoicesViewModelResult.AllInvoicesResult -> InvoicesUiState(
                 "", false, (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices

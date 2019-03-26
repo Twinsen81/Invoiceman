@@ -45,9 +45,9 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
 
         eventsDisposable = events
             .startWith(startingEvent)
-            .doOnNext { Timber.d("MVI-Event: ${it.toString()}") }
+            .doOnNext { Timber.d("MVI-Event: $it") }
             .flatMap { event -> eventToResult(event) }
-            .doOnNext { Timber.d("MVI-Result: ${it.toString()}") }
+            .doOnNext { Timber.d("MVI-Result: $it") }
             .filter { result -> !processAsUiEffect(result) }
             .scan(startingUiState) { previousUiState, newResult ->
                 reduceUiState(previousUiState, newResult)

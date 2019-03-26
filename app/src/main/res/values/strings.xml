@@ -8,4 +8,5 @@
     <string name="invoice_date">Date:</string>
     <string name="invoice_quantity">Quantity:</string>
     <string name="invoices_loading_text">Fetching invoices from the server…</string>
+    <string name="no_new_invoices_to_process">no new invoices to process</string>
 </resources>

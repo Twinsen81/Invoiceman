@@ -1,15 +1,11 @@
 package com.evartem.invoiceman.invoices.fragments
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.evartem.backendsim.RandomInvoiceGenerator
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoices.InvoicesViewModel
@@ -23,7 +19,6 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -31,9 +26,9 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         const val INVOICE_ITEM_TYPE_BASIC = 1
     }
 
-    private val viewModel by sharedViewModel<InvoicesViewModel>(from = {parentFragment!!})
+    private val viewModel by sharedViewModel<InvoicesViewModel>(from = { parentFragment!! })
 
-    private lateinit var itemsAdapter:ItemAdapter<InvoiceItem>
+    private lateinit var itemsAdapter: ItemAdapter<InvoiceItem>
 
     private lateinit var loadingDialog: LoadingDialog
 
@@ -62,8 +57,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     private fun setupUiEvents() {
 
-
-
 /*    addUiEvent(invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
 
         addUiEvent(
@@ -84,6 +77,10 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         else
             loadingDialog.hide()
 
+        val showNothingToProcess =
+            if (!uiState.loadingIndicator && uiState.invoices.isEmpty()) View.VISIBLE else View.GONE
+        invoices_available_status_text.visibility = showNothingToProcess
+        invoices_available_status_image.visibility = showNothingToProcess
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
@@ -91,4 +88,9 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = null
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
+
+    override fun onDestroy() {
+        loadingDialog.hide()
+        super.onDestroy()
+    }
 }
