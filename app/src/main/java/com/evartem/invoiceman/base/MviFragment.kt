@@ -1,6 +1,7 @@
 package com.evartem.invoiceman.base
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -66,12 +67,24 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
     private fun subscribeToViewModel() {
         getUiStateObservable()?.apply {
             doOnNext { Timber.d("MVI-New state: $it") }
-                .subscribe(::onRenderUiState) { Timber.wtf("MVI-Critical app error while precessing UI state: $it") }
+                .subscribe({
+                    try {
+                        onRenderUiState(it)
+                    } catch (ex: Throwable) {
+                        Timber.wtf("MVI-Critical app error while rendering UI state:\n${Log.getStackTraceString(ex)}")
+                    }
+                }) { Timber.wtf("MVI-Critical app error while precessing UI state:\n${Log.getStackTraceString(it)}") }
                 .addTo(disposables)
         }
         getUiEffectObservable()?.apply {
             doOnNext { Timber.d("MVI-New effect: $it") }
-                .subscribe(::onRenderUiEffect) { Timber.wtf("MVI-Critical app error while processing UI effect: $it") }
+                .subscribe({
+                    try {
+                        onRenderUiEffect(it)
+                    } catch (ex: Throwable) {
+                        Timber.wtf("MVI-Critical app error while rendering UI effect:\n${Log.getStackTraceString(ex)}")
+                    }
+                }) { Timber.wtf("MVI-Critical app error while processing UI effect:\n${Log.getStackTraceString(it)}") }
                 .addTo(disposables)
         }
     }
@@ -82,15 +95,14 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     private fun subscribeToUiEvents() {
         if (uiEvents.size > 0) {
-                Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
-                { Timber.wtf("MVI-Critical app error while processing the user's input") }
-                    .addTo(disposables)
+            Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
+                { Timber.wtf("MVI-Critical app error while processing the user's input:\n${Log.getStackTraceString(it)}") }
+                .addTo(disposables)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        Timber.d("MVI-Fragment: onResume")
         subscribeToUiEvents()
     }
 

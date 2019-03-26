@@ -47,7 +47,7 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
                 reduceUiState(previousUiState, newResult)
             }
             .onErrorReturn { error ->
-                Timber.wtf("MVI-Critical app error while processing an event:\n${error.localizedMessage}")
+                Timber.wtf("MVI-Critical app error while processing an event: $error")
                 startingUiState
             }
             .subscribe(uiState::onNext)

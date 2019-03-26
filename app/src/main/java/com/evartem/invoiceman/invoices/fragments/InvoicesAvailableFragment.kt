@@ -66,6 +66,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     override fun onRenderUiState(uiState: InvoicesUiState) {
         if (uiState.invoices.isNotEmpty())
             itemsAdapter.set(uiState.invoices.map { InvoiceItem(it) })
+        else
+            itemsAdapter.set(emptyList())
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
