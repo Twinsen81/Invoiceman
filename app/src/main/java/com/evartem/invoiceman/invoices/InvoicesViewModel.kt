@@ -44,7 +44,7 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
                 event.searchQuery,
                 InvoiceGatewayResult.InvoicesRequestResult(
                     listOf(),
-                    InvoiceGatewayResult.ResponseCode.SUCCESS
+                    true
                 )
             )
         )
@@ -53,22 +53,27 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
         when (newResult) {
             is InvoicesViewModelResult.Invoices -> {
 
-                var newUiState = previousUiState
+                lateinit var newUiState: InvoicesUiState
 
                 when (newResult.gatewayResult) {
                     is InvoiceGatewayResult.InvoicesRequestResult -> {
-                        if (newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.SUCCESS)
+                        if (newResult.gatewayResult.success)
                             newUiState = InvoicesUiState(invoices = newResult.gatewayResult.invoices)
-                        else
+                        else {
+                            newUiState = previousUiState.copy(isLoading = false, isRefreshing = false)
                             addUiEffect(
                                 InvoicesUiEffect.RemoteDatasourceError(
                                     newResult.gatewayResult.networkError ?: NetworkError(0, "Unknown network error")
                                 )
                             )
+                        }
                     }
+                    else -> newUiState = previousUiState.copy(isLoading = false, isRefreshing = false)
                 }
 
-                if (previousUiState.isRefreshing && previousUiState.invoices == newUiState.invoices)
+                if (newResult.gatewayResult.success && previousUiState.isRefreshing &&
+                    previousUiState.invoices == newUiState.invoices
+                )
                     addUiEffect(InvoicesUiEffect.NoNewData())
 
                 newUiState

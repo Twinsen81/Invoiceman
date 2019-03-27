@@ -80,6 +80,6 @@ class InvoiceRepository(
             localInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
         }.toCollection(unitedInvoices)
 
-        return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.response, remote.networkError)
+        return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.success, remote.networkError)
     }
 }

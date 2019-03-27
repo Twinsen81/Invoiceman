@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getDrawable
+import com.evartem.domain.gateway.NetworkError
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoices.InvoicesViewModel
@@ -54,7 +55,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         when (uiEffect) {
             is InvoicesUiEffect.RemoteDatasourceError -> {
                 Timber.e("Network error: ${uiEffect.networkError.code} - ${uiEffect.networkError.message}")
-                Toast.makeText(context, uiEffect.netw, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getNetworkErrorMessageForUi(uiEffect.networkError), Toast.LENGTH_LONG).show()
             }
             is InvoicesUiEffect.NoNewData ->
                 Toast.makeText(context, R.string.invoices_no_new_received, Toast.LENGTH_LONG).show()
@@ -66,5 +67,16 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
 
-    fun getNetworkErrorMessage(code)
+    private fun getNetworkErrorMessageForUi(networkError: NetworkError): String =
+        when (networkError.code) {
+            400 -> R.string.invoices_network_error_inconsistent_data.resToString()
+            401 -> R.string.invoices_network_error_no_permissions.resToString()
+            404 -> R.string.invoices_network_error_not_found.resToString()
+            409 -> R.string.invoices_network_error_taken.resToString()
+            500 -> R.string.invoices_network_error_server.resToString()
+            1000 -> R.string.invoices_network_error_server_not_available.resToString()
+            else -> R.string.invoices_network_error_general.resToString().format(networkError.code)
+        }
+
+    private fun Int.resToString() = resources.getString(this)
 }

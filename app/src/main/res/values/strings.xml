@@ -10,4 +10,11 @@
     <string name="invoices_loading_text">Fetching invoices from the server …</string>
     <string name="invoices_no_new_to_process">no new invoices to process</string>
     <string name="invoices_no_new_received">Nothing new</string>
+    <string name="invoices_network_error_inconsistent_data">Wrong data format</string>
+    <string name="invoices_network_error_no_permissions">Insufficient permissions for that action</string>
+    <string name="invoices_network_error_not_found">This invoice does not exist on the server</string>
+    <string name="invoices_network_error_taken">This invoice is already being processed by another employee</string>
+    <string name="invoices_network_error_server">Server error, please try again later</string>
+    <string name="invoices_network_error_server_not_available">Server unavailable, please try again later</string>
+    <string name="invoices_network_error_general">Unknown network error (%d), please contact the developers</string>
 </resources>

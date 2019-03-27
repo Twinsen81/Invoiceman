@@ -52,7 +52,7 @@
             android:elevation="3dp"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:text="No new invoices to process" android:textColor="@android:color/white"
+            tools:text="No new invoices to process" android:textColor="@color/noInvoicesMessageColor"
             android:textSize="18sp" android:textAlignment="center" android:visibility="visible"
             android:layout_marginTop="128dp" app:layout_constraintTop_toTopOf="parent"
             android:fontFamily="sans-serif-smallcaps" android:textStyle="bold"

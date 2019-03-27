@@ -7,7 +7,6 @@ import com.evartem.data.local.model.ResultStatusLocalModel
 import com.evartem.data.remote.model.InvoiceRemoteModel
 import com.evartem.data.remote.model.ProductRemoteModel
 import com.evartem.data.repository.InvoiceRepositoryResult
-import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.gateway.NetworkError
 import io.realm.RealmList
 import retrofit2.Response
@@ -15,10 +14,10 @@ import retrofit2.Response
 class InvoiceMapperToRepoResult {
 
     val emptyResult
-        get() = InvoiceRepositoryResult.InvoicesRequestResult(listOf(), InvoiceGatewayResult.ResponseCode.SUCCESS)
+        get() = InvoiceRepositoryResult.InvoicesRequestResult(listOf(), true)
 
     fun localToResult(localModel: List<InvoiceLocalModel>): InvoiceRepositoryResult =
-        InvoiceRepositoryResult.InvoicesRequestResult(localModel, InvoiceGatewayResult.ResponseCode.SUCCESS)
+        InvoiceRepositoryResult.InvoicesRequestResult(localModel, true)
 
     fun remoteToResult(remoteResponse: Response<List<InvoiceRemoteModel>>): InvoiceRepositoryResult {
 
@@ -26,7 +25,7 @@ class InvoiceMapperToRepoResult {
             return if (remoteResponse.body() != null)
                 InvoiceRepositoryResult.InvoicesRequestResult(
                     invoiceRemoteToLocal(remoteResponse.body()!!),
-                    InvoiceGatewayResult.ResponseCode.SUCCESS
+                    true
                 )
             else
                 createNetworkErrorResult(0, "Empty response from the server")
@@ -36,11 +35,7 @@ class InvoiceMapperToRepoResult {
     }
 
     private fun createNetworkErrorResult(code: Int, message: String) =
-        InvoiceRepositoryResult.InvoicesRequestResult(
-            listOf(),
-            InvoiceGatewayResult.getResponseCode(code),
-            NetworkError(code, message)
-        )
+        InvoiceRepositoryResult.InvoicesRequestResult(listOf(), false, NetworkError(code, message))
 
     private fun invoiceRemoteToLocal(remoteModel: List<InvoiceRemoteModel>) =
         remoteModel.map { invoiceRemoteToLocal(it) }

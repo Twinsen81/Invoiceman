@@ -12,7 +12,7 @@ import com.evartem.domain.gateway.InvoiceGatewayResult
 class InvoiceMapperToGatewayResult {
     fun toGateway(repoResult: InvoiceRepositoryResult): InvoiceGatewayResult =
         (repoResult as InvoiceRepositoryResult.InvoicesRequestResult).let {
-            InvoiceGatewayResult.InvoicesRequestResult(localToEntity(it.invoices), it.response, it.networkError)
+            InvoiceGatewayResult.InvoicesRequestResult(localToEntity(it.invoices), it.success, it.networkError)
         }
 
     private fun localToEntity(localModel: List<InvoiceLocalModel>) =
