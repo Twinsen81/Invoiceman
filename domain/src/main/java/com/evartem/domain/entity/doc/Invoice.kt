@@ -34,4 +34,7 @@ data class Invoice (
 
     val isProcessingFinishedSuccessfully
         get() = products.all { it.isProcessingFinishedSuccessfully }
+
+    val totalProductsQuantity
+        get() = products.sumBy { it.quantity }
 }

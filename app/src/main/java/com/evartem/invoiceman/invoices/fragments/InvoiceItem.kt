@@ -24,7 +24,7 @@ class InvoiceItem(val invoice: Invoice) : AbstractItem<InvoiceItem, InvoiceItem.
             itemView.invoice_seller.text = item.invoice.seller
             itemView.invoice_number.text = item.invoice.number.toString()
             itemView.invoice_date.text = item.invoice.date
-            itemView.invoice_qty.text = "0"
+            itemView.invoice_qty.text = item.invoice.totalProductsQuantity.toString()
 
             itemView.invoice_comment.apply {
                 text = item.invoice.comment ?: ""

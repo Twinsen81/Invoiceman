@@ -12,6 +12,7 @@ import com.evartem.invoiceman.invoices.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
+import com.evartem.invoiceman.util.InvisibleItem
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.getRandomPeaksForGradientChart
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes

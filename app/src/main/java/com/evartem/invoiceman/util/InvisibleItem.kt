@@ -1,4 +1,4 @@
-package com.evartem.invoiceman.invoices.fragments
+package com.evartem.invoiceman.util
 
 import android.view.View
 import com.evartem.invoiceman.R
@@ -10,7 +10,8 @@ class InvisibleItem : AbstractItem<InvisibleItem, InvisibleItem.ViewHolder>() {
 
     override fun getType(): Int = INVOICE_ITEM_TYPE_INVISIBLE
 
-    override fun getViewHolder(v: View): InvisibleItem.ViewHolder = ViewHolder(v)
+    override fun getViewHolder(v: View): ViewHolder =
+        ViewHolder(v)
 
     override fun getLayoutRes(): Int = R.layout.item_invisible_footer
 
