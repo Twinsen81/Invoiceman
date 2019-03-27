@@ -20,15 +20,21 @@
             app:zoom="10"
             app:isBezier="true"
     />
-    <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:elevation="2dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/invoices_available_recyclerView" tools:listitem="@layout/item_invoice"/>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/invoices_available_recyclerView" tools:listitem="@layout/item_invoice"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_coffee"
@@ -49,7 +55,7 @@
             android:textSize="18sp" android:textAlignment="center" android:visibility="visible"
             android:layout_marginTop="128dp" app:layout_constraintTop_toTopOf="parent"
             android:fontFamily="sans-serif-smallcaps" android:textStyle="bold"
-            android:text="@string/no_new_invoices_to_process"/>
+            android:text="@string/invoices_no_new_to_process"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

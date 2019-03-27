@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:hideOnScroll="true"
+            app:layout_scrollFlags="scroll|enterAlways"
             app:fabAlignmentMode="end"
             android:backgroundTint="@color/secondaryDarkColor"
             app:navigationIcon="@drawable/ic_menu"/>

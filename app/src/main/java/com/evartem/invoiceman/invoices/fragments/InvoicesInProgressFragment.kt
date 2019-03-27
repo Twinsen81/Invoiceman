@@ -51,7 +51,7 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
         invoices_in_progress_text.text = "INVOICES: ${uiState.searchRequest}, ${uiState.invoices.size}"
-        invoices_in_progress_loading.visibility = if (uiState.loadingIndicator) View.VISIBLE else View.GONE
+        invoices_in_progress_loading.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState

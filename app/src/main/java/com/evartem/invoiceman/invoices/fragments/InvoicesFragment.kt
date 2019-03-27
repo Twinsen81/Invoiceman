@@ -29,6 +29,8 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         super.onActivityCreated(savedInstanceState)
 
         setupTabs()
+
+        subscribeToViewModel()
     }
 
     private fun setupTabs() {
@@ -47,10 +49,13 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         fab.hide()
     }
 
-    override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) {
-        if (uiEffect is InvoicesUiEffect.NetworkError)
-            Toast.makeText(context, uiEffect.message, Toast.LENGTH_LONG).show()
-    }
+    override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =
+        when (uiEffect) {
+            is InvoicesUiEffect.NetworkError ->
+                Toast.makeText(context, uiEffect.message, Toast.LENGTH_LONG).show()
+            is InvoicesUiEffect.NoNewData ->
+                Toast.makeText(context, R.string.invoices_no_new_received, Toast.LENGTH_LONG).show()
+        }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = null
 

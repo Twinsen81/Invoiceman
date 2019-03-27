@@ -20,6 +20,7 @@ import timber.log.Timber
 abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     private var disposables: CompositeDisposable = CompositeDisposable()
+
     private val uiEvents: MutableList<Observable<Event>> = mutableListOf()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -64,27 +65,25 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     protected fun subscribeToViewModel() {
         getUiStateObservable()?.apply {
-            doOnNext { Timber.d("MVI-New state: $it") }
-                .subscribe({
-                    try {
-                        Timber.d("Rendering Ui state: $it")
-                        onRenderUiState(it)
-                    } catch (ex: Throwable) {
-                        Timber.wtf("MVI-Critical app error while rendering UI state:\n${Log.getStackTraceString(ex)}")
-                    }
-                }) { Timber.wtf("MVI-Critical app error while precessing UI state:\n${Log.getStackTraceString(it)}") }
+            subscribe({ uiState ->
+                try {
+                    Timber.d("MVI-Rendering new Ui state: $uiState")
+                    onRenderUiState(uiState)
+                } catch (ex: Throwable) {
+                    Timber.wtf("MVI-Critical app error while rendering UI state:\n${Log.getStackTraceString(ex)}")
+                }
+            }) { Timber.wtf("MVI-Critical app error while precessing UI state:\n${Log.getStackTraceString(it)}") }
                 .addTo(disposables)
         }
         getUiEffectObservable()?.apply {
-            doOnNext { Timber.d("MVI-New effect: $it") }
-                .subscribe({
-                    try {
-                        Timber.d("Rendering Ui effect: $it")
-                        onRenderUiEffect(it)
-                    } catch (ex: Throwable) {
-                        Timber.wtf("MVI-Critical app error while rendering UI effect:\n${Log.getStackTraceString(ex)}")
-                    }
-                }) { Timber.wtf("MVI-Critical app error while processing UI effect:\n${Log.getStackTraceString(it)}") }
+            subscribe({ uiEffect ->
+                try {
+                    Timber.d("MVI-Rendering new Ui effect: $uiEffect")
+                    onRenderUiEffect(uiEffect)
+                } catch (ex: Throwable) {
+                    Timber.wtf("MVI-Critical app error while rendering UI effect:\n${Log.getStackTraceString(ex)}")
+                }
+            }) { Timber.wtf("MVI-Critical app error while processing UI effect:\n${Log.getStackTraceString(it)}") }
                 .addTo(disposables)
         }
     }

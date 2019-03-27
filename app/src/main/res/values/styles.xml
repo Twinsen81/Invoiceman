@@ -16,4 +16,12 @@
         <item name="android:statusBarColor">@color/secondaryDarkColor</item>
     </style>
 
+    <style name="StatusDialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowAnimationStyle">@style/StatusDialogAnimation</item>
+    </style>
+
+    <style name="StatusDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/fadein</item>
+    </style>
+
 </resources>

@@ -48,7 +48,6 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
             .doOnNext { Timber.d("MVI-Event: $it") }
             .flatMap { event -> eventToResult(event) }
             .doOnNext { Timber.d("MVI-Result: $it") }
-            .filter { result -> !processAsUiEffect(result) }
             .scan(startingUiState) { previousUiState, newResult ->
                 reduceUiState(previousUiState, newResult)
             }
@@ -59,20 +58,11 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
             .subscribe(uiState::onNext)
     }
 
-    private fun processAsUiEffect(result: ViewModelResult): Boolean {
-        val uiEffect = getUiEffect(result)
-        if (uiEffect != null) {
-            uiEffects.onNext(uiEffect)
-            return true
-        }
-        return false
-    }
+    protected fun addUiEffect(uiEffect: UiEffect) = uiEffects.onNext(uiEffect)
 
     protected abstract fun eventToResult(event: Event): Observable<ViewModelResult>
 
     protected abstract fun reduceUiState(previousUiState: UiState, newResult: ViewModelResult): UiState
-
-    protected abstract fun getUiEffect(newResult: ViewModelResult): UiEffect?
 
     override fun onCleared() {
         super.onCleared()

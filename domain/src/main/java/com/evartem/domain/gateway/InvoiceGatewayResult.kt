@@ -16,6 +16,8 @@ sealed class InvoiceGatewayResult(val response: ResponseCode, val networkError: 
     class SubmitInvoiceResult(response: ResponseCode, networkError: NetworkError? = null) :
         InvoiceGatewayResult(response, networkError)
 
+    class EmptyResult : InvoiceGatewayResult(ResponseCode.SUCCESS)
+
     enum class ResponseCode {
         SUCCESS,
         DENIED_NETWORK_ERROR,

@@ -5,17 +5,20 @@ import android.content.Context
 import android.view.Window
 import com.bumptech.glide.Glide
 import com.evartem.invoiceman.R
-import kotlinx.android.synthetic.main.dialog_loading.*
+import kotlinx.android.synthetic.main.dialog_status.*
 
-class LoadingDialog(context: Context) {
+class StatusDialog(context: Context) {
     private val dialog: Dialog by lazy { createDialog(context) }
 
     private fun createDialog(context: Context): Dialog {
-        val dialog = Dialog(context)
+        val dialog = Dialog(context, R.style.StatusDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
-        dialog.setContentView(R.layout.dialog_loading)
-        Glide.with(dialog.context).load(R.drawable.loading_infinity).into(dialog.loading_image)
+        dialog.setContentView(R.layout.dialog_status)
+        Glide.with(dialog.context)
+            .load(R.drawable.loading_infinity)
+            .placeholder(R.drawable.loading_infinity_stat)
+            .into(dialog.loading_image)
         return dialog
     }
 

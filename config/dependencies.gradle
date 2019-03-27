@@ -81,10 +81,13 @@ ext {
             "org.koin:koin-androidx-viewmodel:$koin",
             "org.koin:koin-androidx-scope:$koin",
 
+            // FastAdapter
+            "com.mikepenz:fastadapter:$fastAdapter",
+            "com.mikepenz:fastadapter-extensions:$fastAdapter",
+
             // Misc
             "com.jakewharton.timber:timber:$timber",
             "com.github.JastAir:Android-BackgroundChart:$backgroundChart",
-            "com.mikepenz:fastadapter:$fastAdapter",
             "com.github.bumptech.glide:glide:$glide"
     ]
 

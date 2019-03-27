@@ -13,7 +13,7 @@ import io.reactivex.Observable
 class InvoicesViewModel(private val user: User, private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
         InvoicesEvent.LoadScreenEvent,
-        InvoicesUiState(loadingIndicator = true)
+        InvoicesUiState(isLoading = true)
     ) {
 
     override fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
@@ -26,22 +26,20 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
     private fun onLoadScreenEvent(): Observable<InvoicesViewModelResult> =
         getInvoicesForUserUseCase.execute(Pair(user, true))
             .map {
-                InvoicesViewModelResult.AllInvoicesResult(it)
+                InvoicesViewModelResult.Invoices(it)
             }
 
     private fun onRefreshScreenEvent(): Observable<InvoicesViewModelResult> =
-        Observable.just(
-            InvoicesViewModelResult.AllInvoicesResult(
-                InvoiceGatewayResult.InvoicesRequestResult(
-                    listOf(),
-                    InvoiceGatewayResult.ResponseCode.DENIED_NETWORK_ERROR
-                )
-            )
-        )
+        Observable.merge(
+            Observable.just(InvoicesViewModelResult.IsRefreshing()),
+            getInvoicesForUserUseCase.execute(Pair(user, true))
+                .map {
+                    InvoicesViewModelResult.Invoices(it)
+                })
 
     private fun onSearchInvoiceEvent(event: InvoicesEvent.SearchInvoiceEvent): Observable<InvoicesViewModelResult> =
         Observable.just(
-            InvoicesViewModelResult.SearchResult(
+            InvoicesViewModelResult.Search(
                 event.searchQuery,
                 InvoiceGatewayResult.InvoicesRequestResult(
                     listOf(),
@@ -50,22 +48,19 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
             )
         )
 
-    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
-        return when (newResult) {
-            is InvoicesViewModelResult.AllInvoicesResult -> InvoicesUiState(
-                "", false, (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices
-            )
-            else -> previousUiState
+    override fun reduceUiState(
+        previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult
+    ): InvoicesUiState =
+        when (newResult) {
+            is InvoicesViewModelResult.Invoices -> {
+                val newUiState = InvoicesUiState(
+                    invoices = (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices
+                )
+                if (previousUiState.isRefreshing && previousUiState.invoices == newUiState.invoices)
+                    addUiEffect(InvoicesUiEffect.NoNewData())
+                newUiState
+            }
+            is InvoicesViewModelResult.IsRefreshing -> previousUiState.copy(isRefreshing = true)
+            else -> previousUiState.copy(isLoading = false, isRefreshing = false)
         }
-    }
-
-    override fun getUiEffect(newResult: InvoicesViewModelResult): InvoicesUiEffect? {
-        return if (newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.DENIED_NETWORK_ERROR) {
-            InvoicesUiEffect.NetworkError(
-                newResult.gatewayResult.networkError?.code ?: 0,
-                newResult.gatewayResult.networkError?.message ?: "Unknown network error"
-            )
-        } else
-            null
-    }
 }
