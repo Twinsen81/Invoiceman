@@ -24,7 +24,7 @@ class LoginFragment : AppBarFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
 
-        login_gradientChart.chartValues = getRandomPeaksForGradientChart()
+        //login_gradientChart.chartValues = getRandomPeaksForGradientChart()
 
         btnLogin.setOnClickListener {
             findNavController().navigate(R.id.action_invoices)

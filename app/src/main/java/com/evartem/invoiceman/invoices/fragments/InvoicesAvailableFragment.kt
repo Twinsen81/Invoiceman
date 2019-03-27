@@ -56,7 +56,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
         subscribeToViewModel()
 
-        invoices_available_gradientChart.chartValues = getRandomPeaksForGradientChart()
+//        invoices_available_gradientChart.chartValues = getRandomPeaksForGradientChart()
     }
 
     private fun setupRecyclerView() {

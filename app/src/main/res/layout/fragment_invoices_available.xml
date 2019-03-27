@@ -2,10 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
                                                    xmlns:tools="http://schemas.android.com/tools"
+                                                   android:background="@drawable/seamless_background"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
 
-    <com.fdev.backgroundchart.GradientChart
+<!--    <com.fdev.backgroundchart.GradientChart
             android:id="@+id/invoices_available_gradientChart"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -19,7 +20,7 @@
             app:minusColorEnd="@color/gradChartMinusColorEnd"
             app:zoom="10"
             app:isBezier="true"
-    />
+    />-->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"

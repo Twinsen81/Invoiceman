@@ -31,7 +31,7 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
 
         subscribeToViewModel()
 
-        invoices_in_progress_gradientChart.chartValues = getRandomPeaksForGradientChart()
+//        invoices_in_progress_gradientChart.chartValues = getRandomPeaksForGradientChart()
     }
 
     private fun setupUiEvents() {
