@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -51,8 +52,10 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =
         when (uiEffect) {
-            is InvoicesUiEffect.NetworkError ->
-                Toast.makeText(context, uiEffect.message, Toast.LENGTH_LONG).show()
+            is InvoicesUiEffect.RemoteDatasourceError -> {
+                Timber.e("Network error: ${uiEffect.networkError.code} - ${uiEffect.networkError.message}")
+                Toast.makeText(context, uiEffect.netw, Toast.LENGTH_LONG).show()
+            }
             is InvoicesUiEffect.NoNewData ->
                 Toast.makeText(context, R.string.invoices_no_new_received, Toast.LENGTH_LONG).show()
         }
@@ -62,4 +65,6 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
     override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
+
+    fun getNetworkErrorMessage(code)
 }

@@ -2,6 +2,7 @@ package com.evartem.invoiceman.invoices
 
 import com.evartem.domain.entity.auth.User
 import com.evartem.domain.gateway.InvoiceGatewayResult
+import com.evartem.domain.gateway.NetworkError
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
@@ -48,16 +49,28 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
             )
         )
 
-    override fun reduceUiState(
-        previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult
-    ): InvoicesUiState =
+    override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState =
         when (newResult) {
             is InvoicesViewModelResult.Invoices -> {
-                val newUiState = InvoicesUiState(
-                    invoices = (newResult.gatewayResult as InvoiceGatewayResult.InvoicesRequestResult).invoices
-                )
+
+                var newUiState = previousUiState
+
+                when (newResult.gatewayResult) {
+                    is InvoiceGatewayResult.InvoicesRequestResult -> {
+                        if (newResult.gatewayResult.response == InvoiceGatewayResult.ResponseCode.SUCCESS)
+                            newUiState = InvoicesUiState(invoices = newResult.gatewayResult.invoices)
+                        else
+                            addUiEffect(
+                                InvoicesUiEffect.RemoteDatasourceError(
+                                    newResult.gatewayResult.networkError ?: NetworkError(0, "Unknown network error")
+                                )
+                            )
+                    }
+                }
+
                 if (previousUiState.isRefreshing && previousUiState.invoices == newUiState.invoices)
                     addUiEffect(InvoicesUiEffect.NoNewData())
+
                 newUiState
             }
             is InvoicesViewModelResult.IsRefreshing -> previousUiState.copy(isRefreshing = true)

@@ -15,7 +15,7 @@ class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository,
         invoiceRepository.getInvoicesForUser(user.id, refresh)
             .map { invoiceMapper.toGateway(it) }
             .onErrorReturn { exception ->
-                InvoiceGatewayResult.InvoicesRequestResult(listOf(), InvoiceGatewayResult.ResponseCode.APP_ERROR,
+                InvoiceGatewayResult.InvoicesRequestResult(listOf(), InvoiceGatewayResult.ResponseCode.SERVER_ERROR,
                     InvoiceGatewayResult.NetworkError(0, exception.message ?: "Unknown error")
                 )
             }

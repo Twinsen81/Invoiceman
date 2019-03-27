@@ -8,6 +8,7 @@ import com.evartem.data.remote.model.InvoiceRemoteModel
 import com.evartem.data.remote.model.ProductRemoteModel
 import com.evartem.data.repository.InvoiceRepositoryResult
 import com.evartem.domain.gateway.InvoiceGatewayResult
+import com.evartem.domain.gateway.NetworkError
 import io.realm.RealmList
 import retrofit2.Response
 
@@ -37,8 +38,8 @@ class InvoiceMapperToRepoResult {
     private fun createNetworkErrorResult(code: Int, message: String) =
         InvoiceRepositoryResult.InvoicesRequestResult(
             listOf(),
-            InvoiceGatewayResult.ResponseCode.DENIED_NETWORK_ERROR,
-            InvoiceGatewayResult.NetworkError(code, message)
+            InvoiceGatewayResult.getResponseCode(code),
+            NetworkError(code, message)
         )
 
     private fun invoiceRemoteToLocal(remoteModel: List<InvoiceRemoteModel>) =

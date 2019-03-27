@@ -25,8 +25,21 @@ sealed class InvoiceGatewayResult(val response: ResponseCode, val networkError: 
         DENIED_TAKEN,
         DENIED_NOT_FOUND,
         DENIED_INCONSISTENT_DATA,
-        APP_ERROR
+        SERVER_ERROR
     }
 
-    data class NetworkError(val code: Int, val message: String)
+    companion object {
+        fun getResponseCode(httpCode: Int) =
+            when (httpCode) {
+                200 -> ResponseCode.SUCCESS
+                400 -> ResponseCode.DENIED_INCONSISTENT_DATA
+                401 -> ResponseCode.DENIED_PERMISSIONS
+                404 -> ResponseCode.DENIED_NOT_FOUND
+                409 -> ResponseCode.DENIED_TAKEN
+                500 -> ResponseCode.SERVER_ERROR
+                else -> ResponseCode.DENIED_NETWORK_ERROR
+            }
+    }
 }
+
+data class NetworkError(val code: Int, val message: String)

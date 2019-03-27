@@ -10,7 +10,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-fun createInvoiceNetworkClient(baseUrl: String, debug: Boolean) =
+fun createInvoiceNetworkClient(baseUrl: String, debug: Boolean): InvoiceService =
     Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(MoshiConverterFactory.create(createMoshi()))
@@ -36,4 +36,3 @@ fun createHttpClient(debug: Boolean, connectTimeout: Long = 5, readTimeout: Long
 }
 
 fun createMoshi(): Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-
