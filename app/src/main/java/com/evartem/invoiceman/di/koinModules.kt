@@ -12,7 +12,7 @@ import com.evartem.domain.gateway.InvoiceGateway
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
 import com.evartem.domain.interactor.Schedulers
 import com.evartem.invoiceman.BuildConfig
-import com.evartem.invoiceman.invoices.InvoicesViewModel
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.util.DEMO_USER
 import io.reactivex.Scheduler
 import org.koin.androidx.viewmodel.dsl.viewModel

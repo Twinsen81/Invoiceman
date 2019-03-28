@@ -36,6 +36,7 @@ class InvoiceRepository(
             if (refreshFromServer)
                 remoteDataSource.getInvoicesForUser(userId)
                     .map { invoiceList -> mapperToRepoResult.remoteToResult(invoiceList) }
+                    .onErrorReturn { exception -> mapperToRepoResult.fromException(exception) }
                     .toObservable()
             else
                 Observable.just(mapperToRepoResult.emptyResult)
@@ -80,6 +81,6 @@ class InvoiceRepository(
             localInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
         }.toCollection(unitedInvoices)
 
-        return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.success, remote.networkError)
+        return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.success, remote.gatewayError)
     }
 }

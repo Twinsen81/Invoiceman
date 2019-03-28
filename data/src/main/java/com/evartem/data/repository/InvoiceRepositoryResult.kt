@@ -1,26 +1,26 @@
 package com.evartem.data.repository
 
 import com.evartem.data.local.model.InvoiceLocalModel
-import com.evartem.domain.gateway.NetworkError
+import com.evartem.domain.gateway.GatewayError
 
 sealed class InvoiceRepositoryResult(
     val success: Boolean,
-    val networkError: NetworkError? = null
+    val gatewayError: GatewayError? = null
 ) {
 
     class InvoicesRequestResult(
         val invoices: List<InvoiceLocalModel>,
         success: Boolean,
-        networkError: NetworkError? = null
-    ) : InvoiceRepositoryResult(success, networkError)
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)
 
     class ProcessingRequestResult(
         success: Boolean,
-        networkError: NetworkError? = null
-    ) : InvoiceRepositoryResult(success, networkError)
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)
 
     class SubmitInvoiceResult(
         success: Boolean,
-        networkError: NetworkError? = null
-    ) : InvoiceRepositoryResult(success, networkError)
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)
 }

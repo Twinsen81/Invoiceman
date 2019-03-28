@@ -1,14 +1,11 @@
-package com.evartem.invoiceman.invoices
+package com.evartem.invoiceman.invoices.mvi
 
 import com.evartem.domain.entity.auth.User
 import com.evartem.domain.gateway.InvoiceGatewayResult
-import com.evartem.domain.gateway.NetworkError
+import com.evartem.domain.gateway.GatewayError
+import com.evartem.domain.gateway.GatewayErrorCode
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
 import com.evartem.invoiceman.base.MviViewModel
-import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
-import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
-import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
-import com.evartem.invoiceman.invoices.mvi.InvoicesViewModelResult
 import io.reactivex.Observable
 
 class InvoicesViewModel(private val user: User, private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase) :
@@ -63,7 +60,10 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
                             newUiState = previousUiState.copy(isLoading = false, isRefreshing = false)
                             addUiEffect(
                                 InvoicesUiEffect.RemoteDatasourceError(
-                                    newResult.gatewayResult.networkError ?: NetworkError(0, "Unknown network error")
+                                    newResult.gatewayResult.gatewayError ?: GatewayError(
+                                        GatewayErrorCode.UNKNOWN_ERROR,
+                                        "Unknown network error"
+                                    )
                                 )
                             )
                         }

@@ -31,11 +31,12 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
 
     fun addEvent(event: Event) = events.onNext(event)
 
+    protected fun addUiEffect(uiEffect: UiEffect) = uiEffects.onNext(uiEffect)
+
     /**
      * NOTE: the call to "scan" will make [uiState] emit its first value [startingUiState]
      * even before the first result comes from [startingEvent]. Thus, the fragment will
      * be initialized with [startingUiState] on its creation.
-     *
      */
     @Synchronized
     private fun subscribeAndProcessEvents() {
@@ -57,8 +58,6 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
             }
             .subscribe(uiState::onNext)
     }
-
-    protected fun addUiEffect(uiEffect: UiEffect) = uiEffects.onNext(uiEffect)
 
     protected abstract fun eventToResult(event: Event): Observable<ViewModelResult>
 

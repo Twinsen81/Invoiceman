@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.evartem.backendsim.InvoiceBackendSimulation
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.InvoicesViewModel
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState

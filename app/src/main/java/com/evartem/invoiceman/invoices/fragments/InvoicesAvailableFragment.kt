@@ -8,13 +8,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.InvoicesViewModel
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.util.InvisibleItem
 import com.evartem.invoiceman.util.StatusDialog
-import com.evartem.invoiceman.util.getRandomPeaksForGradientChart
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
