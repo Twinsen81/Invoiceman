@@ -102,10 +102,10 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         else
             statusDialog.hide()
 
-        val showNothingToProcessMessage =
+        val showNothingToProcess =
             if (!uiState.isLoading && uiState.invoices.isEmpty()) View.VISIBLE else View.GONE
-        invoices_available_status_text.visibility = showNothingToProcessMessage
-        invoices_available_status_image.visibility = showNothingToProcessMessage
+        invoices_available_status_text.visibility = showNothingToProcess
+        invoices_available_status_image.visibility = showNothingToProcess
 
         swipeRefreshLayout.isRefreshing = uiState.isRefreshing
 
