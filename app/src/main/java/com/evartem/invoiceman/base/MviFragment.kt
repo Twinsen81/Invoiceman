@@ -11,6 +11,7 @@ import com.evartem.invoiceman.navigation.MainActivity
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import kotlinx.android.synthetic.main.activity_main.*
@@ -65,25 +66,27 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     protected fun subscribeToViewModel() {
         getUiStateObservable()?.apply {
-            subscribe({ uiState ->
-                try {
-                    Timber.d("MVI-Rendering new Ui state: $uiState")
-                    onRenderUiState(uiState)
-                } catch (ex: Throwable) {
-                    Timber.wtf("MVI-Critical app error while rendering UI state:\n${Log.getStackTraceString(ex)}")
-                }
-            }) { Timber.wtf("MVI-Critical app error while precessing UI state:\n${Log.getStackTraceString(it)}") }
+            observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ uiState ->
+                    try {
+                        Timber.d("MVI-Rendering new Ui state: $uiState")
+                        onRenderUiState(uiState)
+                    } catch (ex: Throwable) {
+                        Timber.wtf("MVI-Critical app error while rendering UI state:\n${Log.getStackTraceString(ex)}")
+                    }
+                }) { Timber.wtf("MVI-Critical app error while precessing UI state:\n${Log.getStackTraceString(it)}") }
                 .addTo(disposables)
         }
         getUiEffectObservable()?.apply {
-            subscribe({ uiEffect ->
-                try {
-                    Timber.d("MVI-Rendering new Ui effect: $uiEffect")
-                    onRenderUiEffect(uiEffect)
-                } catch (ex: Throwable) {
-                    Timber.wtf("MVI-Critical app error while rendering UI effect:\n${Log.getStackTraceString(ex)}")
-                }
-            }) { Timber.wtf("MVI-Critical app error while processing UI effect:\n${Log.getStackTraceString(it)}") }
+            observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ uiEffect ->
+                    try {
+                        Timber.d("MVI-Rendering new Ui effect: $uiEffect")
+                        onRenderUiEffect(uiEffect)
+                    } catch (ex: Throwable) {
+                        Timber.wtf("MVI-Critical app error while rendering UI effect:\n${Log.getStackTraceString(ex)}")
+                    }
+                }) { Timber.wtf("MVI-Critical app error while processing UI effect:\n${Log.getStackTraceString(it)}") }
                 .addTo(disposables)
         }
     }

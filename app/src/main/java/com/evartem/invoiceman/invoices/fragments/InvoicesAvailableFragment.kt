@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.invoiceman.R
@@ -14,6 +15,9 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.util.InvisibleItem
 import com.evartem.invoiceman.util.StatusDialog
+import com.jakewharton.rxbinding3.appcompat.SearchViewQueryTextEvent
+import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
+import com.jakewharton.rxbinding3.appcompat.queryTextChanges
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
@@ -22,6 +26,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import java.util.concurrent.TimeUnit
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -68,29 +73,29 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         itemsAdapterInvisibleFooter.set(listOf(InvisibleItem()))
 
         // Fix a problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
-        invoices_available_recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        invoices_available_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                swipeRefreshLayout.isEnabled = swipeRefreshLayout.isRefreshing || linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0
+                swipeRefreshLayout.isEnabled = !previousUiState.searchViewOpen &&
+                    swipeRefreshLayout.isRefreshing || linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0
             }
         })
     }
 
     private fun setupUiEvents() {
 
-        addUiEvent(swipeRefreshLayout.refreshes().map { InvoicesEvent.RefreshScreenEvent })
-/*    addUiEvent(invoices_available_refreshButton.clicks().map { InvoicesEvent.RefreshScreenEvent })
+        addUiEvent(swipeRefreshLayout.refreshes().map { InvoicesEvent.RefreshScreen })
 
         addUiEvent(
-            invoices_available_searchButton.clicks()
-                .map { invoices_available_searchText.text.trim() }
-                .filter { text -> text.isNotBlank() }
-                .map { InvoicesEvent.SearchInvoiceEvent(it.toString()) })*/
+            searchView.queryTextChangeEvents()
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .filter { searchEvent -> searchEvent.isSubmitted && searchEvent.queryText.isNotBlank() }
+                .map { searchEvent -> InvoicesEvent.Search(searchEvent.queryText.toString()) })
     }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
 
-        if (uiState.invoices.isNotEmpty() && uiState.invoices != previousUiState.invoices) {
+        if (uiState.invoices.isNotEmpty() && (uiState.isInvoicesChanged || previousUiState.invoices.isEmpty())) {
             itemsAdapter.clear()
             invoices_available_recyclerView.layoutManager?.scrollToPosition(0)
             itemsAdapter.add(uiState.invoices.map { InvoiceItem(it) })
@@ -108,6 +113,14 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         invoices_available_status_image.visibility = showNothingToProcess
 
         swipeRefreshLayout.isRefreshing = uiState.isRefreshing
+
+        searchView.visibility = if (uiState.searchViewOpen) View.VISIBLE else View.GONE
+        searchView.setQuery(uiState.searchRequest, false)
+        if (searchView.isVisible)
+        {
+            searchView.isIconified = false
+            searchView.requestFocusFromTouch()
+        }
 
         previousUiState = uiState.copy()
     }

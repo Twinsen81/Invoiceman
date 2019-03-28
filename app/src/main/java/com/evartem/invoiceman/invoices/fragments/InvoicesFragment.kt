@@ -2,9 +2,7 @@ package com.evartem.invoiceman.invoices.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getDrawable
 import com.evartem.domain.gateway.GatewayError
@@ -17,8 +15,10 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.jakewharton.rxbinding3.appcompat.itemClicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices.*
+import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -34,6 +34,8 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
         setupTabs()
 
+        setupUiEvents()
+
         subscribeToViewModel()
     }
 
@@ -47,31 +49,52 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         invoicesTabs.setupWithViewPager(invoicesViewPager)
     }
 
-    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
-        bottomAppBar.navigationIcon = getDrawable(context!!, R.drawable.ic_menu)
-        bottomAppBar.visibility = View.VISIBLE
-        fab.hide()
+    private fun setupUiEvents() {
+        addUiEvent(
+            bottomAppBar.itemClicks()
+                .map { item ->
+                    when (item.itemId) {
+                        R.id.invoices_search -> InvoicesEvent.Search(startSearch = true)
+                        R.id.invoices_sort -> InvoicesEvent.Search()
+                        else -> InvoicesEvent.Search()
+                    }
+                })
     }
 
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =
+
         when (uiEffect) {
             is InvoicesUiEffect.RemoteDatasourceError -> {
-                Timber.e("Network error: ${uiEffect.gatewayError.code} - ${uiEffect.gatewayError.message}")
-                uiEffect.gatewayError.exception?.also { Timber.e(Log.getStackTraceString(it)) }
+                Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
+                uiEffect.gatewayError?.exception?.also { Timber.e(Log.getStackTraceString(it)) }
                 Toast.makeText(context, getNetworkErrorMessageForUi(uiEffect.gatewayError), Toast.LENGTH_LONG).show()
             }
             is InvoicesUiEffect.NoNewData ->
                 Toast.makeText(context, R.string.invoices_no_new_received, Toast.LENGTH_LONG).show()
         }
 
-    override fun getUiStateObservable(): Observable<InvoicesUiState>? = null
+    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
+        bottomAppBar.navigationIcon = getDrawable(context!!, R.drawable.ic_menu)
+        bottomAppBar.visibility = View.VISIBLE
+        bottomAppBar.replaceMenu(R.menu.invoices)
+        fab.hide()
+    }
+
+    override fun onRenderUiState(uiState: InvoicesUiState) {
+        val allowSortAndSearch = uiState.invoices.isNotEmpty() && !uiState.isRefreshing
+        bottomAppBar.menu.findItem(R.id.invoices_sort).isEnabled = allowSortAndSearch
+        bottomAppBar.menu.findItem(R.id.invoices_search).isEnabled = allowSortAndSearch
+    }
+
+    override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
 
     override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
 
-    private fun getNetworkErrorMessageForUi(gatewayError: GatewayError): String =
-        when (gatewayError.code) {
+    private fun getNetworkErrorMessageForUi(gatewayError: GatewayError?): String {
+        if (gatewayError == null) return R.string.network_error_general.resToString().format(0)
+        return when (gatewayError.code) {
             GatewayErrorCode.INCONSISTENT_DATA -> R.string.network_error_inconsistent_data.resToString()
             GatewayErrorCode.NO_PERMISSIONS -> R.string.network_error_no_permissions.resToString()
             GatewayErrorCode.NOT_FOUND -> R.string.network_error_not_found.resToString()
@@ -81,6 +104,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
             GatewayErrorCode.WRONG_SERVER_RESPONSE -> R.string.network_error_server_wrong_response.resToString()
             else -> R.string.network_error_general.resToString().format(gatewayError.code.value)
         }
+    }
 
     private fun Int.resToString() = resources.getString(this)
 }
