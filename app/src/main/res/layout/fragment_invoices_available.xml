@@ -6,35 +6,50 @@
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
 
-<!--    <com.fdev.backgroundchart.GradientChart
-            android:id="@+id/invoices_available_gradientChart"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+    <!--    <com.fdev.backgroundchart.GradientChart
+                android:id="@+id/invoices_available_gradientChart"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:plusColorStart="@color/gradChartPlusColorStart"
+                app:plusColorEnd="@color/gradChartPlusColorEnd"
+                app:minusColorStart="@color/gradChartMinusColorStart"
+                app:minusColorEnd="@color/gradChartMinusColorEnd"
+                app:zoom="10"
+                app:isBezier="true"
+        />-->
+
+    <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:plusColorStart="@color/gradChartPlusColorStart"
-            app:plusColorEnd="@color/gradChartPlusColorEnd"
-            app:minusColorStart="@color/gradChartMinusColorStart"
-            app:minusColorEnd="@color/gradChartMinusColorEnd"
-            app:zoom="10"
-            app:isBezier="true"
-    />-->
+            app:queryHint="@string/invoices_search_hint"
+            android:background="@color/cardViewBackColor"
+            android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"/>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/searchView"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/invoices_available_recyclerView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:elevation="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:id="@+id/invoices_available_recyclerView" tools:listitem="@layout/item_invoice"/>
+                app:layout_constraintTop_toBottomOf="parent"
+                tools:listitem="@layout/item_invoice"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <ImageView
             android:layout_width="wrap_content"
