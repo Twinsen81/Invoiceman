@@ -2,23 +2,24 @@ package com.evartem.invoiceman.invoices.fragments
 
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getDrawable
 import com.evartem.domain.gateway.GatewayError
 import com.evartem.domain.gateway.GatewayErrorCode
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices.*
-import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -84,6 +85,20 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         val allowSortAndSearch = uiState.invoices.isNotEmpty() && !uiState.isRefreshing
         bottomAppBar.menu.findItem(R.id.invoices_sort).isEnabled = allowSortAndSearch
         bottomAppBar.menu.findItem(R.id.invoices_search).isEnabled = allowSortAndSearch
+    }
+
+    override fun onBackPressed(): Boolean {
+
+        var isProcessed = false
+
+        childFragmentManager.fragments.forEach { fragment ->
+            if (fragment is MviFragment<*, *, *> && fragment.onBackPressed()) {
+                isProcessed = true
+                return@forEach
+            }
+        }
+
+        return isProcessed
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState

@@ -4,21 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.util.InvisibleItem
 import com.evartem.invoiceman.util.StatusDialog
-import com.jakewharton.rxbinding3.appcompat.SearchViewQueryTextEvent
+import com.evartem.invoiceman.util.hideKeyboard
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
-import com.jakewharton.rxbinding3.appcompat.queryTextChanges
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
+import com.jakewharton.rxbinding3.view.clicks
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.IItem
@@ -59,11 +59,10 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         setupUiEvents()
 
         subscribeToViewModel()
-
-//        invoices_available_gradientChart.chartValues = getRandomPeaksForGradientChart()
     }
 
     private fun setupRecyclerView() {
+
         itemsAdapter = ItemAdapter()
         itemsAdapterInvisibleFooter = ItemAdapter()
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
@@ -72,19 +71,32 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
             FastAdapter.with<IItem<*, *>, IAdapter<out IItem<*, *>>>(listOf(itemsAdapter, itemsAdapterInvisibleFooter))
         itemsAdapterInvisibleFooter.set(listOf(InvisibleItem()))
 
+        itemsAdapter.itemFilter.withFilterPredicate { item, constraint ->
+            item.invoice.seller.contains(constraint ?: "", true) ||
+                    item.invoice.number.toString().contains(constraint ?: "", true) ||
+                    item.invoice.date.contains(constraint ?: "", true)
+        }
+
         // Fix a problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
         invoices_available_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                swipeRefreshLayout.isEnabled = !previousUiState.searchViewOpen &&
-                    swipeRefreshLayout.isRefreshing || linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0
+                swipeRefreshLayout.isEnabled = !searchView.isVisible && swipeRefreshLayout.isRefreshing ||
+                        linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0
             }
         })
     }
 
     private fun setupUiEvents() {
 
-        addUiEvent(swipeRefreshLayout.refreshes().map { InvoicesEvent.RefreshScreen })
+        addUiEvent(swipeRefreshLayout.refreshes()
+            .doOnNext { if (searchView.isVisible) swipeRefreshLayout.isRefreshing = false }
+            .map { InvoicesEvent.RefreshScreen })
+
+        addUiEvent(
+            searchView.findViewById<ImageView>(com.evartem.invoiceman.R.id.search_close_btn).clicks()
+                .doOnNext { hideKeyboard(activity!!) }
+                .map { InvoicesEvent.Search(stopSearch = true) })
 
         addUiEvent(
             searchView.queryTextChangeEvents()
@@ -92,6 +104,16 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
                 .filter { searchEvent -> searchEvent.isSubmitted && searchEvent.queryText.isNotBlank() }
                 .map { searchEvent -> InvoicesEvent.Search(searchEvent.queryText.toString()) })
     }
+
+    override fun onBackPressed(): Boolean =
+        when {
+            searchView.isVisible -> {
+                hideKeyboard(activity!!)
+                viewModel.addEvent(InvoicesEvent.Search(stopSearch = true))
+                true
+            }
+            else -> false
+        }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
 
@@ -103,7 +125,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
             itemsAdapter.set(emptyList())
 
         if (uiState.isLoading)
-            statusDialog.show(resources.getString(R.string.invoices_loading_text))
+            statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoices_loading_text))
         else
             statusDialog.hide()
 
@@ -116,11 +138,20 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
         searchView.visibility = if (uiState.searchViewOpen) View.VISIBLE else View.GONE
         searchView.setQuery(uiState.searchRequest, false)
-        if (searchView.isVisible)
-        {
+        if (searchView.isVisible) {
             searchView.isIconified = false
             searchView.requestFocusFromTouch()
         }
+
+        if (uiState.searchViewOpen && !previousUiState.searchViewOpen)
+            swipeRefreshLayout.isEnabled = false
+        if (!uiState.searchViewOpen && previousUiState.searchViewOpen)
+            swipeRefreshLayout.isEnabled = true
+
+        if (searchView.isVisible && uiState.searchRequest.isNotBlank())
+            itemsAdapter.filter(uiState.searchRequest)
+        else
+            itemsAdapter.filter(null)
 
         previousUiState = uiState.copy()
     }

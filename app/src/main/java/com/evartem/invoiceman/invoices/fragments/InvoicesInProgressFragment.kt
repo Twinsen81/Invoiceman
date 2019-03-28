@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import com.evartem.backendsim.InvoiceBackendSimulation
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_inprogress.*
@@ -29,8 +29,6 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
         setupUiEvents()
 
         subscribeToViewModel()
-
-//        invoices_in_progress_gradientChart.chartValues = getRandomPeaksForGradientChart()
     }
 
     private fun setupUiEvents() {

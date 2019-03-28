@@ -103,6 +103,8 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
         }
     }
 
+    open fun onBackPressed(): Boolean = false
+
     override fun onResume() {
         super.onResume()
         subscribeToUiEvents()
