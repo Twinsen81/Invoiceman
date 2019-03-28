@@ -53,6 +53,10 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         fab.hide()
     }
 
+    override fun onRenderUiState(uiState: InvoicesUiState) {
+        super.onRenderUiState(uiState)
+    }
+
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =
         when (uiEffect) {
             is InvoicesUiEffect.RemoteDatasourceError -> {
@@ -64,7 +68,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
                 Toast.makeText(context, R.string.invoices_no_new_received, Toast.LENGTH_LONG).show()
         }
 
-    override fun getUiStateObservable(): Observable<InvoicesUiState>? = null
+    override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
 
     override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
 
