@@ -43,4 +43,5 @@ dependencies {
     debugImplementation appDebugDependencies
     releaseImplementation appReleaseDependencies
     debugImplementation appDebugDependencies
+    kapt appKaptDependencies
 }

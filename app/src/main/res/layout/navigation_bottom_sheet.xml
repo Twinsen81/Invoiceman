@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="@color/primaryColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -17,7 +18,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:itemTextColor="@color/secondary_textcolor"
+            app:itemTextColor="@android:color/white"
+            app:itemIconTint="@android:color/white"
             app:menu="@menu/navigation"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

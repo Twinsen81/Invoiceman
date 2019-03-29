@@ -4,18 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.evartem.backendsim.InvoiceBackendSimulation
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.InvoicesViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
-import com.evartem.invoiceman.util.getRandomPeaksForGradientChart
+import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.jakewharton.rxbinding3.view.clicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_inprogress.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 
 class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
@@ -29,12 +28,17 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
 
         setupUiEvents()
 
-        invoices_in_progress_gradientChart.chartValues = getRandomPeaksForGradientChart()
+        subscribeToViewModel()
     }
 
     private fun setupUiEvents() {
 
-        Timber.d("MVI ($viewModel): setupUiEvents")
+        invoices_in_progress_searchButton.clicks()
+            .subscribe {
+                InvoiceBackendSimulation.responseCode = invoices_in_progress_searchText.text.toString().toInt()
+            }
+
+/*        Timber.d("MVI ($viewModel): setupUiEvents")
         addUiEvent(invoices_in_progress_refreshButton.clicks().map {
             Timber.d("MVI ($viewModel): refresh click")
             InvoicesEvent.LoadScreenEvent
@@ -44,12 +48,12 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
             invoices_in_progress_searchButton.clicks()
                 .map { invoices_in_progress_searchText.text.trim() }
                 .filter { text -> text.isNotBlank() }
-                .map { InvoicesEvent.SearchInvoiceEvent(it.toString()) })
+                .map { InvoicesEvent.SearchInvoiceEvent(it.toString()) })*/
     }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
         invoices_in_progress_text.text = "INVOICES: ${uiState.searchRequest}, ${uiState.invoices.size}"
-        invoices_in_progress_loading.visibility = if (uiState.loadingIndicator) View.VISIBLE else View.GONE
+        invoices_in_progress_loading.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState

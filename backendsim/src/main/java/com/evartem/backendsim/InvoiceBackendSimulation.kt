@@ -16,6 +16,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 object InvoiceBackendSimulation {
 
@@ -25,6 +26,8 @@ object InvoiceBackendSimulation {
     private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     private val listOfInvoices: Type = Types.newParameterizedType(List::class.java, Invoice::class.java)
     private val jsonAdapter: JsonAdapter<List<Invoice>> = moshi.adapter<List<Invoice>>(listOfInvoices)
+
+    var responseCode = 200
 
     var responseDelaySeconds = 2L
 
@@ -46,15 +49,12 @@ object InvoiceBackendSimulation {
     }
 
     private fun getMockResponseInvoicesForUser(request: RecordedRequest?): MockResponse? {
-        /*if (!hasQueryParameterNames("userid").matches(request))
-            return MockResponse().setBody("[userid] parameter is missing").setResponseCode(401)
-*/
         val uri = Uri.parse(request!!.requestUrl.toString())
         val userId = uri.getQueryParameter("userid")
 
         if (userId != null && userId.isNotEmpty()) {
             return MockResponse()
-                .setBody(jsonAdapter.toJson(getInvoicesForUser(userId).toList())).setResponseCode(200)
+                .setBody(jsonAdapter.toJson(getInvoicesForUser(userId).toList())).setResponseCode(responseCode)
         }
 
         return MockResponse().setBody("incorrect [userid] parameter").setResponseCode(401)

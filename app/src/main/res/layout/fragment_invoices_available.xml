@@ -1,33 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:background="@drawable/seamless_background"
+                                                   android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
 
-    <com.fdev.backgroundchart.GradientChart
-            android:id="@+id/invoices_available_gradientChart"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+    <!--    <com.fdev.backgroundchart.GradientChart
+                android:id="@+id/invoices_available_gradientChart"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:plusColorStart="@color/gradChartPlusColorStart"
+                app:plusColorEnd="@color/gradChartPlusColorEnd"
+                app:minusColorStart="@color/gradChartMinusColorStart"
+                app:minusColorEnd="@color/gradChartMinusColorEnd"
+                app:zoom="10"
+                app:isBezier="true"
+        />-->
+
+    <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:plusColorStart="@color/gradChartPlusColorStart"
-            app:plusColorEnd="@color/gradChartPlusColorEnd"
-            app:minusColorStart="@color/gradChartMinusColorStart"
-            app:minusColorEnd="@color/gradChartMinusColorEnd"
-            app:zoom="10"
-            app:isBezier="true"
-            />
-    <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            app:queryHint="@string/invoices_search_hint"
+            app:defaultQueryHint="@string/invoices_search_hint"
             android:elevation="2dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/cardViewBackColor"
+            android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:layout_marginTop="8dp"/>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/searchView"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" android:visibility="visible">
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/invoices_available_recyclerView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:elevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                tools:listitem="@layout/item_invoice" android:visibility="visible"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="@drawable/ic_coffee"
+            android:id="@+id/invoices_available_status_image"
+            android:elevation="3dp"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/invoices_available_recyclerView" tools:listitem="@layout/item_invoice"/>
+            android:visibility="invisible"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/invoices_available_status_text"
+            tools:ignore="ContentDescription"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/invoices_available_status_text"
+            android:elevation="3dp"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="No new invoices to process" android:textColor="@color/noInvoicesMessageColor"
+            android:textSize="18sp" android:textAlignment="center" android:visibility="invisible"
+            android:layout_marginTop="128dp" app:layout_constraintTop_toTopOf="parent"
+            android:fontFamily="sans-serif-smallcaps" android:textStyle="bold"
+            android:text="@string/invoices_no_new_to_process"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

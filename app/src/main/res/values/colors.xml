@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#78909c</color>
+    <color name="primaryColor">#637781</color>
     <color name="primaryLightColor">#a7c0cd</color>
     <color name="primaryDarkColor">#4b636e</color>
     <color name="secondaryColor">#2C2C2C</color>
@@ -12,5 +12,6 @@
     <color name="gradChartMinusColorStart">#858585</color>
     <color name="gradChartMinusColorEnd">#727272</color>
 
-    <color name="carViewBackColor">#DDFFFFFF</color>
+    <color name="cardViewBackColor">#C6FFFFFF</color>
+    <color name="noInvoicesMessageColor">#E1474747</color>
 </resources>

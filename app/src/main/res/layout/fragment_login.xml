@@ -3,10 +3,11 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
+        android:background="@drawable/seamless_background"
         android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context=".login.LoginFragment">
 
-    <com.fdev.backgroundchart.GradientChart
+ <!--   <com.fdev.backgroundchart.GradientChart
             android:id="@+id/login_gradientChart"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -19,7 +20,7 @@
             app:minusColorStart="@color/gradChartMinusColorStart"
             app:minusColorEnd="@color/gradChartMinusColorEnd"
             app:zoom="10"
-            app:isBezier="true"/>
+            app:isBezier="true"/>-->
 
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="LOGIN"
               app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"

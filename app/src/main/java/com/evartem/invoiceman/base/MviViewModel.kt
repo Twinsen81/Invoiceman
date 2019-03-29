@@ -3,6 +3,7 @@ package com.evartem.invoiceman.base
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
@@ -31,6 +32,13 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
 
     fun addEvent(event: Event) = events.onNext(event)
 
+    protected fun addUiEffect(uiEffect: UiEffect) = uiEffects.onNext(uiEffect)
+
+    /**
+     * NOTE: the call to "scan" will make [uiState] emit its first value [startingUiState]
+     * even before the first result comes from [startingEvent]. Thus, the fragment will
+     * be initialized with [startingUiState] on its creation.
+     */
     @Synchronized
     private fun subscribeAndProcessEvents() {
         if (isInitialized) return else isInitialized = true
@@ -38,35 +46,24 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
         Timber.d("MVI-Init")
 
         eventsDisposable = events
+            .subscribeOn(Schedulers.io())
             .startWith(startingEvent)
-            .doOnNext { Timber.d("MVI-Event: ${it.toString()}") }
+            .doOnNext { Timber.d("MVI-Event: $it") }
             .flatMap { event -> eventToResult(event) }
-            .doOnNext { Timber.d("MVI-Result: ${it.toString()}") }
-            .filter { result -> !processAsUiEffect(result) }
+            .doOnNext { Timber.d("MVI-Result: $it") }
             .scan(startingUiState) { previousUiState, newResult ->
                 reduceUiState(previousUiState, newResult)
             }
             .onErrorReturn { error ->
-                Timber.wtf("MVI-Critical app error while processing an event:\n${error.localizedMessage}")
+                Timber.wtf("MVI-Critical app error while processing an event: $error")
                 startingUiState
             }
             .subscribe(uiState::onNext)
     }
 
-    private fun processAsUiEffect(result: ViewModelResult): Boolean {
-        val uiEffect = getUiEffect(result)
-        if (uiEffect != null) {
-            uiEffects.onNext(uiEffect)
-            return true
-        }
-        return false
-    }
-
     protected abstract fun eventToResult(event: Event): Observable<ViewModelResult>
 
     protected abstract fun reduceUiState(previousUiState: UiState, newResult: ViewModelResult): UiState
-
-    protected abstract fun getUiEffect(newResult: ViewModelResult): UiEffect?
 
     override fun onCleared() {
         super.onCleared()

@@ -36,6 +36,7 @@ class InvoiceRepository(
             if (refreshFromServer)
                 remoteDataSource.getInvoicesForUser(userId)
                     .map { invoiceList -> mapperToRepoResult.remoteToResult(invoiceList) }
+                    .onErrorReturn { exception -> mapperToRepoResult.fromException(exception) }
                     .toObservable()
             else
                 Observable.just(mapperToRepoResult.emptyResult)
@@ -57,9 +58,10 @@ class InvoiceRepository(
      * @param remote invoices (wrapped in InvoiceRepositoryResult) received from the server
      * @param userId the current user's ID
      */
-
     private fun joinLocalAndRemoteResults(
-        local: InvoiceRepositoryResult, remote: InvoiceRepositoryResult, userId: String
+        local: InvoiceRepositoryResult,
+        remote: InvoiceRepositoryResult,
+        userId: String
     ): InvoiceRepositoryResult {
 
         val localInvoices = (local as InvoiceRepositoryResult.InvoicesRequestResult).invoices
@@ -79,6 +81,6 @@ class InvoiceRepository(
             localInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
         }.toCollection(unitedInvoices)
 
-        return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.response, remote.networkError)
+        return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.success, remote.gatewayError)
     }
 }
