@@ -23,6 +23,11 @@ class InvoiceRepository(
     fun insertResult(result: ResultLocalModel) {
     }
 
+    fun getInvoice(invoiceId: String): Observable<InvoiceRepositoryResult> =
+        localDataSource.getInvoice(invoiceId)
+            .map { invoice -> mapperToRepoResult.localToResult(invoice) }
+            .toObservable()
+
     fun getInvoicesForUser(userId: String, refresh: Boolean = false): Observable<InvoiceRepositoryResult> {
 
         var refreshFromServer = refresh

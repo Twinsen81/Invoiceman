@@ -12,6 +12,16 @@ class InvoiceLocalDataSource {
     val isEmpty
         get() = Realm.getDefaultInstance().isEmpty
 
+    fun getInvoice(invoiceId: String): Single<InvoiceLocalModel> {
+        var invoice = InvoiceLocalModel()
+        Realm.getDefaultInstance().use { realm ->
+            // A detached from Realm copy of the invoice that won't be updated by Realm anymore
+            invoice = realm.copyFromRealm(realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()!!)
+        }
+        invoice.sortProducts() // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        return Single.just(invoice)
+    }
+
     /**
      * Returns invoices that were saved locally on the device
      */

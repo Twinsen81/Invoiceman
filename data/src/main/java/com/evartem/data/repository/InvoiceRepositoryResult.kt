@@ -14,7 +14,13 @@ sealed class InvoiceRepositoryResult(
         gatewayError: GatewayError? = null
     ) : InvoiceRepositoryResult(success, gatewayError)
 
-    class ProcessingRequestResult(
+    class InvoiceRequestResult(
+        val invoice: InvoiceLocalModel,
+        success: Boolean = true,
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)
+
+/*    class ProcessingRequestResult(
         success: Boolean,
         gatewayError: GatewayError? = null
     ) : InvoiceRepositoryResult(success, gatewayError)
@@ -22,5 +28,5 @@ sealed class InvoiceRepositoryResult(
     class SubmitInvoiceResult(
         success: Boolean,
         gatewayError: GatewayError? = null
-    ) : InvoiceRepositoryResult(success, gatewayError)
+    ) : InvoiceRepositoryResult(success, gatewayError)*/
 }
