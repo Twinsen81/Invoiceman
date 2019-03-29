@@ -8,7 +8,8 @@ data class InvoicesUiState(
     var isLoading: Boolean = false,
     var isRefreshing: Boolean = false,
     var isInvoicesChanged: Boolean = true,
-    var invoices: List<Invoice> = emptyList()
+    var isSortingChanged: Boolean = false,
+    var invoices: MutableList<Invoice> = mutableListOf()
 ) {
     override fun toString(): String {
         return StringBuilder()
@@ -17,6 +18,7 @@ data class InvoicesUiState(
             .append(" isLoading=").append(isLoading)
             .append(" isRefreshing=").append(isRefreshing)
             .append(" isInvoicesChanged=").append(isInvoicesChanged)
+            .append(" isSortingChanged=").append(isSortingChanged)
             .append(" invoices=${invoices.size}").toString()
     }
 }

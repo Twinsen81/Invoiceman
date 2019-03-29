@@ -11,7 +11,7 @@
             android:id="@+id/loading_text" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp" android:layout_marginTop="16dp"
-            app:layout_constraintTop_toTopOf="parent" android:textSize="14sp" tools:text="Fetching invoices..."
+            app:layout_constraintTop_toTopOf="parent" android:textSize="16sp" tools:text="Fetching invoices..."
             android:visibility="visible" android:textColor="@android:color/black"/>
     <ImageView
             android:layout_width="200px"

@@ -11,10 +11,7 @@ import com.evartem.domain.gateway.GatewayError
 import com.evartem.domain.gateway.GatewayErrorCode
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
-import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
-import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
-import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
+import com.evartem.invoiceman.invoices.mvi.*
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxbinding3.appcompat.itemClicks
@@ -56,10 +53,12 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
                 .map { item ->
                     when (item.itemId) {
                         R.id.invoices_search -> InvoicesEvent.Search(startSearch = true)
-                        R.id.invoices_sort -> InvoicesEvent.Search()
-                        else -> InvoicesEvent.Search()
+                        R.id.invoices_sort_by_number -> InvoicesEvent.Sort(SortInvoicesBy.NUMBER)
+                        R.id.invoices_sort_by_date -> InvoicesEvent.Sort(SortInvoicesBy.DATE)
+                        R.id.invoices_sort_by_seller -> InvoicesEvent.Sort(SortInvoicesBy.SELLER)
+                        else -> InvoicesEvent.Empty
                     }
-                })
+                }.filter { it !is InvoicesEvent.Empty })
     }
 
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =

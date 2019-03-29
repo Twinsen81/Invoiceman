@@ -8,9 +8,12 @@
     <string name="invoice_quantity">Quantity:</string>
     <string name="invoice_date">Date:</string>
     <string name="invoices_search_hint">Enter number, date or seller</string>
+    <string name="invoices_sort_by_number">By number</string>
+    <string name="invoices_sort_by_date">By date</string>
+    <string name="invoices_sort_by_seller">By seller</string>
     <string name="invoices_tab_available">AVAILABLE</string>
     <string name="invoices_tab_in_progress">IN PROGRESS</string>
-    <string name="invoices_loading_text">Fetching invoices from the server …</string>
+    <string name="invoices_loading_text">Fetching invoices …</string>
     <string name="invoices_no_new_to_process">no new invoices to process</string>
     <string name="invoices_no_new_received">Nothing new</string>
     <string name="network_error_inconsistent_data">Wrong data format</string>

@@ -26,6 +26,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
@@ -44,11 +45,18 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     private lateinit var previousUiState: InvoicesUiState
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
+    init {
+        Timber.d("Lifecycle: class instance crated")
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Timber.d("Lifecycle: onCreateView")
+        return inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        Timber.d("Lifecycle: onActivityCreated")
 
         previousUiState = InvoicesUiState()
 
@@ -117,42 +125,57 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
 
-        if (uiState.invoices.isNotEmpty() && (uiState.isInvoicesChanged || previousUiState.invoices.isEmpty())) {
+        // region Display invoices in the list
+        if (uiState.invoices.isNotEmpty() &&
+            (uiState.isInvoicesChanged || uiState.isSortingChanged ||
+                    previousUiState.invoices.isEmpty())) {
             itemsAdapter.clear()
             invoices_available_recyclerView.layoutManager?.scrollToPosition(0)
             itemsAdapter.add(uiState.invoices.map { InvoiceItem(it) })
         } else if (uiState.invoices.isEmpty())
             itemsAdapter.set(emptyList())
+        // endregion
 
+        // region "Fetching invoices..." dialog
         if (uiState.isLoading)
             statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoices_loading_text))
         else
             statusDialog.hide()
+        // endregion
 
+        // region "Nothing to process" text and image
         val showNothingToProcess =
             if (!uiState.isLoading && uiState.invoices.isEmpty()) View.VISIBLE else View.GONE
         invoices_available_status_text.visibility = showNothingToProcess
         invoices_available_status_image.visibility = showNothingToProcess
+        // endregion
 
-        swipeRefreshLayout.isRefreshing = uiState.isRefreshing
-
+        // region SearchView text box
         searchView.visibility = if (uiState.searchViewOpen) View.VISIBLE else View.GONE
         searchView.setQuery(uiState.searchRequest, false)
-        if (searchView.isVisible) {
+        if (searchView.isVisible && previousUiState.invoices.isNotEmpty()) {
             searchView.isIconified = false
             searchView.requestFocusFromTouch()
         }
+        // endregion
 
+        // region Refreshing: animation
+        swipeRefreshLayout.isRefreshing = uiState.isRefreshing
+        // Refreshing: disable when searching
         if (uiState.searchViewOpen && !previousUiState.searchViewOpen)
             swipeRefreshLayout.isEnabled = false
         if (!uiState.searchViewOpen && previousUiState.searchViewOpen)
             swipeRefreshLayout.isEnabled = true
+        // endregion
 
+        // region Filter items if the search is active
         if (searchView.isVisible && uiState.searchRequest.isNotBlank())
             itemsAdapter.filter(uiState.searchRequest)
         else
             itemsAdapter.filter(null)
+        // endregion
 
+        // Memorize current state
         previousUiState = uiState.copy()
     }
 
@@ -162,8 +185,10 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
 
-    override fun onDestroy() {
-        statusDialog.hide()
-        super.onDestroy()
+    override fun onDestroyView() {
+        // Clear the reference to the adapter to prevent leaking this layout
+        invoices_available_recyclerView.adapter = null
+        super.onDestroyView()
     }
+
 }
