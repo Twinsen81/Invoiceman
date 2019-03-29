@@ -1,6 +1,8 @@
 package com.evartem.invoiceman.base
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.evartem.invoiceman.util.stackToString
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -54,8 +56,8 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
             .scan(startingUiState) { previousUiState, newResult ->
                 reduceUiState(previousUiState, newResult)
             }
-            .onErrorReturn { error ->
-                Timber.wtf("MVI-Critical app error while processing an event: $error")
+            .onErrorReturn { exception ->
+                Timber.wtf("MVI-Critical app error while processing an event:\n${exception.stackToString()}")
                 startingUiState
             }
             .subscribe(uiState::onNext)

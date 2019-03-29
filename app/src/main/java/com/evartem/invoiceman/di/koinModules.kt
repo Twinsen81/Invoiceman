@@ -12,6 +12,7 @@ import com.evartem.domain.gateway.InvoiceGateway
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
 import com.evartem.domain.interactor.Schedulers
 import com.evartem.invoiceman.BuildConfig
+import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.util.DEMO_USER
 import io.reactivex.Scheduler
@@ -21,6 +22,7 @@ import org.koin.dsl.module
 
 val viewModelModule: Module = module {
     viewModel { InvoicesViewModel(user = get(), getInvoicesForUserUseCase = get()) }
+    //viewModel { InvoiceDetailViewModel(user = get(), getInvoicesForUserUseCase = get()) }
 }
 
 val useCasesModule: Module = module {
@@ -51,7 +53,7 @@ val dataSourceModule: Module = module {
 }
 
 val networkModule: Module = module {
-    single<InvoiceService> { createInvoiceNetworkClient(InvoiceBackendSimulation.getBaseUrl(), BuildConfig.DEBUG) }
+    single { createInvoiceNetworkClient(InvoiceBackendSimulation.getBaseUrl(), BuildConfig.DEBUG) }
 }
 
 val commonModule: Module = module {

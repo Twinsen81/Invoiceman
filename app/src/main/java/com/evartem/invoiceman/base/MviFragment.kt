@@ -8,6 +8,7 @@ import androidx.navigation.Navigation
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.navigation.BottomNavigationDrawerFragment
 import com.evartem.invoiceman.navigation.MainActivity
+import com.evartem.invoiceman.util.stackToString
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
@@ -71,10 +72,11 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
                     try {
                         Timber.d("MVI-Rendering new Ui state: $uiState")
                         onRenderUiState(uiState)
-                    } catch (ex: Throwable) {
-                        Timber.wtf("MVI-Critical app error while rendering UI state:\n${Log.getStackTraceString(ex)}")
+                    } catch (exception: Throwable) {
+                        Timber.wtf("MVI-Critical app error while rendering UI state:\n${exception.stackToString()}")
                     }
-                }) { Timber.wtf("MVI-Critical app error while precessing UI state:\n${Log.getStackTraceString(it)}") }
+                }) { exception ->
+                    Timber.wtf("MVI-Critical app error while precessing UI state:\n${exception.stackToString()}") }
                 .addTo(disposables)
         }
         getUiEffectObservable()?.apply {
@@ -83,10 +85,12 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
                     try {
                         Timber.d("MVI-Rendering new Ui effect: $uiEffect")
                         onRenderUiEffect(uiEffect)
-                    } catch (ex: Throwable) {
-                        Timber.wtf("MVI-Critical app error while rendering UI effect:\n${Log.getStackTraceString(ex)}")
+                    } catch (exception: Throwable) {
+                        Timber.wtf("MVI-Critical app error while rendering UI effect:\n${exception.stackToString()}")
                     }
-                }) { Timber.wtf("MVI-Critical app error while processing UI effect:\n${Log.getStackTraceString(it)}") }
+                }) { exception ->
+                    Timber.wtf("MVI-Critical app error while processing UI effect:\n${exception.stackToString()}")
+                }
                 .addTo(disposables)
         }
     }
@@ -98,7 +102,9 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
     private fun subscribeToUiEvents() {
         if (uiEvents.size > 0) {
             Observable.merge(uiEvents).subscribe(getUiEventsConsumer())
-            { Timber.wtf("MVI-Critical app error while processing the user's input:\n${Log.getStackTraceString(it)}") }
+            { exception ->
+                Timber.wtf("MVI-Critical app error while processing the user's input:\n${exception.stackToString()}")
+            }
                 .addTo(disposables)
         }
     }
