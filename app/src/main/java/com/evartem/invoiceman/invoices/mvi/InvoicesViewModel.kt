@@ -1,17 +1,16 @@
 package com.evartem.invoiceman.invoices.mvi
 
-import com.evartem.domain.entity.auth.User
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.DateParser
+import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
-class InvoicesViewModel(private val user: User, private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase) :
+class InvoicesViewModel(
+    private val sessionManager: SessionManager,
+    private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase
+) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
         InvoicesEvent.LoadScreen,
         InvoicesUiState(isLoading = true)
@@ -27,7 +26,7 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
         }
 
     private fun onRefreshData(): Observable<InvoicesViewModelResult> =
-        getInvoicesForUserUseCase.execute(Pair(user, true))
+        getInvoicesForUserUseCase.execute(Pair(sessionManager.currentUser, true))
             .map {
                 InvoicesViewModelResult.Invoices(it)
             }
@@ -53,8 +52,6 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
                 addUiEffect(InvoicesUiEffect.NoNewData())
         }
 
-        newUiState.isInvoicesChanged = newUiState.invoices != previousUiState.invoices
-
         if (newResult is InvoicesViewModelResult.RelayEvent) {
             // Search
             if (newResult.uiEvent is InvoicesEvent.Search) {
@@ -71,17 +68,35 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
             if (newResult.uiEvent is InvoicesEvent.Sort) {
                 when (newResult.uiEvent.sortBy) {
                     SortInvoicesBy.NUMBER ->
-                        newUiState.invoices.sortWith(compareBy({ it.number }, { DateParser.toLocalDate(it.date) }, { it.seller }))
+                        newUiState.invoices.sortWith(
+                            compareBy(
+                                { it.number },
+                                { DateParser.toLocalDate(it.date) },
+                                { it.seller })
+                        )
                     SortInvoicesBy.DATE ->
-                        newUiState.invoices.sortWith(compareBy({ DateParser.toLocalDate(it.date) }, { it.number }, { it.seller }))
+                        newUiState.invoices.sortWith(
+                            compareBy(
+                                { DateParser.toLocalDate(it.date) },
+                                { it.number },
+                                { it.seller })
+                        )
                     SortInvoicesBy.SELLER ->
-                        newUiState.invoices.sortWith(compareBy({ it.seller }, { it.number }, { DateParser.toLocalDate(it.date) }))
+                        newUiState.invoices.sortWith(
+                            compareBy(
+                                { it.seller },
+                                { it.number },
+                                { DateParser.toLocalDate(it.date) })
+                        )
                     else -> Unit
                 }
 
                 newUiState.isSortingChanged = true
             } else
                 newUiState.isSortingChanged = false
+
+            newUiState.isInvoicesChanged = newUiState.invoices.isNotEmpty() &&
+                    (newUiState.invoices != previousUiState.invoices || newUiState.isSortingChanged)
 
             // Refreshing
             newUiState.isRefreshing = newResult.uiEvent is InvoicesEvent.RefreshScreen

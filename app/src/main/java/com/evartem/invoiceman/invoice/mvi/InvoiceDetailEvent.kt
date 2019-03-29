@@ -1,4 +1,4 @@
-package com.evartem.invoiceman.invoice_detail.mvi
+package com.evartem.invoiceman.invoice.mvi
 
 sealed class InvoiceDetailEvent {
     object Empty : InvoiceDetailEvent()

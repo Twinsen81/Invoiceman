@@ -1,9 +1,11 @@
-package com.evartem.invoiceman.invoice_detail.mvi
+package com.evartem.invoiceman.invoice.mvi
 
 import com.evartem.domain.entity.doc.Invoice
 
 data class InvoiceDetailUiState(
     var invoice: Invoice,
+    var displayProgress: Boolean = false,
+    var progress: Pair<Int, Int> = 0 to 0,
     var isLoading: Boolean = false
 ) {
     override fun toString(): String {
