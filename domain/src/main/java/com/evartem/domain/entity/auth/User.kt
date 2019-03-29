@@ -10,10 +10,10 @@ package com.evartem.domain.entity.auth
  * @property status the state of the user (busy, off-duty, waiting for a task, etc.)
  */
 data class User(
-    val id: String,
-    val fullName: String,
-    val avatarUrl: String,
-    val position: String,
-    val authGroups: List<Group>,
-    val status: UserStatus
+    val id: String = "",
+    val fullName: String = "",
+    val avatarUrl: String = "",
+    val position: String = "",
+    val authGroups: List<Group> = listOf(),
+    val status: UserStatus = UserStatus.OFF_DUTY
 )
