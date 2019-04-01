@@ -10,6 +10,12 @@ sealed class InvoiceGatewayResult(val success: Boolean, val gatewayError: Gatewa
         gatewayError: GatewayError? = null
     ) : InvoiceGatewayResult(success, gatewayError)
 
+    class InvoiceRequestResult(
+        val invoice: Invoice,
+        success: Boolean,
+        gatewayError: GatewayError? = null
+    ) : InvoiceGatewayResult(success, gatewayError)
+
     class ProcessingRequestResult(success: Boolean, gatewayError: GatewayError? = null) :
         InvoiceGatewayResult(success, gatewayError)
 
