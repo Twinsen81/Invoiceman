@@ -15,7 +15,6 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
-import com.evartem.invoiceman.util.InvisibleItem
 import com.evartem.invoiceman.util.SessionManager
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.hideKeyboard
@@ -56,8 +55,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     private lateinit var statusDialog: StatusDialog
 
-    private lateinit var previousUiState: InvoicesUiState
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
 
@@ -77,13 +74,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private fun setupRecyclerView() {
 
         itemsAdapter = ItemAdapter()
-        itemsAdapterInvisibleFooter = ItemAdapter()
-
-        itemsAdapter.itemFilter.withFilterPredicate { item, constraint ->
-            item.invoice.seller.contains(constraint ?: "", true) ||
-                    item.invoice.number.toString().contains(constraint ?: "", true) ||
-                    item.invoice.date.contains(constraint ?: "", true)
-        }
 
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         invoices_available_recyclerView.layoutManager = linearLayoutManager
@@ -92,6 +82,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
         invoices_available_recyclerView.itemAnimator = ScaleUpAnimator()
 
+        // Setup search conditions for the recycler view (adapter)
         itemsAdapter.itemFilter.withFilterPredicate { item, constraint ->
             item.invoice.seller.contains(constraint ?: "", true) ||
                     item.invoice.number.toString().contains(constraint ?: "", true) ||
@@ -99,21 +90,23 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         }
         itemsAdapter.fastAdapter.withOnClickListener { _, _, item, _ ->
             sessionManager.currentInvoiceId = item.invoice.id
-            findNavController().navigate(R.id.destination_invoiceDetail)
+            findNavController().navigate(R.id.action_invoiceDetail)
             true
         }
+
         // Fix a problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
         invoices_available_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                swipeRefreshLayout.isEnabled = !searchView.isVisible && swipeRefreshLayout.isRefreshing ||
-                        linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0
+                swipeRefreshLayout.isEnabled = !searchView.isVisible && (swipeRefreshLayout.isRefreshing ||
+                        linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0)
             }
         })
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
         uiStates
+            .subscribeOn(Schedulers.io())
             .map { it.invoices }
             .flatMap { listOfInvoices ->
                 Observable.fromIterable(listOfInvoices)
@@ -137,7 +130,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
                         oldItem?.invoice == newItem?.invoice
                 })
             }
-            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 FastAdapterDiffUtil.set(itemsAdapter, it)

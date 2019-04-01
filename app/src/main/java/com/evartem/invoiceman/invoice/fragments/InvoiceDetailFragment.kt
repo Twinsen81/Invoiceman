@@ -1,31 +1,18 @@
-package com.evartem.invoiceman.invoice_detail.fragments
+package com.evartem.invoiceman.invoice.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.evartem.invoiceman.base.MviFragment
-import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailEvent
-import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailUiEffect
-import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailUiState
-import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailViewModel
+import com.evartem.invoiceman.invoice.mvi.InvoiceDetailEvent
+import com.evartem.invoiceman.invoice.mvi.InvoiceDetailUiEffect
+import com.evartem.invoiceman.invoice.mvi.InvoiceDetailUiState
+import com.evartem.invoiceman.invoice.mvi.InvoiceDetailViewModel
 import com.evartem.invoiceman.util.StatusDialog
-import com.evartem.invoiceman.util.hideKeyboard
-import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
-import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
-import com.jakewharton.rxbinding3.view.clicks
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.IAdapter
-import com.mikepenz.fastadapter.IItem
-import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.fragment_invoice_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiEffect, InvoiceDetailEvent>() {
 

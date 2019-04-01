@@ -6,22 +6,6 @@
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
 
-    <!--    <com.fdev.backgroundchart.GradientChart
-                android:id="@+id/invoices_available_gradientChart"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:plusColorStart="@color/gradChartPlusColorStart"
-                app:plusColorEnd="@color/gradChartPlusColorEnd"
-                app:minusColorStart="@color/gradChartMinusColorStart"
-                app:minusColorEnd="@color/gradChartMinusColorEnd"
-                app:zoom="10"
-                app:isBezier="true"
-        />-->
-
     <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:visibility="gone"
@@ -47,6 +31,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:elevation="2dp"
+                android:scrollbars="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -1,6 +1,5 @@
-package com.evartem.invoiceman.invoice_detail.mvi
+package com.evartem.invoiceman.invoice.mvi
 
-import com.evartem.domain.entity.auth.User
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.interactor.GetInvoiceUseCase
 import com.evartem.invoiceman.base.MviViewModel

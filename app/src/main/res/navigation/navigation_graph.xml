@@ -6,7 +6,7 @@
     <fragment android:id="@+id/destination_login" android:name="com.evartem.invoiceman.login.LoginFragment"
               android:label="Login screen" tools:layout="@layout/fragment_login">
         <action android:id="@+id/action_invoices"
-                app:destination="@id/destination_invoiceList" app:enterAnim="@anim/nav_default_enter_anim"
+                app:destination="@+id/destination_invoiceList" app:enterAnim="@anim/nav_default_enter_anim"
                 app:exitAnim="@anim/nav_default_exit_anim"
                 app:popUpToInclusive="false" app:launchSingleTop="true"/>
     </fragment>
@@ -17,13 +17,16 @@
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
         <action android:id="@+id/action_login" app:destination="@id/destination_login"
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
-        <action android:id="@+id/action_destination_invoiceList_to_invoiceDetailFragment"
+        <action android:id="@+id/action_invoiceDetail"
                 app:destination="@id/destination_invoiceDetail" app:enterAnim="@anim/nav_default_pop_enter_anim"
                 app:exitAnim="@anim/nav_default_pop_exit_anim"/>
+
+
     </fragment>
     <fragment android:id="@+id/destination_settings" android:name="com.evartem.invoiceman.settings.SettingsFragment"
               android:label="App's settings" tools:layout="@layout/fragment_settings"/>
     <fragment android:id="@+id/destination_invoiceDetail"
               android:name="com.evartem.invoiceman.invoice.fragments.InvoiceDetailFragment"
               android:label="InvoiceDetailFragment"/>
+
 </navigation>
