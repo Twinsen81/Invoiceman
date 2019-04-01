@@ -6,6 +6,7 @@
 
     <androidx.viewpager.widget.ViewPager
             android:id="@+id/invoicesViewPager"
+            android:layout_above="@id/bottomAppBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <com.google.android.material.tabs.TabLayout
@@ -25,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:hideOnScroll="true"
-            app:layout_scrollFlags="scroll|enterAlways"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
             app:fabAlignmentMode="end"
             android:backgroundTint="@color/primaryColor"
             app:navigationIcon="@drawable/ic_menu"/>
