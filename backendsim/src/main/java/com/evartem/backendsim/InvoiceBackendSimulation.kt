@@ -29,7 +29,7 @@ object InvoiceBackendSimulation {
 
     var responseCode = 200
 
-    var responseDelaySeconds = 2L
+    private var responseDelaySeconds = 2L
 
     fun startServer(initialNumberOfInvoices: Int = 5, responseDelaySeconds: Long = 2) {
         this.initialNumberOfInvoices = initialNumberOfInvoices
@@ -63,6 +63,15 @@ object InvoiceBackendSimulation {
     private fun getInvoicesForUser(userId: String): MutableList<Invoice> {
         if (!invoices.containsKey(userId))
             invoices[userId] = RandomInvoiceGenerator.getInvoices(initialNumberOfInvoices).toMutableList()
-        return invoices[userId]!!
+        val invoicesForUser:MutableList<Invoice> = invoices[userId]!!
+
+        // Randomly add an invoice (and remove one if the size of the list gets too big)
+        if (Random.nextBoolean()) {
+            invoicesForUser.add(RandomInvoiceGenerator.getInvoices(1).toMutableList()[0])
+            if (invoicesForUser.size > initialNumberOfInvoices + 1)
+                invoicesForUser.removeAt((0 until (invoicesForUser.size-1)).random())
+        }
+
+        return invoicesForUser
     }
 }
