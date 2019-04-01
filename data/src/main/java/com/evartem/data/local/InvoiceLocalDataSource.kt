@@ -1,8 +1,6 @@
 package com.evartem.data.local
 
 import com.evartem.data.local.model.InvoiceLocalModel
-import com.evartem.data.local.model.ProductLocalModel
-import com.evartem.data.local.model.ResultLocalModel
 import io.reactivex.Single
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -16,9 +14,12 @@ class InvoiceLocalDataSource {
         var invoice = InvoiceLocalModel()
         Realm.getDefaultInstance().use { realm ->
             // A detached from Realm copy of the invoice that won't be updated by Realm anymore
-            invoice = realm.copyFromRealm(realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()!!)
+            invoice = realm.copyFromRealm(
+                realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()!!
+            )
         }
-        invoice.sortProducts() // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        invoice.sortProducts()
         return Single.just(invoice)
     }
 
@@ -31,10 +32,10 @@ class InvoiceLocalDataSource {
             // A detached from Realm copy of invoices that won't be updated by Realm anymore
             invoices = realm.copyFromRealm(realm.where<InvoiceLocalModel>().findAll())
         }
-        invoices.forEach { it.sortProducts() } // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        invoices.forEach { it.sortProducts() }
         return Single.just(invoices)
     }
-
 
     fun deleteAllAndInsert(invoices: List<InvoiceLocalModel>) =
         Realm.getDefaultInstance().use { realm ->
