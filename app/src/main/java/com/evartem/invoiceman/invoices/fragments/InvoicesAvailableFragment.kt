@@ -18,6 +18,7 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
 import com.evartem.invoiceman.util.SessionManager
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.hideKeyboard
+import com.evartem.invoiceman.util.itemClicks
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.jakewharton.rxbinding3.view.clicks
@@ -88,11 +89,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
                     item.invoice.number.toString().contains(constraint ?: "", true) ||
                     item.invoice.date.contains(constraint ?: "", true)
         }
-        itemsAdapter.fastAdapter.withOnClickListener { _, _, item, _ ->
-            sessionManager.currentInvoiceId = item.invoice.id
-            findNavController().navigate(R.id.action_invoiceDetail)
-            true
-        }
 
         // Fix a problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
         invoices_available_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -138,6 +134,9 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     }
 
     private fun setupUiEvents() {
+
+        addUiEvent(itemsAdapter.fastAdapter.itemClicks()
+            .map { invoiceItem -> InvoicesEvent.Click(invoiceItem.invoice.id) })
 
         addUiEvent(swipeRefreshLayout.refreshes()
             .doOnNext { if (searchView.isVisible) swipeRefreshLayout.isRefreshing = false }
@@ -206,9 +205,16 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         // endregion
     }
 
+    override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) {
+        if (uiEffect is InvoicesUiEffect.InvoiceClick) {
+            sessionManager.currentInvoiceId = uiEffect.invoiceId
+            findNavController().navigate(R.id.destination_invoiceDetail)
+        }
+    }
+
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
 
-    override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = null
+    override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
 

@@ -71,6 +71,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
             }
             is InvoicesUiEffect.NoNewData ->
                 Toast.makeText(context, R.string.invoices_no_new_received, Toast.LENGTH_LONG).show()
+            is InvoicesUiEffect.InvoiceClick -> Unit
         }
 
     override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
