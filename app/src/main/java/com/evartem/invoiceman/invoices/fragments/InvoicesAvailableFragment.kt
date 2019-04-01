@@ -6,13 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
+import com.evartem.invoiceman.util.InvisibleItem
+import com.evartem.invoiceman.util.SessionManager
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.hideKeyboard
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
@@ -32,8 +36,8 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
@@ -43,6 +47,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     }
 
     private val viewModel by sharedViewModel<InvoicesViewModel>(from = { parentFragment!! })
+    private val sessionManager: SessionManager by inject()
 
     private lateinit var itemsAdapter: ItemAdapter<InvoiceItem>
 
@@ -51,18 +56,13 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     private lateinit var statusDialog: StatusDialog
 
-    init {
-        Timber.d("Lifecycle: class instance crated")
-    }
+    private lateinit var previousUiState: InvoicesUiState
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        Timber.d("Lifecycle: onCreateView")
-        return inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Timber.d("Lifecycle: onActivityCreated")
 
         setupRecyclerView()
         setupRecyclerViewAsyncRenderingWithDiff()
@@ -77,6 +77,14 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private fun setupRecyclerView() {
 
         itemsAdapter = ItemAdapter()
+        itemsAdapterInvisibleFooter = ItemAdapter()
+
+        itemsAdapter.itemFilter.withFilterPredicate { item, constraint ->
+            item.invoice.seller.contains(constraint ?: "", true) ||
+                    item.invoice.number.toString().contains(constraint ?: "", true) ||
+                    item.invoice.date.contains(constraint ?: "", true)
+        }
+
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         invoices_available_recyclerView.layoutManager = linearLayoutManager
         invoices_available_recyclerView.adapter =
@@ -89,7 +97,11 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
                     item.invoice.number.toString().contains(constraint ?: "", true) ||
                     item.invoice.date.contains(constraint ?: "", true)
         }
-
+        itemsAdapter.fastAdapter.withOnClickListener { _, _, item, _ ->
+            sessionManager.currentInvoiceId = item.invoice.id
+            findNavController().navigate(R.id.destination_invoiceDetail)
+            true
+        }
         // Fix a problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
         invoices_available_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

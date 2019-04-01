@@ -2,9 +2,12 @@ package com.evartem.invoiceman
 
 import android.app.Application
 import com.evartem.backendsim.InvoiceBackendSimulation
+import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.invoiceman.di.*
 import com.squareup.leakcanary.LeakCanary
+import io.reactivex.Single
 import io.realm.Realm
+import io.realm.kotlin.where
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -28,6 +31,13 @@ class TheApp : Application() {
             Timber.plant(Timber.DebugTree())
 
         Realm.init(this)
+        // Clear the DB on the app start. Otherwise it becomes bloated with invoices since their IDs are generated
+        // randomly by the InvoiceBackendSimulation
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction {
+                it.deleteAll()
+            }
+        }
 
         startKoin {
             androidLogger(Level.DEBUG)
@@ -44,7 +54,7 @@ class TheApp : Application() {
             )
         }
 
-        InvoiceBackendSimulation.startServer(15, 2)
+        InvoiceBackendSimulation.startServer(7, 2)
     }
 
     companion object {

@@ -1,13 +1,16 @@
 package com.evartem.invoiceman.invoices.mvi
 
-import com.evartem.domain.entity.auth.User
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.DateParser
+import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
 
-class InvoicesViewModel(private val user: User, private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase) :
+class InvoicesViewModel(
+    private val sessionManager: SessionManager,
+    private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase
+) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
         InvoicesEvent.LoadScreen,
         InvoicesUiState(isLoading = true)
@@ -23,7 +26,7 @@ class InvoicesViewModel(private val user: User, private val getInvoicesForUserUs
         }
 
     private fun onRefreshData(): Observable<InvoicesViewModelResult> =
-        getInvoicesForUserUseCase.execute(Pair(user, true))
+        getInvoicesForUserUseCase.execute(Pair(sessionManager.currentUser, true))
             .map {
                 InvoicesViewModelResult.Invoices(it)
             }

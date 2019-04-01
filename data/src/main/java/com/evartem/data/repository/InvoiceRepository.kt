@@ -50,6 +50,8 @@ class InvoiceRepository(
             BiFunction { local: InvoiceRepositoryResult, remote: InvoiceRepositoryResult ->
                 joinLocalAndRemoteResults(local, remote, userId)
             })
+            .doOnNext { result -> if (refreshFromServer)
+                localDataSource.deleteAllAndInsert((result as InvoiceRepositoryResult.InvoicesRequestResult).invoices) }
     }
 
     /**
@@ -83,7 +85,7 @@ class InvoiceRepository(
 
         // Add remote invoices that are not yet stored locally
         remoteInvoices.filter { remoteInvoice ->
-            localInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
+            unitedInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
         }.toCollection(unitedInvoices)
 
         return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.success, remote.gatewayError)

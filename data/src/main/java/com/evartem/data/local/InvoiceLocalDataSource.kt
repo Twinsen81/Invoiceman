@@ -35,6 +35,16 @@ class InvoiceLocalDataSource {
         return Single.just(invoices)
     }
 
+
+    fun deleteAllAndInsert(invoices: List<InvoiceLocalModel>) =
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction {
+                it.deleteAll()
+                it.insert(invoices)
+            }
+        }
+
+    /*
     fun insertOrUpdateInvoice(invoice: InvoiceLocalModel) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
@@ -43,7 +53,8 @@ class InvoiceLocalDataSource {
         }
     }
 
-    fun insertOrUpdateInvoice(invoices: List<InvoiceLocalModel>) {
+
+    fun insertOrUpdateInvoices(invoices: List<InvoiceLocalModel>) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 it.insertOrUpdate(invoices)
@@ -80,5 +91,5 @@ class InvoiceLocalDataSource {
                 block(product)
             }
         }
-    }
+    }*/
 }
