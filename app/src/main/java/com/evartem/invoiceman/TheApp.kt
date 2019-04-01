@@ -2,12 +2,9 @@ package com.evartem.invoiceman
 
 import android.app.Application
 import com.evartem.backendsim.InvoiceBackendSimulation
-import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.invoiceman.di.*
 import com.squareup.leakcanary.LeakCanary
-import io.reactivex.Single
 import io.realm.Realm
-import io.realm.kotlin.where
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
