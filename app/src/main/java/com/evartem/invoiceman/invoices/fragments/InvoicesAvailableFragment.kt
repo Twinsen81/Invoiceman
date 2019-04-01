@@ -13,7 +13,6 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
-import com.evartem.invoiceman.util.InvisibleItem
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.hideKeyboard
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
@@ -23,7 +22,15 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.IItem
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.commons.utils.DiffCallback
+import com.mikepenz.fastadapter.commons.utils.FastAdapterDiffUtil
+import com.mikepenz.itemanimators.ScaleUpAnimator
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
@@ -33,17 +40,16 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     companion object {
         const val INVOICE_ITEM_TYPE_BASIC = 1
-        const val INVOICE_ITEM_TYPE_INVISIBLE = 2
     }
 
     private val viewModel by sharedViewModel<InvoicesViewModel>(from = { parentFragment!! })
 
     private lateinit var itemsAdapter: ItemAdapter<InvoiceItem>
-    private lateinit var itemsAdapterInvisibleFooter: ItemAdapter<InvisibleItem>
+
+    private var disposables: CompositeDisposable = CompositeDisposable()
+    private val uiStates: PublishSubject<InvoicesUiState> = PublishSubject.create()
 
     private lateinit var statusDialog: StatusDialog
-
-    private lateinit var previousUiState: InvoicesUiState
 
     init {
         Timber.d("Lifecycle: class instance crated")
@@ -58,9 +64,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         super.onActivityCreated(savedInstanceState)
         Timber.d("Lifecycle: onActivityCreated")
 
-        previousUiState = InvoicesUiState()
-
         setupRecyclerView()
+        setupRecyclerViewAsyncRenderingWithDiff()
 
         statusDialog = StatusDialog(context!!)
 
@@ -72,12 +77,12 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private fun setupRecyclerView() {
 
         itemsAdapter = ItemAdapter()
-        itemsAdapterInvisibleFooter = ItemAdapter()
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         invoices_available_recyclerView.layoutManager = linearLayoutManager
         invoices_available_recyclerView.adapter =
-            FastAdapter.with<IItem<*, *>, IAdapter<out IItem<*, *>>>(listOf(itemsAdapter, itemsAdapterInvisibleFooter))
-        itemsAdapterInvisibleFooter.set(listOf(InvisibleItem()))
+            FastAdapter.with<IItem<*, *>, IAdapter<out IItem<*, *>>>(listOf(itemsAdapter))
+
+        invoices_available_recyclerView.itemAnimator = ScaleUpAnimator()
 
         itemsAdapter.itemFilter.withFilterPredicate { item, constraint ->
             item.invoice.seller.contains(constraint ?: "", true) ||
@@ -93,6 +98,39 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
                         linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0
             }
         })
+    }
+
+    private fun setupRecyclerViewAsyncRenderingWithDiff() {
+        uiStates
+            .map { it.invoices }
+            .flatMap { listOfInvoices ->
+                Observable.fromIterable(listOfInvoices)
+                    .map { item -> InvoiceItem(item) }
+                    .toList()
+                    .toObservable()
+            }
+            .map {
+                FastAdapterDiffUtil.calculateDiff(itemsAdapter, it, object : DiffCallback<InvoiceItem?> {
+                    override fun areItemsTheSame(oldItem: InvoiceItem?, newItem: InvoiceItem?) =
+                        newItem?.invoice?.id == oldItem?.invoice?.id
+
+                    override fun getChangePayload(
+                        oldItem: InvoiceItem?,
+                        oldItemPosition: Int,
+                        newItem: InvoiceItem?,
+                        newItemPosition: Int
+                    ): Any? = null
+
+                    override fun areContentsTheSame(oldItem: InvoiceItem?, newItem: InvoiceItem?) =
+                        oldItem?.invoice == newItem?.invoice
+                })
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                FastAdapterDiffUtil.set(itemsAdapter, it)
+                invoices_available_recyclerView.layoutManager?.scrollToPosition(0)
+            }.addTo(disposables)
     }
 
     private fun setupUiEvents() {
@@ -125,16 +163,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
 
-        // region Display invoices in the list
-        if (uiState.invoices.isNotEmpty() &&
-            (uiState.isInvoicesChanged || uiState.isSortingChanged ||
-                    previousUiState.invoices.isEmpty())) {
-            itemsAdapter.clear()
-            invoices_available_recyclerView.layoutManager?.scrollToPosition(0)
-            itemsAdapter.add(uiState.invoices.map { InvoiceItem(it) })
-        } else if (uiState.invoices.isEmpty())
-            itemsAdapter.set(emptyList())
-        // endregion
+        // Render asynchronously with diffing
+        uiStates.onNext(uiState)
 
         // region "Fetching invoices..." dialog
         if (uiState.isLoading)
@@ -153,7 +183,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         // region SearchView text box
         searchView.visibility = if (uiState.searchViewOpen) View.VISIBLE else View.GONE
         searchView.setQuery(uiState.searchRequest, false)
-        if (searchView.isVisible && previousUiState.invoices.isNotEmpty()) {
+        if (uiState.setFocusToSearchView) {
             searchView.isIconified = false
             searchView.requestFocusFromTouch()
         }
@@ -161,11 +191,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
         // region Refreshing: animation
         swipeRefreshLayout.isRefreshing = uiState.isRefreshing
-        // Refreshing: disable when searching
-        if (uiState.searchViewOpen && !previousUiState.searchViewOpen)
-            swipeRefreshLayout.isEnabled = false
-        if (!uiState.searchViewOpen && previousUiState.searchViewOpen)
-            swipeRefreshLayout.isEnabled = true
+        swipeRefreshLayout.isEnabled = !uiState.searchViewOpen
         // endregion
 
         // region Filter items if the search is active
@@ -174,9 +200,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         else
             itemsAdapter.filter(null)
         // endregion
-
-        // Memorize current state
-        previousUiState = uiState.copy()
     }
 
     override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
@@ -188,7 +211,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     override fun onDestroyView() {
         // Clear the reference to the adapter to prevent leaking this layout
         invoices_available_recyclerView.adapter = null
+
+        disposables.clear()
         super.onDestroyView()
     }
-
 }

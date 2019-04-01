@@ -4,55 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailEvent
 import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailUiEffect
 import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailUiState
-import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
-import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
-import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoice_detail.mvi.InvoiceDetailViewModel
-import com.evartem.invoiceman.util.InvisibleItem
 import com.evartem.invoiceman.util.StatusDialog
-import com.evartem.invoiceman.util.hideKeyboard
-import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
-import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
-import com.jakewharton.rxbinding3.view.clicks
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.IAdapter
-import com.mikepenz.fastadapter.IItem
-import com.mikepenz.fastadapter.adapters.ItemAdapter
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.fragment_invoices_available.*
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiEffect, InvoiceDetailEvent>() {
 
     companion object {
         const val INVOICE_ITEM_TYPE_BASIC = 1
-        const val INVOICE_ITEM_TYPE_INVISIBLE = 2
     }
 
     private val viewModel by viewModel<InvoiceDetailViewModel>()
 
     private lateinit var statusDialog: StatusDialog
 
-    private lateinit var previousUiState: InvoiceDetailUiState
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoice_detail, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        previousUiState = InvoiceDetailUiState.EmptyUiState
 
         //setupRecyclerView()
 
@@ -121,8 +96,6 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
 
 
 
-        // Memorize current state
-        previousUiState = uiState.copy()
     }
 
     override fun getUiStateObservable(): Observable<InvoiceDetailUiState>? = viewModel.uiState

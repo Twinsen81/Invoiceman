@@ -7,8 +7,9 @@ data class InvoicesUiState(
     var searchViewOpen: Boolean = false,
     var isLoading: Boolean = false,
     var isRefreshing: Boolean = false,
-    var isInvoicesChanged: Boolean = true,
-    var isSortingChanged: Boolean = false,
+    var setFocusToSearchView: Boolean = false,
+//    var isInvoicesChanged: Boolean = true,
+    var sorting: InvoicesEvent.Sort.SortBy = InvoicesEvent.Sort.SortBy.NONE,
     var invoices: MutableList<Invoice> = mutableListOf()
 ) {
     override fun toString(): String {
@@ -17,8 +18,8 @@ data class InvoicesUiState(
             .append(" searchViewOpen=").append(searchViewOpen)
             .append(" isLoading=").append(isLoading)
             .append(" isRefreshing=").append(isRefreshing)
-            .append(" isInvoicesChanged=").append(isInvoicesChanged)
-            .append(" isSortingChanged=").append(isSortingChanged)
+//            .append(" isInvoicesChanged=").append(isInvoicesChanged)
+            .append(" sorting=").append(sorting)
             .append(" invoices=${invoices.size}").toString()
     }
 }
