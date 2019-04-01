@@ -20,16 +20,30 @@ class InvoicesViewModel(
         when (event) {
             is InvoicesEvent.LoadScreen -> onRefreshData()
             is InvoicesEvent.RefreshScreen -> Observable.merge(relay(event), onRefreshData())
+            is InvoicesEvent.Click -> onInvoiceClicked(event)
             is InvoicesEvent.Search,
             is InvoicesEvent.Sort,
             is InvoicesEvent.Empty -> relay(event)
         }
+
+    override fun shouldUpdateUiState(result: InvoicesViewModelResult): Boolean =
+        if (result is InvoicesViewModelResult.RelayEvent)
+            when (result.uiEvent) {
+                is InvoicesEvent.Click,
+                is InvoicesEvent.Empty -> false
+                else -> true
+            } else true
 
     private fun onRefreshData(): Observable<InvoicesViewModelResult> =
         getInvoicesForUserUseCase.execute(Pair(sessionManager.currentUser, true))
             .map {
                 InvoicesViewModelResult.Invoices(it)
             }
+
+    private fun onInvoiceClicked(event: InvoicesEvent.Click): Observable<InvoicesViewModelResult> {
+        addUiEffect(InvoicesUiEffect.InvoiceClick(event.invoiceId))
+        return relay(event)
+    }
 
     override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
 

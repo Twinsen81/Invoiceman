@@ -1,6 +1,5 @@
 package com.evartem.invoiceman.base
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.evartem.invoiceman.util.stackToString
 import io.reactivex.Observable
@@ -52,6 +51,7 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
             .startWith(startingEvent)
             .doOnNext { Timber.d("MVI-Event: $it") }
             .flatMap { event -> eventToResult(event) }
+            .filter { event -> shouldUpdateUiState(event) }
             .doOnNext { Timber.d("MVI-Result: $it") }
             .scan(startingUiState) { previousUiState, newResult ->
                 reduceUiState(previousUiState, newResult)
@@ -64,6 +64,8 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
     }
 
     protected abstract fun eventToResult(event: Event): Observable<ViewModelResult>
+
+    protected open fun shouldUpdateUiState(result: ViewModelResult): Boolean = true
 
     protected abstract fun reduceUiState(previousUiState: UiState, newResult: ViewModelResult): UiState
 
