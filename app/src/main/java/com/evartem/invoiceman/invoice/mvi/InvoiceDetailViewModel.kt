@@ -18,8 +18,23 @@ class InvoiceDetailViewModel(
     override fun eventToResult(event: InvoiceDetailEvent): Observable<InvoiceDetailViewModelResult> =
         when (event) {
             is InvoiceDetailEvent.LoadScreen -> onLoadInvoiceData()
+            is InvoiceDetailEvent.Click -> onProductClicked(event)
+            is InvoiceDetailEvent.Search,
             is InvoiceDetailEvent.Empty -> relay(event)
         }
+
+    override fun shouldUpdateUiState(result: InvoiceDetailViewModelResult): Boolean =
+        if (result is InvoiceDetailViewModelResult.RelayEvent)
+            when (result.uiEvent) {
+                is InvoiceDetailEvent.Click,
+                is InvoiceDetailEvent.Empty -> false
+                else -> true
+            } else true
+
+    private fun onProductClicked(event: InvoiceDetailEvent.Click): Observable<InvoiceDetailViewModelResult> {
+        addUiEffect(InvoiceDetailUiEffect.ProductClick(event.productId))
+        return relay(event)
+    }
 
     private fun onLoadInvoiceData(): Observable<InvoiceDetailViewModelResult> =
         getInvoiceUseCase.execute(sessionManager.currentInvoiceId)

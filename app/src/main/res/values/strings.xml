@@ -27,4 +27,8 @@
     <string name="network_error_server_not_available">Server unavailable, please try again later</string>
     <string name="network_error_server_wrong_response">Incorrect response from the server</string>
     <string name="network_error_general">Unknown network error (%d), please contact the developers</string>
+    <string name="product_scan_article">scan\narticle</string>
+    <string name="product_has_serial">has\nserial</string>
+    <string name="product_scan_serial">scan\nserial</string>
+    <string name="product_same_serial">same\nserial</string>
 </resources>
