@@ -136,6 +136,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private fun setupUiEvents() {
 
         addUiEvent(itemsAdapter.fastAdapter.itemClicks()
+            .debounce(1000, TimeUnit.MILLISECONDS)
             .map { invoiceItem -> InvoicesEvent.Click(invoiceItem.invoice.id) })
 
         addUiEvent(swipeRefreshLayout.refreshes()
