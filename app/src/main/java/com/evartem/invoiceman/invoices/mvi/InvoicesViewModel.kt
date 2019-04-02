@@ -55,7 +55,7 @@ class InvoicesViewModel(
         val newUiState = previousUiState.copy()
         var responseWithDataReceived = false
 
-        // Received a response from the repository
+        // Received a response - the invoices
         if (newResult is InvoicesViewModelResult.Invoices) {
             newUiState.isRefreshing = false
             newUiState.isLoading = false

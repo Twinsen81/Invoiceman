@@ -10,7 +10,7 @@ interface InvoiceGateway {
 
     fun getInvoice(invoiceId: String): Observable<InvoiceGatewayResult>
 
-    fun requestInvoiceForProcessing(user: User, invoice: Invoice): Observable<InvoiceGatewayResult>
+    fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceGatewayResult>
 
     fun submitInvoicesWithResults(user: User, invoices: List<Invoice>): Observable<InvoiceGatewayResult>
 }
