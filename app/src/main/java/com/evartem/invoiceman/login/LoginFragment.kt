@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.evartem.invoiceman.R
@@ -15,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_login.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 
-class LoginFragment : AppBarFragment() {
+class LoginFragment : Fragment() {
 
     private lateinit var viewModel: LoginViewModel
     private val sessionManager: SessionManager by inject()
@@ -33,8 +34,8 @@ class LoginFragment : AppBarFragment() {
         }
     }
 
-    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
+/*    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
         fab.hide()
         bottomAppBar.visibility = View.GONE
-    }
+    }*/
 }
