@@ -19,16 +19,15 @@ class InvoiceDetailViewModel(
         when (event) {
             is InvoiceDetailEvent.LoadScreen -> onLoadInvoiceData()
             is InvoiceDetailEvent.Click -> onProductClicked(event)
-            is InvoiceDetailEvent.Accept -> onAcceptInvoiceClicked()
+            is InvoiceDetailEvent.Accept,// -> onAcceptInvoiceClicked()
             is InvoiceDetailEvent.Return,
             is InvoiceDetailEvent.Submit,
             is InvoiceDetailEvent.Search,
             is InvoiceDetailEvent.Empty -> relay(event)
         }
 
-    private fun onAcceptInvoiceClicked(): Observable<InvoiceDetailViewModelResult> {
-        
-    }
+    /*private fun onAcceptInvoiceClicked(): Observable<InvoiceDetailViewModelResult> {
+    }*/
 
     override fun shouldUpdateUiState(result: InvoiceDetailViewModelResult): Boolean =
         if (result is InvoiceDetailViewModelResult.RelayEvent)

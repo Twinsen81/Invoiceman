@@ -19,8 +19,6 @@ import com.evartem.invoiceman.util.SessionManager
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.hideKeyboard
 import com.evartem.invoiceman.util.itemClicks
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import com.jakewharton.rxbinding3.view.clicks
@@ -67,14 +65,12 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         setupRecyclerView()
         setupRecyclerViewAsyncRenderingWithDiff()
 
+        configureBottomAppBar()
+
         statusDialog = StatusDialog(context!!)
-
-        setupUiEvents()
-
-        subscribeToViewModel()
     }
 
-    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
+    private fun configureBottomAppBar() {
         bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
         bottomAppBar.visibility = View.VISIBLE
         bottomAppBar.replaceMenu(R.menu.invoice_detail)
@@ -132,10 +128,9 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             }.addTo(disposables)
     }
 
-    private fun setupUiEvents() {
-
+    override fun onSetupUiEvents() {
         addUiEvent(itemsAdapter.fastAdapter.itemClicks()
-            .debounce(1000, TimeUnit.MILLISECONDS)
+            .throttleFirst(1, TimeUnit.SECONDS)
             .map { ProductItem -> InvoiceDetailEvent.Click(ProductItem.product.id) })
 
         addUiEvent(
@@ -151,7 +146,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
 
         addUiEvent(
             bottomAppBar.itemClicks()
-                .debounce(1000, TimeUnit.MILLISECONDS)
+                .throttleFirst(1, TimeUnit.SECONDS)
                 .map { item ->
                     when (item.itemId) {
                         R.id.products_search -> InvoiceDetailEvent.Search(startSearch = true)
@@ -160,9 +155,9 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
                 }.filter { it !is InvoiceDetailEvent.Empty })
 
         addUiEvent(
-        invoice_action_accept.clicks()
-            .debounce(1000, TimeUnit.MILLISECONDS)
-            .map { InvoiceDetailEvent.Accept })
+            invoice_action_accept.clicks()
+                .throttleFirst(1, TimeUnit.SECONDS)
+                .map { InvoiceDetailEvent.Accept })
     }
 
     override fun onBackPressed(): Boolean =
@@ -183,7 +178,6 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         invoice_seller.text = uiState.invoice.seller
         invoice_number.text = uiState.invoice.number.toString()
         invoice_date.text = uiState.invoice.date
-
 
         if (uiState.invoice.processedByUser?.equals(sessionManager.currentUser.id) == true) {
             invoice_action_accept.visibility = View.GONE

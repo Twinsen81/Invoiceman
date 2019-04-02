@@ -38,6 +38,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
@@ -66,10 +67,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         setupRecyclerViewAsyncRenderingWithDiff()
 
         statusDialog = StatusDialog(context!!)
-
-        setupUiEvents()
-
-        subscribeToViewModel()
     }
 
     private fun setupRecyclerView() {
@@ -133,10 +130,10 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
             }.addTo(disposables)
     }
 
-    private fun setupUiEvents() {
+    override fun onSetupUiEvents() {
 
         addUiEvent(itemsAdapter.fastAdapter.itemClicks()
-            .debounce(1000, TimeUnit.MILLISECONDS)
+            .throttleFirst(1, TimeUnit.SECONDS)
             .map { invoiceItem -> InvoicesEvent.Click(invoiceItem.invoice.id) })
 
         addUiEvent(swipeRefreshLayout.refreshes()
@@ -222,8 +219,61 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     override fun onDestroyView() {
         // Clear the reference to the adapter to prevent leaking this layout
         invoices_available_recyclerView.adapter = null
-
+        Timber.d("lifecycle onDestroyView")
         disposables.clear()
         super.onDestroyView()
     }
+/*
+    override fun onPause() {
+        super.onPause()
+        Timber.d("lifecycle onPause")
+    }
+
+    override fun onResume() {
+        setupUiEvents()
+        subscribeToViewModel()
+
+        super.onResume()
+        Timber.d("lifecycle onResume")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Timber.d("lifecycleonDestroy")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Timber.d("lifecycle onDetach")
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Timber.d("lifecycle onAttach")
+    }
+
+    override fun onAttachFragment(childFragment: Fragment) {
+        super.onAttachFragment(childFragment)
+        Timber.d("lifecycle onAttachFragment")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Timber.d("lifecycle onStop")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Timber.d("lifecycle onStart")
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Timber.d("lifecycle onViewCreated")
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        Timber.d("lifecycle onViewStateRestored")
+    }*/
 }

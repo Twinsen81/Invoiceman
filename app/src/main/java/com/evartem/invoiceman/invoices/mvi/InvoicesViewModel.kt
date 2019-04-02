@@ -6,6 +6,7 @@ import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.DateParser
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
+import timber.log.Timber
 
 class InvoicesViewModel(
     private val sessionManager: SessionManager,
@@ -16,6 +17,9 @@ class InvoicesViewModel(
         InvoicesUiState(isLoading = true)
     ) {
 
+    init {
+        Timber.d("lifecycle init model")
+    }
     override fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
         when (event) {
             is InvoicesEvent.LoadScreen -> onRefreshData()

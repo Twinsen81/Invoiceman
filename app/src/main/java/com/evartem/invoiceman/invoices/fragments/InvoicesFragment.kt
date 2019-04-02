@@ -12,8 +12,6 @@ import com.evartem.domain.gateway.GatewayErrorCode
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoices.mvi.*
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices.*
@@ -32,9 +30,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
         setupTabs()
 
-        setupUiEvents()
-
-        subscribeToViewModel()
+        configureBottomAppBar()
     }
 
     private fun setupTabs() {
@@ -47,7 +43,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         invoicesTabs.setupWithViewPager(invoicesViewPager)
     }
 
-    private fun setupUiEvents() {
+    override fun onSetupUiEvents() {
         addUiEvent(
             bottomAppBar.itemClicks()
                 .map { item ->
@@ -74,7 +70,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
             is InvoicesUiEffect.InvoiceClick -> Unit
         }
 
-    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
+    private fun configureBottomAppBar() {
         bottomAppBar.navigationIcon = getDrawable(context!!, R.drawable.ic_menu)
         bottomAppBar.visibility = View.VISIBLE
         bottomAppBar.replaceMenu(R.menu.invoices)

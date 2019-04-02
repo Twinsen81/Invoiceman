@@ -23,16 +23,7 @@ class InvoicesInProgressFragment : MviFragment<InvoicesUiState, InvoicesUiEffect
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_invoices_inprogress, container, false)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setupUiEvents()
-
-        subscribeToViewModel()
-    }
-
-    private fun setupUiEvents() {
-
+    override fun onSetupUiEvents() {
         invoices_in_progress_searchButton.clicks()
             .subscribe {
                 InvoiceBackendSimulation.responseCode = invoices_in_progress_searchText.text.toString().toInt()

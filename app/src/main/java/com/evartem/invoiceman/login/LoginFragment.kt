@@ -8,10 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.evartem.invoiceman.R
-import com.evartem.invoiceman.base.AppBarFragment
 import com.evartem.invoiceman.util.SessionManager
-import com.google.android.material.bottomappbar.BottomAppBar
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_login.*
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -29,6 +26,7 @@ class LoginFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
 
         btnLogin.setOnClickListener {
+            btnLogin.isEnabled = false
             sessionManager.currentUser = get() // injecting DEMO_USER
             findNavController().navigate(R.id.action_invoices)
         }
