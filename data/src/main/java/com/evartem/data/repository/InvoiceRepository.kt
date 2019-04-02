@@ -5,6 +5,8 @@ import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.remote.api.InvoiceService
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
+import com.evartem.domain.entity.auth.User
+import com.evartem.domain.entity.doc.Invoice
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 
@@ -44,14 +46,14 @@ class InvoiceRepository(
                     .onErrorReturn { exception -> mapperToRepoResult.fromException(exception) }
                     .toObservable()
             else
-                Observable.just(mapperToRepoResult.emptyResult)
+                Observable.just(InvoiceRepositoryResult.Invoices(listOf()))
 
         return Observable.zip(localResult, remoteResult,
             BiFunction { local: InvoiceRepositoryResult, remote: InvoiceRepositoryResult ->
                 joinLocalAndRemoteResults(local, remote, userId)
             })
             .doOnNext { result -> if (refreshFromServer)
-                localDataSource.deleteAllAndInsert((result as InvoiceRepositoryResult.InvoicesRequestResult).invoices) }
+                localDataSource.deleteAllAndInsert((result as InvoiceRepositoryResult.Invoices).invoices) }
     }
 
     /**
@@ -71,8 +73,8 @@ class InvoiceRepository(
         userId: String
     ): InvoiceRepositoryResult {
 
-        val localInvoices = (local as InvoiceRepositoryResult.InvoicesRequestResult).invoices
-        val remoteInvoices = (remote as InvoiceRepositoryResult.InvoicesRequestResult).invoices
+        val localInvoices = (local as InvoiceRepositoryResult.Invoices).invoices
+        val remoteInvoices = (remote as InvoiceRepositoryResult.Invoices).invoices
         val unitedInvoices: MutableList<InvoiceLocalModel> = mutableListOf()
 
         // Keep local invoices that are:
@@ -88,6 +90,12 @@ class InvoiceRepository(
             unitedInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
         }.toCollection(unitedInvoices)
 
-        return InvoiceRepositoryResult.InvoicesRequestResult(unitedInvoices, remote.success, remote.gatewayError)
+        return InvoiceRepositoryResult.Invoices(unitedInvoices)
     }
+
+    fun requestInvoiceForProcessing(user: User, invoice: Invoice): Observable<InvoiceRepositoryResult> =
+        remoteDataSource.requestInvoiceForProcessing(user.id, invoice.id)
+            .map { response -> mapperToRepoResult.remotePostToResult(response) }
+            .onErrorReturn { exception -> mapperToRepoResult.fromException(exception) }
+            .toObservable()
 }

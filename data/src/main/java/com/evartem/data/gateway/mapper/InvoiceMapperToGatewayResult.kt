@@ -13,12 +13,17 @@ class InvoiceMapperToGatewayResult {
 
     fun toGateway(repoResult: InvoiceRepositoryResult): InvoiceGatewayResult =
         when (repoResult) {
-            is InvoiceRepositoryResult.InvoicesRequestResult -> repoResult.let {
-                InvoiceGatewayResult.InvoicesRequestResult(localToEntity(it.invoices), it.success, it.gatewayError)
+            is InvoiceRepositoryResult.Invoices -> repoResult.let {
+                InvoiceGatewayResult.Invoices(localToEntity(it.invoices))
             }
-            is InvoiceRepositoryResult.InvoiceRequestResult -> repoResult.let {
-                InvoiceGatewayResult.InvoiceRequestResult(localToEntity(it.invoice), it.success, it.gatewayError)
+            is InvoiceRepositoryResult.Invoice -> repoResult.let {
+                InvoiceGatewayResult.Invoice(localToEntity(it.invoice))
             }
+            is InvoiceRepositoryResult.Error -> repoResult.let {
+                InvoiceGatewayResult.Error(it.gatewayError)
+            }
+            is InvoiceRepositoryResult.ProcessingAcceptConfirmed ->
+                InvoiceGatewayResult.ProcessingAcceptConfirmed
         }
 
     private fun localToEntity(localModel: List<InvoiceLocalModel>) =

@@ -16,18 +16,25 @@ import java.io.EOFException
 
 class InvoiceMapperToRepoResult {
 
-    val emptyResult
-        get() = InvoiceRepositoryResult.InvoicesRequestResult(listOf(), true)
-
     fun localToResult(localModel: List<InvoiceLocalModel>): InvoiceRepositoryResult =
-        InvoiceRepositoryResult.InvoicesRequestResult(localModel, true)
+        InvoiceRepositoryResult.Invoices(localModel)
 
     fun localToResult(localModel: InvoiceLocalModel): InvoiceRepositoryResult =
-        InvoiceRepositoryResult.InvoiceRequestResult(localModel, true)
+        InvoiceRepositoryResult.Invoice(localModel)
+
+    fun remotePostToResult(remoteResponse: Response<Void>): InvoiceRepositoryResult {
+        if (remoteResponse.isSuccessful)
+            return InvoiceRepositoryResult.ProcessingAcceptConfirmed
+
+        return createNetworkErrorResult(
+            GatewayError.ErrorCode.getByValue(remoteResponse.code()),
+            remoteResponse.raw().body()?.string() ?: remoteResponse.message()
+        )
+    }
 
     fun remoteToResult(remoteResponse: Response<List<InvoiceRemoteModel>>): InvoiceRepositoryResult {
         if (remoteResponse.isSuccessful && remoteResponse.body() != null)
-            return InvoiceRepositoryResult.InvoicesRequestResult(invoiceRemoteToLocal(remoteResponse.body()!!), true)
+            return InvoiceRepositoryResult.Invoices(invoiceRemoteToLocal(remoteResponse.body()!!))
 
         return createNetworkErrorResult(
             GatewayError.ErrorCode.getByValue(remoteResponse.code()),
@@ -46,7 +53,7 @@ class InvoiceMapperToRepoResult {
         }
 
     private fun createNetworkErrorResult(code: GatewayErrorCode, message: String?, exception: Throwable? = null) =
-        InvoiceRepositoryResult.InvoicesRequestResult(listOf(), false, GatewayError(code, message, exception))
+        InvoiceRepositoryResult.Error(GatewayError(code, message, exception))
 
     private fun invoiceRemoteToLocal(remoteModel: List<InvoiceRemoteModel>) =
         remoteModel.map { invoiceRemoteToLocal(it) }

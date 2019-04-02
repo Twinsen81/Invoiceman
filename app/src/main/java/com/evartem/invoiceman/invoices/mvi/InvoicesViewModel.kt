@@ -20,6 +20,7 @@ class InvoicesViewModel(
     init {
         Timber.d("lifecycle init model")
     }
+
     override fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
         when (event) {
             is InvoicesEvent.LoadScreen -> onRefreshData()
@@ -55,17 +56,18 @@ class InvoicesViewModel(
         var responseWithDataReceived = false
 
         // Received a response from the repository
-        if (newResult is InvoicesViewModelResult.Invoices &&
-            newResult.gatewayResult is InvoiceGatewayResult.InvoicesRequestResult
-        ) {
+        if (newResult is InvoicesViewModelResult.Invoices) {
             newUiState.isRefreshing = false
             newUiState.isLoading = false
-            if (newResult.gatewayResult.success)
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Invoices)
                 newUiState.invoices = newResult.gatewayResult.invoices.toMutableList()
-            else
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Error)
                 addUiEffect(InvoicesUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))
 
-            responseWithDataReceived = newResult.gatewayResult.success && previousUiState.isRefreshing
+            responseWithDataReceived = newResult.gatewayResult is InvoiceGatewayResult.Invoices &&
+                    previousUiState.isRefreshing
         }
 
         if (newResult is InvoicesViewModelResult.RelayEvent) {

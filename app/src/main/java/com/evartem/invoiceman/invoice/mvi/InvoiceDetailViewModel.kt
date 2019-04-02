@@ -46,17 +46,20 @@ class InvoiceDetailViewModel(
         getInvoiceUseCase.execute(sessionManager.currentInvoiceId)
             .map { InvoiceDetailViewModelResult.Invoice(it) }
 
-    override fun reduceUiState(previousUiState: InvoiceDetailUiState, newResult: InvoiceDetailViewModelResult): InvoiceDetailUiState {
+    override fun reduceUiState(
+        previousUiState: InvoiceDetailUiState,
+        newResult: InvoiceDetailViewModelResult
+    ): InvoiceDetailUiState {
         val newUiState = previousUiState.copy()
 
         // Received a response from the repository
-        if (newResult is InvoiceDetailViewModelResult.Invoice &&
-            newResult.gatewayResult is InvoiceGatewayResult.InvoiceRequestResult
-        ) {
+        if (newResult is InvoiceDetailViewModelResult.Invoice) {
             newUiState.isLoading = false
-            if (newResult.gatewayResult.success)
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Invoice)
                 newUiState.invoice = newResult.gatewayResult.invoice
-            else
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Error)
                 addUiEffect(InvoiceDetailUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))
         }
 

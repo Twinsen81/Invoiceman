@@ -1,16 +1,25 @@
 package com.evartem.domain.gateway
 
-import com.evartem.domain.entity.doc.Invoice
+sealed class InvoiceGatewayResult {
 
-sealed class InvoiceGatewayResult(val success: Boolean, val gatewayError: GatewayError? = null) {
+    data class Invoices(val invoices: List<com.evartem.domain.entity.doc.Invoice>) : InvoiceGatewayResult()
 
-    class InvoicesRequestResult(
+    data class Invoice(val invoice: com.evartem.domain.entity.doc.Invoice) : InvoiceGatewayResult()
+
+    object ProcessingAcceptConfirmed : InvoiceGatewayResult()
+
+    data class Error(val gatewayError: GatewayError) : InvoiceGatewayResult()
+}
+
+/*sealed class InvoiceGatewayResult(val success: Boolean, val gatewayError: GatewayError? = null) {
+
+    class Invoices(
         val invoices: List<Invoice>,
         success: Boolean,
         gatewayError: GatewayError? = null
     ) : InvoiceGatewayResult(success, gatewayError)
 
-    class InvoiceRequestResult(
+    class Invoice(
         val invoice: Invoice,
         success: Boolean,
         gatewayError: GatewayError? = null
@@ -23,4 +32,4 @@ sealed class InvoiceGatewayResult(val success: Boolean, val gatewayError: Gatewa
         InvoiceGatewayResult(success, gatewayError)
 
     class EmptyResult : InvoiceGatewayResult(true)
-}
+}*/

@@ -3,30 +3,47 @@ package com.evartem.data.repository
 import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.domain.gateway.GatewayError
 
-sealed class InvoiceRepositoryResult(
-    val success: Boolean,
-    val gatewayError: GatewayError? = null
-) {
+sealed class InvoiceRepositoryResult {
 
-    class InvoicesRequestResult(
-        val invoices: List<InvoiceLocalModel>,
-        success: Boolean,
-        gatewayError: GatewayError? = null
-    ) : InvoiceRepositoryResult(success, gatewayError)
+    data class Invoices(val invoices: List<InvoiceLocalModel>) : InvoiceRepositoryResult()
 
-    class InvoiceRequestResult(
-        val invoice: InvoiceLocalModel,
-        success: Boolean = true,
-        gatewayError: GatewayError? = null
-    ) : InvoiceRepositoryResult(success, gatewayError)
+    data class Invoice(val invoice: InvoiceLocalModel) : InvoiceRepositoryResult()
 
-/*    class ProcessingRequestResult(
-        success: Boolean,
-        gatewayError: GatewayError? = null
-    ) : InvoiceRepositoryResult(success, gatewayError)
+    object ProcessingAcceptConfirmed : InvoiceRepositoryResult()
 
+    data class Error(val gatewayError: GatewayError) : InvoiceRepositoryResult()
+
+/*
     class SubmitInvoiceResult(
         success: Boolean,
         gatewayError: GatewayError? = null
     ) : InvoiceRepositoryResult(success, gatewayError)*/
 }
+
+/*sealed class InvoiceRepositoryResult(
+    val success: Boolean,
+    val gatewayError: GatewayError? = null
+) {
+
+    class Invoices(
+        val invoices: List<InvoiceLocalModel>,
+        success: Boolean,
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)
+
+    class Invoice(
+        val invoice: InvoiceLocalModel,
+        success: Boolean = true,
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)
+
+    class ProcessingRequestResult(
+        success: Boolean,
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)
+*//*
+    class SubmitInvoiceResult(
+        success: Boolean,
+        gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult(success, gatewayError)*//*
+}*/
