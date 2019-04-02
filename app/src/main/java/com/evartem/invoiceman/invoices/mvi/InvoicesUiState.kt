@@ -8,7 +8,6 @@ data class InvoicesUiState(
     var isLoading: Boolean = false,
     var isRefreshing: Boolean = false,
     var setFocusToSearchView: Boolean = false,
-//    var isInvoicesChanged: Boolean = true,
     var sorting: InvoicesEvent.Sort.SortBy = InvoicesEvent.Sort.SortBy.NONE,
     var invoices: MutableList<Invoice> = mutableListOf()
 ) {
@@ -18,7 +17,6 @@ data class InvoicesUiState(
             .append(" searchViewOpen=").append(searchViewOpen)
             .append(" isLoading=").append(isLoading)
             .append(" isRefreshing=").append(isRefreshing)
-//            .append(" isInvoicesChanged=").append(isInvoicesChanged)
             .append(" sorting=").append(sorting)
             .append(" invoices=${invoices.size}").toString()
     }
