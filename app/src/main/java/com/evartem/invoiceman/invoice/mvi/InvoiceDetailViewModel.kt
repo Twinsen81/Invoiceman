@@ -19,9 +19,16 @@ class InvoiceDetailViewModel(
         when (event) {
             is InvoiceDetailEvent.LoadScreen -> onLoadInvoiceData()
             is InvoiceDetailEvent.Click -> onProductClicked(event)
+            is InvoiceDetailEvent.Accept -> onAcceptInvoiceClicked()
+            is InvoiceDetailEvent.Return,
+            is InvoiceDetailEvent.Submit,
             is InvoiceDetailEvent.Search,
             is InvoiceDetailEvent.Empty -> relay(event)
         }
+
+    private fun onAcceptInvoiceClicked(): Observable<InvoiceDetailViewModelResult> {
+        
+    }
 
     override fun shouldUpdateUiState(result: InvoiceDetailViewModelResult): Boolean =
         if (result is InvoiceDetailViewModelResult.RelayEvent)
@@ -52,6 +59,27 @@ class InvoiceDetailViewModel(
                 newUiState.invoice = newResult.gatewayResult.invoice
             else
                 addUiEffect(InvoiceDetailUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))
+        }
+
+        if (newResult is InvoiceDetailViewModelResult.RelayEvent) {
+            // Search
+            if (newResult.uiEvent is InvoiceDetailEvent.Search) {
+                when {
+                    newResult.uiEvent.stopSearch -> {
+                        newUiState.setFocusToSearchView = false
+                        newUiState.searchRequest = ""
+                        newUiState.searchViewOpen = false
+                    }
+                    newResult.uiEvent.startSearch -> {
+                        newUiState.setFocusToSearchView = true
+                        newUiState.searchViewOpen = true
+                    }
+                    else -> {
+                        newUiState.setFocusToSearchView = false
+                        newUiState.searchRequest = newResult.uiEvent.searchQuery
+                    }
+                }
+            }
         }
 
         return newUiState

@@ -31,4 +31,7 @@
     <string name="product_has_serial">has\nserial</string>
     <string name="product_scan_serial">scan\nserial</string>
     <string name="product_same_serial">same\nserial</string>
+    <string name="invoice_accept">accept</string>
+    <string name="invoice_return">return</string>
+    <string name="invoice_submit">submit</string>
 </resources>

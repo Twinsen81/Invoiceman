@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailEvent
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailUiEffect
@@ -17,6 +19,9 @@ import com.evartem.invoiceman.util.SessionManager
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.hideKeyboard
 import com.evartem.invoiceman.util.itemClicks
+import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.jakewharton.rxbinding3.appcompat.itemClicks
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import com.jakewharton.rxbinding3.view.clicks
 import com.mikepenz.fastadapter.FastAdapter
@@ -67,6 +72,13 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         setupUiEvents()
 
         subscribeToViewModel()
+    }
+
+    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
+        bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
+        bottomAppBar.visibility = View.VISIBLE
+        bottomAppBar.replaceMenu(R.menu.invoice_detail)
+        fab.hide()
     }
 
     private fun setupRecyclerView() {
@@ -123,6 +135,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
     private fun setupUiEvents() {
 
         addUiEvent(itemsAdapter.fastAdapter.itemClicks()
+            .debounce(1000, TimeUnit.MILLISECONDS)
             .map { ProductItem -> InvoiceDetailEvent.Click(ProductItem.product.id) })
 
         addUiEvent(
@@ -135,6 +148,21 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .filter { searchEvent -> searchEvent.isSubmitted && searchEvent.queryText.isNotBlank() }
                 .map { searchEvent -> InvoiceDetailEvent.Search(searchEvent.queryText.toString()) })
+
+        addUiEvent(
+            bottomAppBar.itemClicks()
+                .debounce(1000, TimeUnit.MILLISECONDS)
+                .map { item ->
+                    when (item.itemId) {
+                        R.id.products_search -> InvoiceDetailEvent.Search(startSearch = true)
+                        else -> InvoiceDetailEvent.Empty
+                    }
+                }.filter { it !is InvoiceDetailEvent.Empty })
+
+        addUiEvent(
+        invoice_action_accept.clicks()
+            .debounce(1000, TimeUnit.MILLISECONDS)
+            .map { InvoiceDetailEvent.Accept })
     }
 
     override fun onBackPressed(): Boolean =
@@ -156,6 +184,17 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         invoice_number.text = uiState.invoice.number.toString()
         invoice_date.text = uiState.invoice.date
 
+
+        if (uiState.invoice.processedByUser?.equals(sessionManager.currentUser.id) == true) {
+            invoice_action_accept.visibility = View.GONE
+            invoice_action_return.visibility = View.VISIBLE
+            invoice_action_submit.visibility = View.VISIBLE
+        } else {
+            invoice_action_accept.visibility = View.VISIBLE
+            invoice_action_return.visibility = View.GONE
+            invoice_action_submit.visibility = View.GONE
+        }
+
         if (uiState.invoice.comment.isNullOrEmpty()) {
             invoice_comment.visibility = View.VISIBLE
             invoice_comment.text = uiState.invoice.comment
@@ -165,6 +204,17 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             invoice_label_comment.visibility = View.GONE
         }
 
+        searchView.visibility = if (uiState.searchViewOpen) View.VISIBLE else View.GONE
+        searchView.setQuery(uiState.searchRequest, false)
+        if (uiState.setFocusToSearchView) {
+            searchView.isIconified = false
+            searchView.requestFocusFromTouch()
+        }
+
+        if (searchView.isVisible && uiState.searchRequest.isNotBlank())
+            itemsAdapter.filter(uiState.searchRequest)
+        else
+            itemsAdapter.filter(null)
     }
 
     override fun onRenderUiEffect(uiEffect: InvoiceDetailUiEffect) {
@@ -187,5 +237,4 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         disposables.clear()
         super.onDestroyView()
     }
-
 }
