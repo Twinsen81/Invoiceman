@@ -19,8 +19,8 @@ class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository, val invoiceMa
         invoiceRepository.getInvoice(invoiceId)
             .map { invoiceMapper.toGateway(it) }
 
-    override fun requestInvoiceForProcessing(user: User, invoice: Invoice): Observable<InvoiceGatewayResult> =
-        invoiceRepository.requestInvoiceForProcessing(user, invoice)
+    override fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceGatewayResult> =
+        invoiceRepository.requestInvoiceForProcessing(user, invoiceId)
             .map { invoiceMapper.toGateway(it) }
 
     override fun submitInvoicesWithResults(user: User, invoices: List<Invoice>): Observable<InvoiceGatewayResult> {

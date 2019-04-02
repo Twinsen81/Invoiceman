@@ -2,13 +2,15 @@ package com.evartem.invoiceman.invoice.mvi
 
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.interactor.GetInvoiceUseCase
+import com.evartem.domain.interactor.RequestInvoiceForProcessingUseCase
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
 
 class InvoiceDetailViewModel(
     private val sessionManager: SessionManager,
-    private val getInvoiceUseCase: GetInvoiceUseCase
+    private val getInvoiceUseCase: GetInvoiceUseCase,
+    private val requestProcessingUseCase: RequestInvoiceForProcessingUseCase
 ) :
     MviViewModel<InvoiceDetailUiState, InvoiceDetailUiEffect, InvoiceDetailEvent, InvoiceDetailViewModelResult>(
         InvoiceDetailEvent.LoadScreen,
@@ -19,15 +21,16 @@ class InvoiceDetailViewModel(
         when (event) {
             is InvoiceDetailEvent.LoadScreen -> onLoadInvoiceData()
             is InvoiceDetailEvent.Click -> onProductClicked(event)
-            is InvoiceDetailEvent.Accept,// -> onAcceptInvoiceClicked()
+            is InvoiceDetailEvent.Accept -> Observable.merge(relay(event), onAcceptInvoiceClicked())
             is InvoiceDetailEvent.Return,
             is InvoiceDetailEvent.Submit,
             is InvoiceDetailEvent.Search,
             is InvoiceDetailEvent.Empty -> relay(event)
         }
 
-    /*private fun onAcceptInvoiceClicked(): Observable<InvoiceDetailViewModelResult> {
-    }*/
+    private fun onAcceptInvoiceClicked(): Observable<InvoiceDetailViewModelResult> =
+    requestProcessingUseCase.execute(sessionManager.currentUser to sessionManager.currentInvoiceId)
+        .map { InvoiceDetailViewModelResult.AcceptRequest(it) }
 
     override fun shouldUpdateUiState(result: InvoiceDetailViewModelResult): Boolean =
         if (result is InvoiceDetailViewModelResult.RelayEvent)
@@ -52,15 +55,26 @@ class InvoiceDetailViewModel(
     ): InvoiceDetailUiState {
         val newUiState = previousUiState.copy()
 
-        // Received a response from the repository
+        // Received a response - the invoice
         if (newResult is InvoiceDetailViewModelResult.Invoice) {
-            newUiState.isLoading = false
+            newUiState.isLoadingInvoice = false
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Invoice)
                 newUiState.invoice = newResult.gatewayResult.invoice
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Error)
                 addUiEffect(InvoiceDetailUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))
+        }
+
+        // Received a response - the ACCEPT request
+        if (newResult is InvoiceDetailViewModelResult.Invoice) {
+     /*       newUiState.isLoadingInvoice = false
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Invoice)
+                newUiState.invoice = newResult.gatewayResult.invoice
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Error)
+                addUiEffect(InvoiceDetailUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))*/
         }
 
         if (newResult is InvoiceDetailViewModelResult.RelayEvent) {

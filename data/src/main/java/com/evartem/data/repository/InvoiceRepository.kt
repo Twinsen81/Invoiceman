@@ -6,7 +6,6 @@ import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.remote.api.InvoiceService
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.entity.auth.User
-import com.evartem.domain.entity.doc.Invoice
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 
@@ -93,8 +92,8 @@ class InvoiceRepository(
         return InvoiceRepositoryResult.Invoices(unitedInvoices)
     }
 
-    fun requestInvoiceForProcessing(user: User, invoice: Invoice): Observable<InvoiceRepositoryResult> =
-        remoteDataSource.requestInvoiceForProcessing(user.id, invoice.id)
+    fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceRepositoryResult> =
+        remoteDataSource.requestInvoiceForProcessing(user.id, invoiceId)
             .map { response -> mapperToRepoResult.remotePostToResult(response) }
             .onErrorReturn { exception -> mapperToRepoResult.fromException(exception) }
             .toObservable()

@@ -10,6 +10,7 @@ import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.gateway.InvoiceGateway
 import com.evartem.domain.interactor.GetInvoiceUseCase
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
+import com.evartem.domain.interactor.RequestInvoiceForProcessingUseCase
 import com.evartem.domain.interactor.Schedulers
 import com.evartem.invoiceman.BuildConfig
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailViewModel
@@ -23,12 +24,19 @@ import org.koin.dsl.module
 
 val viewModelModule: Module = module {
     viewModel { InvoicesViewModel(sessionManager = get(), getInvoicesForUserUseCase = get()) }
-    viewModel { InvoiceDetailViewModel(sessionManager = get(), getInvoiceUseCase = get()) }
+    viewModel {
+        InvoiceDetailViewModel(
+            sessionManager = get(),
+            getInvoiceUseCase = get(),
+            requestProcessingUseCase = get()
+        )
+    }
 }
 
 val useCasesModule: Module = module {
     factory { GetInvoicesForUserUseCase(schedulers = get(), gateway = get()) }
     factory { GetInvoiceUseCase(schedulers = get(), gateway = get()) }
+    factory { RequestInvoiceForProcessingUseCase(schedulers = get(), gateway = get()) }
 }
 
 val gatewaysModule: Module = module {

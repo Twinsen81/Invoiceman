@@ -6,7 +6,9 @@ data class InvoiceDetailUiState(
     var invoice: Invoice,
     var displayProgress: Boolean = false,
     var progress: Pair<Int, Int> = 0 to 0,
-    var isLoading: Boolean = false,
+    var isLoadingInvoice: Boolean = false,
+    var isRequestingAccept: Boolean = false,
+    var isRequestingReturn: Boolean = false,
     var searchRequest: String = "",
     var searchViewOpen: Boolean = false,
     var setFocusToSearchView: Boolean = false
@@ -17,7 +19,9 @@ data class InvoiceDetailUiState(
             .append(" searchRequest=").append(searchRequest)
             .append(" searchViewOpen=").append(searchViewOpen)
             .append(" setFocusToSearchView=").append(setFocusToSearchView)
-            .append(" isLoading=").append(isLoading)
+            .append(" isLoadingInvoice=").append(isLoadingInvoice)
+            .append(" isRequestingAccept=").append(isRequestingAccept)
+            .append(" isRequestingReturn=").append(isRequestingReturn)
             .append(" products=${invoice.products.size}").toString()
     }
 
