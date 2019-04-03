@@ -14,4 +14,5 @@
 
     <color name="semiTransparentBackground">#ADFFFFFF</color>
     <color name="noInvoicesMessageColor">#E1474747</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>
