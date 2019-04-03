@@ -22,7 +22,7 @@ data class Invoice (
     val date: String,
     val seller: String,
     val products: List<Product>,
-    val processedByUser: String? = null,
+    var processedByUser: String? = null,
     val scanCopyUrl: String? = null,
     val comment: String? = null
 ) {
