@@ -60,7 +60,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =
 
         when (uiEffect) {
-            is InvoicesUiEffect.RemoteDatasourceError -> {
+            is InvoicesUiEffect.Error -> {
                 Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
                 uiEffect.gatewayError?.exception?.also { Timber.e(Log.getStackTraceString(it)) }
                 Toast.makeText(context, getNetworkErrorMessageForUi(uiEffect.gatewayError), Toast.LENGTH_LONG).show()

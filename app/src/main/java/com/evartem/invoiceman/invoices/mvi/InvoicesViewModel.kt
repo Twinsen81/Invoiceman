@@ -64,7 +64,7 @@ class InvoicesViewModel(
                 newUiState.invoices = newResult.gatewayResult.invoices.toMutableList()
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Error)
-                addUiEffect(InvoicesUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))
+                addUiEffect(InvoicesUiEffect.Error(newResult.gatewayResult.gatewayError))
 
             responseWithDataReceived = newResult.gatewayResult is InvoiceGatewayResult.Invoices &&
                     previousUiState.isRefreshing
