@@ -7,11 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getDrawable
-import com.evartem.domain.gateway.GatewayError
-import com.evartem.domain.gateway.GatewayErrorCode
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoices.mvi.*
+import com.evartem.invoiceman.util.getErrorMessageForUi
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_invoices.*
@@ -63,7 +62,8 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
             is InvoicesUiEffect.Error -> {
                 Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
                 uiEffect.gatewayError?.exception?.also { Timber.e(Log.getStackTraceString(it)) }
-                Toast.makeText(context, getNetworkErrorMessageForUi(uiEffect.gatewayError), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getErrorMessageForUi(resources, uiEffect.gatewayError), Toast.LENGTH_LONG)
+                    .show()
             }
             is InvoicesUiEffect.NoNewData ->
                 Toast.makeText(context, R.string.invoices_no_new_received, Toast.LENGTH_LONG).show()
@@ -103,7 +103,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
 
-    private fun getNetworkErrorMessageForUi(gatewayError: GatewayError?): String {
+/*    private fun getNetworkErrorMessageForUi(gatewayError: GatewayError?): String {
         if (gatewayError == null) return R.string.network_error_general.resToString().format(0)
         return when (gatewayError.code) {
             GatewayErrorCode.INCONSISTENT_DATA -> R.string.network_error_inconsistent_data.resToString()
@@ -117,5 +117,5 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         }
     }
 
-    private fun Int.resToString() = resources.getString(this)
+    private fun Int.resToString() = resources.getString(this)*/
 }

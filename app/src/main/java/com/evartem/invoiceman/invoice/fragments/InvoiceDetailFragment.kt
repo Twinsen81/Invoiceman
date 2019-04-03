@@ -1,10 +1,12 @@
 package com.evartem.invoiceman.invoice.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,10 +17,7 @@ import com.evartem.invoiceman.invoice.mvi.InvoiceDetailEvent
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailUiEffect
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailUiState
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailViewModel
-import com.evartem.invoiceman.util.SessionManager
-import com.evartem.invoiceman.util.StatusDialog
-import com.evartem.invoiceman.util.hideKeyboard
-import com.evartem.invoiceman.util.itemClicks
+import com.evartem.invoiceman.util.*
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import com.jakewharton.rxbinding3.view.clicks
@@ -38,6 +37,7 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_invoice_detail.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiEffect, InvoiceDetailEvent>() {
@@ -172,8 +172,11 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
 
     override fun onRenderUiState(uiState: InvoiceDetailUiState) {
 
-        // Render asynchronously with diffing
-        uiStates.onNext(uiState)
+        // Render the recycler view asynchronously with diffing
+        if (uiState.invoice.products.isNotEmpty())
+            uiStates.onNext(uiState)
+        else // Diffing crashes when updating from an non-empty list -> empty
+            itemsAdapter.clear()
 
         invoice_seller.text = uiState.invoice.seller
         invoice_number.text = uiState.invoice.number.toString()
@@ -212,9 +215,16 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
     }
 
     override fun onRenderUiEffect(uiEffect: InvoiceDetailUiEffect) {
-        if (uiEffect is InvoiceDetailUiEffect.ProductClick) {
-            sessionManager.currentProductId = uiEffect.productId
-            //findNavController().navigate(R.id.destination_invoiceDetail)
+        when (uiEffect) {
+            is InvoiceDetailUiEffect.ProductClick -> {
+                sessionManager.currentProductId = uiEffect.productId
+                //findNavController().navigate(R.id.destination_invoiceDetail)
+            }
+            is InvoiceDetailUiEffect.Error -> {
+                Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
+                uiEffect.gatewayError?.exception?.also { Timber.e(Log.getStackTraceString(it)) }
+                Toast.makeText(context, getErrorMessageForUi(resources, uiEffect.gatewayError), Toast.LENGTH_LONG).show()
+            }
         }
     }
 

@@ -63,18 +63,24 @@ class InvoiceDetailViewModel(
                 newUiState.invoice = newResult.gatewayResult.invoice
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Error)
-                addUiEffect(InvoiceDetailUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))
+                addUiEffect(InvoiceDetailUiEffect.Error(newResult.gatewayResult.gatewayError))
         }
 
         // Received a response - the ACCEPT request
-        if (newResult is InvoiceDetailViewModelResult.Invoice) {
+        if (newResult is InvoiceDetailViewModelResult.AcceptRequest) {
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.ProcessingAcceptConfirmed)
+                newUiState.invoice.processedByUser = sessionManager.currentUser.id
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Error)
+                addUiEffect(InvoiceDetailUiEffect.Error(newResult.gatewayResult.gatewayError))
      /*       newUiState.isLoadingInvoice = false
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Invoice)
                 newUiState.invoice = newResult.gatewayResult.invoice
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Error)
-                addUiEffect(InvoiceDetailUiEffect.RemoteDatasourceError(newResult.gatewayResult.gatewayError))*/
+                addUiEffect(InvoiceDetailUiEffect.Error(newResult.gatewayResult.gatewayError))*/
         }
 
         if (newResult is InvoiceDetailViewModelResult.RelayEvent) {

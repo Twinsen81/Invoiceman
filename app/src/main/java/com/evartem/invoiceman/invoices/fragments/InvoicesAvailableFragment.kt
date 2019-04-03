@@ -164,8 +164,11 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
 
-        // Render asynchronously with diffing
-        uiStates.onNext(uiState)
+        // Render the recycler view asynchronously with diffing
+        if (uiState.invoices.isNotEmpty())
+            uiStates.onNext(uiState)
+        else // Diffing crashes when updating from an non-empty list -> empty
+            itemsAdapter.clear()
 
         // region "Fetching invoices..." dialog
         if (uiState.isLoading)
