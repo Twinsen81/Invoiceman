@@ -25,7 +25,7 @@ class InvoicesViewModel(
         when (event) {
             is InvoicesEvent.LoadScreen -> onRefreshData(event.reloadFromServer)
             is InvoicesEvent.RefreshScreen -> Observable.merge(relay(event), onRefreshData())
-            is InvoicesEvent.Click -> Observable.merge(relay(event), onInvoiceClicked(event))
+            is InvoicesEvent.Click -> onInvoiceClicked(event)
             is InvoicesEvent.Search,
             is InvoicesEvent.Sort,
             is InvoicesEvent.Empty -> relay(event)
@@ -53,7 +53,6 @@ class InvoicesViewModel(
     override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
 
         val newUiState = previousUiState.copy()
-        newUiState.refreshDataOnNextScreenLoad = false
         var responseWithDataReceived = false
 
         // Received a response - the invoices
@@ -98,10 +97,6 @@ class InvoicesViewModel(
             // Refreshing
             newUiState.isRefreshing = newResult.uiEvent is InvoicesEvent.RefreshScreen
             if (newUiState.isRefreshing) newUiState.searchViewOpen = false
-
-            // Invoice clicked -> refresh data when user comes back ('cause user might accept/return/submit invoices)
-            if (newResult.uiEvent is InvoicesEvent.Click)
-                newUiState.refreshDataOnNextScreenLoad = true
         }
 
         // Sort

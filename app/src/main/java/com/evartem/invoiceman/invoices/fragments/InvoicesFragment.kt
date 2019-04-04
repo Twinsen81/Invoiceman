@@ -78,6 +78,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
     }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
+
         val allowSortAndSearch = uiState.invoices.isNotEmpty() && !uiState.isRefreshing
         bottomAppBar.menu.findItem(R.id.invoices_sort).isEnabled = allowSortAndSearch
         bottomAppBar.menu.findItem(R.id.invoices_search).isEnabled = allowSortAndSearch
@@ -102,20 +103,4 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
     override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
 
     override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
-
-/*    private fun getNetworkErrorMessageForUi(gatewayError: GatewayError?): String {
-        if (gatewayError == null) return R.string.network_error_general.resToString().format(0)
-        return when (gatewayError.code) {
-            GatewayErrorCode.INCONSISTENT_DATA -> R.string.network_error_inconsistent_data.resToString()
-            GatewayErrorCode.NO_PERMISSIONS -> R.string.network_error_no_permissions.resToString()
-            GatewayErrorCode.NOT_FOUND -> R.string.network_error_not_found.resToString()
-            GatewayErrorCode.ALREADY_TAKEN_BY_OTHER -> R.string.network_error_taken.resToString()
-            GatewayErrorCode.INTERNAL_SERVER_ERROR -> R.string.network_error_server.resToString()
-            GatewayErrorCode.GENERAL_NETWORK_ERROR -> R.string.network_error_server_not_available.resToString()
-            GatewayErrorCode.WRONG_SERVER_RESPONSE -> R.string.network_error_server_wrong_response.resToString()
-            else -> R.string.network_error_general.resToString().format(gatewayError.code.value)
-        }
-    }
-
-    private fun Int.resToString() = resources.getString(this)*/
 }

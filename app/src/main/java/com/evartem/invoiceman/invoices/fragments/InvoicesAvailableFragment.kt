@@ -56,10 +56,16 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private var disposables: CompositeDisposable = CompositeDisposable()
     private val listOfInvoices: PublishSubject<List<Invoice>> = PublishSubject.create()
 
+    private var reloadDataOnResume: Boolean = false
+
     private lateinit var statusDialog: StatusDialog
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        savedInstanceState?.let {
+            reloadDataOnResume = it.getBoolean("reloadDataOnResume", false)
+        }
+        return inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoices_available, container, false)
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -68,6 +74,25 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         setupRecyclerViewAsyncRenderingWithDiff()
 
         statusDialog = StatusDialog(context!!)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean("reloadDataOnResume", reloadDataOnResume)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // The user has come back from the invoiceDetail fragment where he possibly changed
+        // the state of invoices (accepted, returned or submitted) - hence, reload data
+        // from the local data source to reflect those changes
+        if (reloadDataOnResume) {
+            reloadDataOnResume = false
+            viewModel.addEvent(InvoicesEvent.LoadScreen(false))
+            return
+        }
     }
 
     private fun setupRecyclerView() {
@@ -166,11 +191,6 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
 
-        if (uiState.refreshDataOnNextScreenLoad) {
-            viewModel.addEvent(InvoicesEvent.LoadScreen(false))
-            return
-        }
-
         // Render the recycler view asynchronously with diffing
         if (uiState.invoices.isNotEmpty())
             listOfInvoices.onNext(uiState.invoices.filter { it.processedByUser.isNullOrEmpty() })
@@ -215,6 +235,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) {
         if (uiEffect is InvoicesUiEffect.InvoiceClick) {
+            reloadDataOnResume = true
             sessionManager.currentInvoiceId = uiEffect.invoiceId
             findNavController().navigate(R.id.action_destination_invoiceList_to_destination_invoiceDetail)
         }
