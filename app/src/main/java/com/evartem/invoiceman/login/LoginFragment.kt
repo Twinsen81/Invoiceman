@@ -25,8 +25,8 @@ class LoginFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
 
-        btnLogin.setOnClickListener {
-            btnLogin.isEnabled = false
+        buttonSignIn.setOnClickListener {
+            buttonSignIn.isEnabled = false
             sessionManager.currentUser = get() // injecting DEMO_USER
             findNavController().navigate(R.id.action_invoices)
         }

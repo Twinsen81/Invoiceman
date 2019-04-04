@@ -38,4 +38,9 @@
     <string name="invoice_accept">accept</string>
     <string name="invoice_return">return</string>
     <string name="invoice_submit">submit</string>
+    <string name="password">Password</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="sign_in">sign in</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="email">Email</string>
 </resources>
