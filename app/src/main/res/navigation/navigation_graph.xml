@@ -17,6 +17,8 @@
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
         <action android:id="@+id/action_login" app:destination="@id/destination_login"
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
+        <action android:id="@+id/action_destination_invoiceList_to_destination_invoiceDetail"
+                app:destination="@id/destination_invoiceDetail"/>
 
 
     </fragment>

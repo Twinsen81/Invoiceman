@@ -5,7 +5,6 @@
                                                    android:background="@drawable/seamless_background"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
-
     <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:visibility="gone"
@@ -27,7 +26,7 @@
             app:layout_constraintTop_toBottomOf="@id/searchView"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" android:visibility="visible">
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/invoices_available_recyclerView"
+                android:id="@+id/invoices_recyclerView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:elevation="2dp"
@@ -43,16 +42,16 @@
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_coffee"
-            android:id="@+id/invoices_available_status_image"
+            android:id="@+id/invoices_status_image"
             android:elevation="3dp"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="invisible"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/invoices_available_status_text"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/invoices_status_text"
             tools:ignore="ContentDescription"/>
     <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/invoices_available_status_text"
+            android:layout_height="wrap_content" android:id="@+id/invoices_status_text"
             android:elevation="3dp"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintEnd_toEndOf="parent"
@@ -61,6 +60,4 @@
             android:layout_marginTop="128dp" app:layout_constraintTop_toTopOf="parent"
             android:fontFamily="sans-serif-smallcaps" android:textStyle="bold"
             android:text="@string/invoices_no_new_to_process"/>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

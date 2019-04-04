@@ -15,15 +15,6 @@ class InvoiceRepository(
     private val mapperToRepoResult: InvoiceMapperToRepoResult
 ) {
 
-    fun insertInvoices(invoices: List<InvoiceLocalModel>) {
-    }
-
-    fun insertInvoice(invoice: InvoiceLocalModel) {
-    }
-
-    fun insertResult(result: ResultLocalModel) {
-    }
-
     fun getInvoice(invoiceId: String): Observable<InvoiceRepositoryResult> =
         localDataSource.getInvoice(invoiceId)
             .map { invoice -> mapperToRepoResult.localToResult(invoice) }
@@ -43,11 +34,11 @@ class InvoiceRepository(
                 try {
                     remoteDataSource.getInvoicesForUser(userId)
                         .map { invoiceList -> mapperToRepoResult.remoteToResult(invoiceList) }
-                        .onErrorReturn { exception -> mapperToRepoResult.fromException(exception) }
+                        .onErrorReturn { exception -> mapperToRepoResult.errorFromException(exception) }
                         .toObservable()
                 } catch (exception: Throwable) {
                     // If exception is thrown while creating an Observable -> onErrorReturn isn't called
-                    Observable.just(mapperToRepoResult.fromException(exception))
+                    Observable.just(mapperToRepoResult.errorFromException(exception))
                 }
             } else
                 Observable.just(InvoiceRepositoryResult.Invoices(listOf()))
@@ -102,11 +93,36 @@ class InvoiceRepository(
     fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceRepositoryResult> =
         try {
             remoteDataSource.requestInvoiceForProcessing(user.id, invoiceId)
-                .map { response -> mapperToRepoResult.remotePostToResult(response) }
-                .onErrorReturn { exception -> mapperToRepoResult.fromException(exception) }
+                .map { response -> mapperToRepoResult.remoteAcceptToResult(response) }
+                .onErrorReturn { exception -> mapperToRepoResult.errorFromException(exception) }
+                .doOnEvent { result, _ -> assignInvoiceToUserInLocalDatasource(result, user.id, invoiceId) }
                 .toObservable()
         } catch (exception: Throwable) {
             // If exception is thrown while creating an Observable -> onErrorReturn isn't called
-            Observable.just(mapperToRepoResult.fromException(exception))
+            Observable.just(mapperToRepoResult.errorFromException(exception))
+        }
+
+    fun requestInvoiceReturn(user: User, invoiceId: String): Observable<InvoiceRepositoryResult> =
+        try {
+            remoteDataSource.requestInvoiceReturn(user.id, invoiceId)
+                .map { response -> mapperToRepoResult.remoteReturnToResult(response) }
+                .onErrorReturn { exception -> mapperToRepoResult.errorFromException(exception) }
+                .doOnEvent { result, _ -> assignInvoiceToUserInLocalDatasource(result, "", invoiceId) }
+                .toObservable()
+        } catch (exception: Throwable) {
+            // If exception is thrown while creating an Observable -> onErrorReturn isn't called
+            Observable.just(mapperToRepoResult.errorFromException(exception))
+        }
+
+    private fun assignInvoiceToUserInLocalDatasource(
+        requestResult: InvoiceRepositoryResult,
+        userId: String,
+        invoiceId: String
+    ) =
+        when (requestResult) {
+            is InvoiceRepositoryResult.AcceptConfirmed,
+            is InvoiceRepositoryResult.ReturnConfirmed ->
+                localDataSource.assignInvoiceToUser(userId, invoiceId)
+            else -> Unit
         }
 }

@@ -8,10 +8,7 @@ import com.evartem.data.remote.api.createInvoiceNetworkClient
 import com.evartem.data.repository.InvoiceRepository
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.gateway.InvoiceGateway
-import com.evartem.domain.interactor.GetInvoiceUseCase
-import com.evartem.domain.interactor.GetInvoicesForUserUseCase
-import com.evartem.domain.interactor.RequestInvoiceForProcessingUseCase
-import com.evartem.domain.interactor.Schedulers
+import com.evartem.domain.interactor.*
 import com.evartem.invoiceman.BuildConfig
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
@@ -28,7 +25,8 @@ val viewModelModule: Module = module {
         InvoiceDetailViewModel(
             sessionManager = get(),
             getInvoiceUseCase = get(),
-            requestProcessingUseCase = get()
+            requestProcessingUseCase = get(),
+            requestReturnUseCase = get()
         )
     }
 }
@@ -37,6 +35,7 @@ val useCasesModule: Module = module {
     factory { GetInvoicesForUserUseCase(schedulers = get(), gateway = get()) }
     factory { GetInvoiceUseCase(schedulers = get(), gateway = get()) }
     factory { RequestInvoiceForProcessingUseCase(schedulers = get(), gateway = get()) }
+    factory { RequestInvoiceReturnUseCase(schedulers = get(), gateway = get()) }
 }
 
 val gatewaysModule: Module = module {

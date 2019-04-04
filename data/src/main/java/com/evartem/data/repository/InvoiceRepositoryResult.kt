@@ -9,7 +9,8 @@ sealed class InvoiceRepositoryResult {
 
     data class Invoice(val invoice: InvoiceLocalModel) : InvoiceRepositoryResult()
 
-    object ProcessingAcceptConfirmed : InvoiceRepositoryResult()
+    object AcceptConfirmed : InvoiceRepositoryResult()
+    object ReturnConfirmed : InvoiceRepositoryResult()
 
     data class Error(val gatewayError: GatewayError) : InvoiceRepositoryResult()
 

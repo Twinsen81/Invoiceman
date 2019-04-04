@@ -1,6 +1,8 @@
 package com.evartem.data.local
 
 import com.evartem.data.local.model.InvoiceLocalModel
+import com.evartem.data.repository.InvoiceRepositoryResult
+import com.evartem.domain.entity.auth.User
 import io.reactivex.Single
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -21,6 +23,17 @@ class InvoiceLocalDataSource {
         // Realm does not restore order of items in a list -> sort manually to restore the ascending order
         invoice.sortProducts()
         return Single.just(invoice)
+    }
+
+    fun assignInvoiceToUser(userId: String, invoiceId: String) {
+        Realm.getDefaultInstance().use { realm ->
+            // A detached from Realm copy of the invoice that won't be updated by Realm anymore
+            val invoice = realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()
+            if (invoice != null)
+                realm.executeTransaction {
+                    invoice.processedByUser = userId
+                }
+        }
     }
 
     /**

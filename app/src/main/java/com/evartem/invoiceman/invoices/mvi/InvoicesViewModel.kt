@@ -13,7 +13,7 @@ class InvoicesViewModel(
     private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase
 ) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
-        InvoicesEvent.LoadScreen,
+        InvoicesEvent.LoadScreen(reloadFromServer = true),
         InvoicesUiState(isLoading = true)
     ) {
 
@@ -23,9 +23,9 @@ class InvoicesViewModel(
 
     override fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
         when (event) {
-            is InvoicesEvent.LoadScreen -> onRefreshData()
+            is InvoicesEvent.LoadScreen -> onRefreshData(event.reloadFromServer)
             is InvoicesEvent.RefreshScreen -> Observable.merge(relay(event), onRefreshData())
-            is InvoicesEvent.Click -> onInvoiceClicked(event)
+            is InvoicesEvent.Click -> Observable.merge(relay(event), onInvoiceClicked(event))
             is InvoicesEvent.Search,
             is InvoicesEvent.Sort,
             is InvoicesEvent.Empty -> relay(event)
@@ -39,8 +39,8 @@ class InvoicesViewModel(
                 else -> true
             } else true
 
-    private fun onRefreshData(): Observable<InvoicesViewModelResult> =
-        getInvoicesForUserUseCase.execute(Pair(sessionManager.currentUser, true))
+    private fun onRefreshData(reloadFromServer: Boolean = true): Observable<InvoicesViewModelResult> =
+        getInvoicesForUserUseCase.execute(Pair(sessionManager.currentUser, reloadFromServer))
             .map {
                 InvoicesViewModelResult.Invoices(it)
             }
@@ -53,6 +53,7 @@ class InvoicesViewModel(
     override fun reduceUiState(previousUiState: InvoicesUiState, newResult: InvoicesViewModelResult): InvoicesUiState {
 
         val newUiState = previousUiState.copy()
+        newUiState.refreshDataOnNextScreenLoad = false
         var responseWithDataReceived = false
 
         // Received a response - the invoices
@@ -97,6 +98,10 @@ class InvoicesViewModel(
             // Refreshing
             newUiState.isRefreshing = newResult.uiEvent is InvoicesEvent.RefreshScreen
             if (newUiState.isRefreshing) newUiState.searchViewOpen = false
+
+            // Invoice clicked -> refresh data when user comes back ('cause user might accept/return/submit invoices)
+            if (newResult.uiEvent is InvoicesEvent.Click)
+                newUiState.refreshDataOnNextScreenLoad = true
         }
 
         // Sort

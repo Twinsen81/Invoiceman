@@ -22,8 +22,8 @@ class InvoiceMapperToGatewayResult {
             is InvoiceRepositoryResult.Error -> repoResult.let {
                 InvoiceGatewayResult.Error(it.gatewayError)
             }
-            is InvoiceRepositoryResult.ProcessingAcceptConfirmed ->
-                InvoiceGatewayResult.ProcessingAcceptConfirmed
+            is InvoiceRepositoryResult.AcceptConfirmed -> InvoiceGatewayResult.AcceptConfirmed
+            is InvoiceRepositoryResult.ReturnConfirmed -> InvoiceGatewayResult.ReturnConfirmed
         }
 
     private fun localToEntity(localModel: List<InvoiceLocalModel>) =

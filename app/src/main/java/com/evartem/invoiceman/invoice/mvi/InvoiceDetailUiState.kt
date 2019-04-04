@@ -9,6 +9,7 @@ data class InvoiceDetailUiState(
     var isLoadingInvoice: Boolean = false,
     var isRequestingAccept: Boolean = false,
     var isRequestingReturn: Boolean = false,
+    var isSubmitting: Boolean = false,
     var searchRequest: String = "",
     var searchViewOpen: Boolean = false,
     var setFocusToSearchView: Boolean = false
@@ -22,6 +23,7 @@ data class InvoiceDetailUiState(
             .append(" isLoadingInvoice=").append(isLoadingInvoice)
             .append(" isRequestingAccept=").append(isRequestingAccept)
             .append(" isRequestingReturn=").append(isRequestingReturn)
+            .append(" isSubmitting=").append(isSubmitting)
             .append(" products=${invoice.products.size}").toString()
     }
 

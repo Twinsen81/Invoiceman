@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.invoiceman.R
@@ -158,10 +159,16 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             invoice_action_accept.clicks()
                 .throttleFirst(1, TimeUnit.SECONDS)
                 .map { InvoiceDetailEvent.Accept })
+
+        addUiEvent(
+            invoice_action_return.clicks()
+                .throttleFirst(1, TimeUnit.SECONDS)
+                .map { InvoiceDetailEvent.Return })
     }
 
-    override fun onBackPressed(): Boolean =
-        when {
+    override fun onBackPressed(): Boolean {
+        if (lifecycle.currentState != Lifecycle.State.RESUMED) return false
+        return when {
             searchView.isVisible -> {
                 hideKeyboard(activity!!)
                 viewModel.addEvent(InvoiceDetailEvent.Search(stopSearch = true))
@@ -169,6 +176,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             }
             else -> false
         }
+    }
 
     override fun onRenderUiState(uiState: InvoiceDetailUiState) {
 
@@ -177,6 +185,15 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             uiStates.onNext(uiState)
         else // Diffing crashes when updating from an non-empty list -> empty
             itemsAdapter.clear()
+
+        // region Dialogs
+        when {
+            uiState.isRequestingAccept -> statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoice_accepting))
+            uiState.isRequestingReturn -> statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoice_returning))
+            uiState.isSubmitting -> statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoice_submitting))
+            else -> statusDialog.hide()
+        }
+        // endregion
 
         invoice_seller.text = uiState.invoice.seller
         invoice_number.text = uiState.invoice.number.toString()
@@ -223,7 +240,11 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             is InvoiceDetailUiEffect.Error -> {
                 Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
                 uiEffect.gatewayError?.exception?.also { Timber.e(Log.getStackTraceString(it)) }
-                Toast.makeText(context, getErrorMessageForUi(resources, uiEffect.gatewayError), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getErrorMessageForUi(resources, uiEffect.gatewayError), Toast.LENGTH_LONG)
+                    .show()
+            }
+            is InvoiceDetailUiEffect.SuccessMessage -> {
+                Toast.makeText(context, R.string.success_exclamation, Toast.LENGTH_LONG).show()
             }
         }
     }

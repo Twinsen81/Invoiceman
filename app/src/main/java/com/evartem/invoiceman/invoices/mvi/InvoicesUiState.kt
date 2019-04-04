@@ -7,6 +7,7 @@ data class InvoicesUiState(
     var searchViewOpen: Boolean = false,
     var isLoading: Boolean = false,
     var isRefreshing: Boolean = false,
+    var refreshDataOnNextScreenLoad: Boolean = false,
     var setFocusToSearchView: Boolean = false,
     var sorting: InvoicesEvent.Sort.SortBy = InvoicesEvent.Sort.SortBy.NONE,
     var invoices: MutableList<Invoice> = mutableListOf()
@@ -18,6 +19,8 @@ data class InvoicesUiState(
             .append(" isLoading=").append(isLoading)
             .append(" isRefreshing=").append(isRefreshing)
             .append(" sorting=").append(sorting)
+            .append(" refreshDataOnNextScreenLoad=").append(refreshDataOnNextScreenLoad)
+            .append(" setFocusToSearchView=").append(setFocusToSearchView)
             .append(" invoices=${invoices.size}").toString()
     }
 }

@@ -6,7 +6,8 @@ sealed class InvoiceGatewayResult {
 
     data class Invoice(val invoice: com.evartem.domain.entity.doc.Invoice) : InvoiceGatewayResult()
 
-    object ProcessingAcceptConfirmed : InvoiceGatewayResult()
+    object AcceptConfirmed : InvoiceGatewayResult()
+    object ReturnConfirmed : InvoiceGatewayResult()
 
     data class Error(val gatewayError: GatewayError) : InvoiceGatewayResult()
 }

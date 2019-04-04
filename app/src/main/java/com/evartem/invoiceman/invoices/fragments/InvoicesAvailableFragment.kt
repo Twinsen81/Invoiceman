@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.evartem.domain.entity.doc.Invoice
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
@@ -38,7 +40,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_invoices_available.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
@@ -53,7 +54,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     private lateinit var itemsAdapter: ItemAdapter<InvoiceItem>
 
     private var disposables: CompositeDisposable = CompositeDisposable()
-    private val uiStates: PublishSubject<InvoicesUiState> = PublishSubject.create()
+    private val listOfInvoices: PublishSubject<List<Invoice>> = PublishSubject.create()
 
     private lateinit var statusDialog: StatusDialog
 
@@ -74,11 +75,11 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         itemsAdapter = ItemAdapter()
 
         val linearLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        invoices_available_recyclerView.layoutManager = linearLayoutManager
-        invoices_available_recyclerView.adapter =
+        invoices_recyclerView.layoutManager = linearLayoutManager
+        invoices_recyclerView.adapter =
             FastAdapter.with<IItem<*, *>, IAdapter<out IItem<*, *>>>(listOf(itemsAdapter))
 
-        invoices_available_recyclerView.itemAnimator = ScaleUpAnimator()
+        invoices_recyclerView.itemAnimator = ScaleUpAnimator()
 
         // Setup search conditions for the recycler view (adapter)
         itemsAdapter.itemFilter.withFilterPredicate { item, constraint ->
@@ -88,7 +89,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         }
 
         // Fix a problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
-        invoices_available_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        invoices_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 swipeRefreshLayout.isEnabled = !searchView.isVisible && (swipeRefreshLayout.isRefreshing ||
@@ -98,9 +99,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
-        uiStates
+        listOfInvoices
             .subscribeOn(Schedulers.io())
-            .map { it.invoices }
             .flatMap { listOfInvoices ->
                 Observable.fromIterable(listOfInvoices)
                     .map { item -> InvoiceItem(item) }
@@ -126,7 +126,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 FastAdapterDiffUtil.set(itemsAdapter, it)
-                invoices_available_recyclerView.layoutManager?.scrollToPosition(0)
+                invoices_recyclerView.layoutManager?.scrollToPosition(0)
             }.addTo(disposables)
     }
 
@@ -152,8 +152,9 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
                 .map { searchEvent -> InvoicesEvent.Search(searchEvent.queryText.toString()) })
     }
 
-    override fun onBackPressed(): Boolean =
-        when {
+    override fun onBackPressed(): Boolean {
+        if (lifecycle.currentState != Lifecycle.State.RESUMED) return false
+        return when {
             searchView.isVisible -> {
                 hideKeyboard(activity!!)
                 viewModel.addEvent(InvoicesEvent.Search(stopSearch = true))
@@ -161,12 +162,18 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
             }
             else -> false
         }
+    }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {
 
+        if (uiState.refreshDataOnNextScreenLoad) {
+            viewModel.addEvent(InvoicesEvent.LoadScreen(false))
+            return
+        }
+
         // Render the recycler view asynchronously with diffing
         if (uiState.invoices.isNotEmpty())
-            uiStates.onNext(uiState)
+            listOfInvoices.onNext(uiState.invoices.filter { it.processedByUser.isNullOrEmpty() })
         else // Diffing crashes when updating from an non-empty list -> empty
             itemsAdapter.clear()
 
@@ -180,8 +187,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
         // region "Nothing to process" text and image
         val showNothingToProcess =
             if (!uiState.isLoading && uiState.invoices.isEmpty()) View.VISIBLE else View.GONE
-        invoices_available_status_text.visibility = showNothingToProcess
-        invoices_available_status_image.visibility = showNothingToProcess
+        invoices_status_text.visibility = showNothingToProcess
+        invoices_status_image.visibility = showNothingToProcess
         // endregion
 
         // region SearchView text box
@@ -209,7 +216,7 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) {
         if (uiEffect is InvoicesUiEffect.InvoiceClick) {
             sessionManager.currentInvoiceId = uiEffect.invoiceId
-            findNavController().navigate(R.id.destination_invoiceDetail)
+            findNavController().navigate(R.id.action_destination_invoiceList_to_destination_invoiceDetail)
         }
     }
 
@@ -221,62 +228,8 @@ class InvoicesAvailableFragment : MviFragment<InvoicesUiState, InvoicesUiEffect,
 
     override fun onDestroyView() {
         // Clear the reference to the adapter to prevent leaking this layout
-        invoices_available_recyclerView.adapter = null
-        Timber.d("lifecycle onDestroyView")
+        invoices_recyclerView.adapter = null
         disposables.clear()
         super.onDestroyView()
     }
-/*
-    override fun onPause() {
-        super.onPause()
-        Timber.d("lifecycle onPause")
-    }
-
-    override fun onResume() {
-        setupUiEvents()
-        subscribeToViewModel()
-
-        super.onResume()
-        Timber.d("lifecycle onResume")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.d("lifecycleonDestroy")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        Timber.d("lifecycle onDetach")
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Timber.d("lifecycle onAttach")
-    }
-
-    override fun onAttachFragment(childFragment: Fragment) {
-        super.onAttachFragment(childFragment)
-        Timber.d("lifecycle onAttachFragment")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Timber.d("lifecycle onStop")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Timber.d("lifecycle onStart")
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Timber.d("lifecycle onViewCreated")
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        Timber.d("lifecycle onViewStateRestored")
-    }*/
 }

@@ -23,6 +23,10 @@ class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository, val invoiceMa
         invoiceRepository.requestInvoiceForProcessing(user, invoiceId)
             .map { invoiceMapper.toGateway(it) }
 
+    override fun requestInvoiceReturn(user: User, invoiceId: String): Observable<InvoiceGatewayResult> =
+        invoiceRepository.requestInvoiceReturn(user, invoiceId)
+            .map { invoiceMapper.toGateway(it) }
+
     override fun submitInvoicesWithResults(user: User, invoices: List<Invoice>): Observable<InvoiceGatewayResult> {
         TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
