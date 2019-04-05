@@ -1,6 +1,8 @@
 package com.evartem.data.local
 
 import com.evartem.data.local.model.InvoiceLocalModel
+import com.evartem.data.local.model.ProductLocalModel
+import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.repository.InvoiceRepositoryResult
 import com.evartem.domain.entity.auth.User
 import io.reactivex.Single
@@ -58,7 +60,6 @@ class InvoiceLocalDataSource {
             }
         }
 
-    /*
     fun insertOrUpdateInvoice(invoice: InvoiceLocalModel) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
@@ -105,5 +106,5 @@ class InvoiceLocalDataSource {
                 block(product)
             }
         }
-    }*/
+    }
 }
