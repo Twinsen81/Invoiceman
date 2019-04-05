@@ -25,15 +25,11 @@ class LoginFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
 
+        // TODO: Implement authorization trough Auth0.com
         buttonSignIn.setOnClickListener {
             buttonSignIn.isEnabled = false
             sessionManager.currentUser = get() // injecting DEMO_USER
             findNavController().navigate(R.id.action_invoices)
         }
     }
-
-/*    override fun onConfigureBottomAppBar(bottomAppBar: BottomAppBar, fab: FloatingActionButton) {
-        fab.hide()
-        bottomAppBar.visibility = View.GONE
-    }*/
 }
