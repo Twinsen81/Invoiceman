@@ -35,13 +35,13 @@ class InvoiceMapperToGatewayResult {
             localModel.number,
             localModel.date,
             localModel.seller,
-            localModel.products.toList().map { productRemoteToLocal(it) },
+            localModel.products.toList().map { productLocalToEntity(it) },
             localModel.processedByUser,
             localModel.scanCopyUrl,
             localModel.comment
         )
 
-    private fun productRemoteToLocal(localProduct: ProductLocalModel) =
+    private fun productLocalToEntity(localProduct: ProductLocalModel) =
         Product(
             localProduct.id,
             localProduct.article,

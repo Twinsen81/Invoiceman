@@ -28,7 +28,7 @@ ext {
 
     //region VERSIONS: Testing
     jUnit = '4.12'
-    mockito = '2.24.5'
+    mockito = '2.26.0'
     espresso = '3.1.1'
     testCore = '1.0.0'
     testRunner = '1.1.0-alpha3'
@@ -126,7 +126,8 @@ ext {
 
     domainTestDependencies = [
             "junit:junit:$jUnit",
-            "org.mockito:mockito-core:$mockito"
+            "org.mockito:mockito-core:$mockito",
+            "org.mockito:mockito-inline:$mockito"
     ]
     //endregion
 
