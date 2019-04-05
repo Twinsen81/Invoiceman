@@ -1,6 +1,6 @@
 package com.evartem.data.remote
 
-object TestData
+object TestData1
 {
     val JSON_DATA1 = """
 [

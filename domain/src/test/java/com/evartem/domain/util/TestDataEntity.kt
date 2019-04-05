@@ -5,7 +5,7 @@ import com.evartem.domain.entity.doc.Invoice
 import com.evartem.domain.entity.doc.Product
 import com.evartem.domain.entity.doc.ResultStatus
 
-object TestData {
+class TestDataEntity {
 
     lateinit var invoice1: Invoice
     lateinit var invoice2: Invoice
