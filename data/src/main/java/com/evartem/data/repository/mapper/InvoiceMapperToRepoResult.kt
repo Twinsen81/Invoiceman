@@ -13,26 +13,41 @@ import com.squareup.moshi.JsonEncodingException
 import io.realm.RealmList
 import retrofit2.Response
 import java.io.EOFException
+import java.lang.Exception
 
 class InvoiceMapperToRepoResult {
 
-    val emptyResult
-        get() = InvoiceRepositoryResult.InvoicesRequestResult(listOf(), true)
-
     fun localToResult(localModel: List<InvoiceLocalModel>): InvoiceRepositoryResult =
-        InvoiceRepositoryResult.InvoicesRequestResult(localModel, true)
+        InvoiceRepositoryResult.Invoices(localModel)
 
-    fun remoteToResult(remoteResponse: Response<List<InvoiceRemoteModel>>): InvoiceRepositoryResult {
-        if (remoteResponse.isSuccessful && remoteResponse.body() != null)
-            return InvoiceRepositoryResult.InvoicesRequestResult(invoiceRemoteToLocal(remoteResponse.body()!!), true)
+    fun localToResult(localModel: InvoiceLocalModel): InvoiceRepositoryResult =
+        InvoiceRepositoryResult.Invoice(localModel)
 
-        return createNetworkErrorResult(
-            GatewayError.ErrorCode.getByValue(remoteResponse.code()),
-            remoteResponse.raw().body()?.string() ?: remoteResponse.message()
-        )
+    fun remoteAcceptToResult(remoteResponse: Response<Void>): InvoiceRepositoryResult {
+
+        if (remoteResponse.isSuccessful)
+            return InvoiceRepositoryResult.AcceptConfirmed
+
+        return errorFromResponse(remoteResponse)
     }
 
-    fun fromException(exception: Throwable): InvoiceRepositoryResult =
+    fun remoteReturnToResult(remoteResponse: Response<Void>): InvoiceRepositoryResult {
+
+        if (remoteResponse.isSuccessful)
+            return InvoiceRepositoryResult.ReturnConfirmed
+
+        return errorFromResponse(remoteResponse)
+    }
+
+    fun remoteToResult(remoteResponse: Response<List<InvoiceRemoteModel>>): InvoiceRepositoryResult {
+
+        if (remoteResponse.isSuccessful && remoteResponse.body() != null)
+            return InvoiceRepositoryResult.Invoices(invoiceRemoteToLocal(remoteResponse.body()!!))
+
+        return errorFromResponse(remoteResponse)
+    }
+
+    fun errorFromException(exception: Throwable): InvoiceRepositoryResult =
         when (exception) {
             is JsonEncodingException, is EOFException -> createNetworkErrorResult(
                 GatewayError.ErrorCode.WRONG_SERVER_RESPONSE, exception.message, exception
@@ -42,8 +57,18 @@ class InvoiceMapperToRepoResult {
             )
         }
 
+    private fun <T> errorFromResponse(response: Response<T>) =
+        createNetworkErrorResult(
+            GatewayError.ErrorCode.getByValue(response.code()),
+            try {
+                response.raw().body()?.string() ?: response.message()
+            } catch (ignored: Exception) {
+                response.message()
+            }
+        )
+
     private fun createNetworkErrorResult(code: GatewayErrorCode, message: String?, exception: Throwable? = null) =
-        InvoiceRepositoryResult.InvoicesRequestResult(listOf(), false, GatewayError(code, message, exception))
+        InvoiceRepositoryResult.Error(GatewayError(code, message, exception))
 
     private fun invoiceRemoteToLocal(remoteModel: List<InvoiceRemoteModel>) =
         remoteModel.map { invoiceRemoteToLocal(it) }

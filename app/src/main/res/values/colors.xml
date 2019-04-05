@@ -12,6 +12,7 @@
     <color name="gradChartMinusColorStart">#858585</color>
     <color name="gradChartMinusColorEnd">#727272</color>
 
-    <color name="cardViewBackColor">#C6FFFFFF</color>
+    <color name="semiTransparentBackground">#ADFFFFFF</color>
     <color name="noInvoicesMessageColor">#E1474747</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
 </resources>

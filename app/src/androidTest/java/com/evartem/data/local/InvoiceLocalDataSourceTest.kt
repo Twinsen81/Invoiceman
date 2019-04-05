@@ -75,7 +75,7 @@ class InvoiceLocalDataSourceTest {
         val twoInvoices = listOf(invoice1, invoice2)
 
         // WHEN insert that list into the local data source
-        localDataSource.insertOrUpdateInvoice(twoInvoices)
+        localDataSource.insertOrUpdateInvoices(twoInvoices)
 
         // SHOULD be able to retrieve it with the same data
         localDataSource.getInvoices()
@@ -108,12 +108,12 @@ class InvoiceLocalDataSourceTest {
     fun updatingListOfInvoicesShouldBeSuccessful() {
         // GIVEN a list of invoices in the data source
         val twoInvoices = listOf(invoice1, invoice2)
-        localDataSource.insertOrUpdateInvoice(twoInvoices)
+        localDataSource.insertOrUpdateInvoices(twoInvoices)
 
         // WHEN update its data and insert into the data source again
         addProduct3ToInvoice(twoInvoices[0])
         addProduct3ToInvoice(twoInvoices[1])
-        localDataSource.insertOrUpdateInvoice(twoInvoices)
+        localDataSource.insertOrUpdateInvoices(twoInvoices)
 
         // SHOULD be able to retrieve it with the updated data
         localDataSource.getInvoices()

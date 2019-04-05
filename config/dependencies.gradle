@@ -83,6 +83,7 @@ ext {
             // FastAdapter
             "com.mikepenz:fastadapter:$fastAdapter",
             "com.mikepenz:fastadapter-extensions:$fastAdapter",
+            "com.mikepenz:itemanimators:1.1.0",
 
             // Misc
             "com.jakewharton.timber:timber:$timber",

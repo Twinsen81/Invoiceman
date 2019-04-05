@@ -28,6 +28,13 @@ class TheApp : Application() {
             Timber.plant(Timber.DebugTree())
 
         Realm.init(this)
+        // Clear the DB on the app start. Otherwise it becomes bloated with invoices since their IDs are generated
+        // randomly by the InvoiceBackendSimulation
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction {
+                it.deleteAll()
+            }
+        }
 
         startKoin {
             androidLogger(Level.DEBUG)
@@ -44,7 +51,7 @@ class TheApp : Application() {
             )
         }
 
-        InvoiceBackendSimulation.startServer(15, 2)
+        InvoiceBackendSimulation.startServer(7, 1)
     }
 
     companion object {

@@ -44,4 +44,5 @@ dependencies {
     releaseImplementation appReleaseDependencies
     debugImplementation appDebugDependencies
     kapt appKaptDependencies
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 }

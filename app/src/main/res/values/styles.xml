@@ -14,7 +14,7 @@
         <item name="android:textColorPrimary">#1A1A1A</item>
         <item name="android:textColorSecondary">@color/secondary_textcolor</item>
         <item name="android:statusBarColor">@color/secondaryDarkColor</item>
-        <item name="android:windowBackground">@drawable/seamless_background</item>
+        <item name="android:windowBackground">@drawable/loading_background</item>
     </style>
 
     <style name="StatusDialog" parent="Theme.MaterialComponents.Dialog">

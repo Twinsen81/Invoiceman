@@ -3,6 +3,8 @@ package com.evartem.data.local
 import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.data.local.model.ResultLocalModel
+import com.evartem.data.repository.InvoiceRepositoryResult
+import com.evartem.domain.entity.auth.User
 import io.reactivex.Single
 import io.realm.Realm
 import io.realm.kotlin.where
@@ -11,6 +13,30 @@ class InvoiceLocalDataSource {
 
     val isEmpty
         get() = Realm.getDefaultInstance().isEmpty
+
+    fun getInvoice(invoiceId: String): Single<InvoiceLocalModel> {
+        var invoice = InvoiceLocalModel()
+        Realm.getDefaultInstance().use { realm ->
+            // A detached from Realm copy of the invoice that won't be updated by Realm anymore
+            invoice = realm.copyFromRealm(
+                realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()!!
+            )
+        }
+        // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        invoice.sortProducts()
+        return Single.just(invoice)
+    }
+
+    fun assignInvoiceToUser(userId: String, invoiceId: String) {
+        Realm.getDefaultInstance().use { realm ->
+            // A detached from Realm copy of the invoice that won't be updated by Realm anymore
+            val invoice = realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()
+            if (invoice != null)
+                realm.executeTransaction {
+                    invoice.processedByUser = userId
+                }
+        }
+    }
 
     /**
      * Returns invoices that were saved locally on the device
@@ -21,9 +47,18 @@ class InvoiceLocalDataSource {
             // A detached from Realm copy of invoices that won't be updated by Realm anymore
             invoices = realm.copyFromRealm(realm.where<InvoiceLocalModel>().findAll())
         }
-        invoices.forEach { it.sortProducts() } // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        invoices.forEach { it.sortProducts() }
         return Single.just(invoices)
     }
+
+    fun deleteAllAndInsert(invoices: List<InvoiceLocalModel>) =
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction {
+                it.deleteAll()
+                it.insert(invoices)
+            }
+        }
 
     fun insertOrUpdateInvoice(invoice: InvoiceLocalModel) {
         Realm.getDefaultInstance().use { realm ->
@@ -33,7 +68,8 @@ class InvoiceLocalDataSource {
         }
     }
 
-    fun insertOrUpdateInvoice(invoices: List<InvoiceLocalModel>) {
+
+    fun insertOrUpdateInvoices(invoices: List<InvoiceLocalModel>) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransaction {
                 it.insertOrUpdate(invoices)

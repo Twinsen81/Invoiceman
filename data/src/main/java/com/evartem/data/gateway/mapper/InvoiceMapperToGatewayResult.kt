@@ -10,9 +10,20 @@ import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.domain.gateway.InvoiceGatewayResult
 
 class InvoiceMapperToGatewayResult {
+
     fun toGateway(repoResult: InvoiceRepositoryResult): InvoiceGatewayResult =
-        (repoResult as InvoiceRepositoryResult.InvoicesRequestResult).let {
-            InvoiceGatewayResult.InvoicesRequestResult(localToEntity(it.invoices), it.success, it.gatewayError)
+        when (repoResult) {
+            is InvoiceRepositoryResult.Invoices -> repoResult.let {
+                InvoiceGatewayResult.Invoices(localToEntity(it.invoices))
+            }
+            is InvoiceRepositoryResult.Invoice -> repoResult.let {
+                InvoiceGatewayResult.Invoice(localToEntity(it.invoice))
+            }
+            is InvoiceRepositoryResult.Error -> repoResult.let {
+                InvoiceGatewayResult.Error(it.gatewayError)
+            }
+            is InvoiceRepositoryResult.AcceptConfirmed -> InvoiceGatewayResult.AcceptConfirmed
+            is InvoiceRepositoryResult.ReturnConfirmed -> InvoiceGatewayResult.ReturnConfirmed
         }
 
     private fun localToEntity(localModel: List<InvoiceLocalModel>) =

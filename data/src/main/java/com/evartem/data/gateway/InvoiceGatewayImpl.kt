@@ -10,13 +10,22 @@ import io.reactivex.Observable
 
 class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository, val invoiceMapper: InvoiceMapperToGatewayResult) :
     InvoiceGateway {
+
     override fun getInvoicesForUser(user: User, refresh: Boolean): Observable<InvoiceGatewayResult> =
         invoiceRepository.getInvoicesForUser(user.id, refresh)
             .map { invoiceMapper.toGateway(it) }
 
-    override fun requestInvoiceForProcessing(user: User, invoice: Invoice): Observable<InvoiceGatewayResult> {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getInvoice(invoiceId: String): Observable<InvoiceGatewayResult> =
+        invoiceRepository.getInvoice(invoiceId)
+            .map { invoiceMapper.toGateway(it) }
+
+    override fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceGatewayResult> =
+        invoiceRepository.requestInvoiceForProcessing(user, invoiceId)
+            .map { invoiceMapper.toGateway(it) }
+
+    override fun requestInvoiceReturn(user: User, invoiceId: String): Observable<InvoiceGatewayResult> =
+        invoiceRepository.requestInvoiceReturn(user, invoiceId)
+            .map { invoiceMapper.toGateway(it) }
 
     override fun submitInvoicesWithResults(user: User, invoices: List<Invoice>): Observable<InvoiceGatewayResult> {
         TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
