@@ -6,15 +6,11 @@ import com.evartem.domain.entity.doc.ResultStatus
 
 class TestDataEntity {
 
-    lateinit var invoice1: Invoice
-    lateinit var invoice2: Invoice
+    val invoice1 = createTestInvoice1()
+    val invoice2 = createTestInvoice2()
+    val invoice1And2 = listOf(invoice1, invoice2)
 
-    init {
-        createTestInvoice1()
-        createTestInvoice2()
-    }
-
-    private fun createTestInvoice1() {
+    private fun createTestInvoice1(): Invoice {
 
         val product1 = Product(1, "6ES7322-1BL00-0AA0", "32 DI module", 3)
         val product2 =
@@ -32,7 +28,7 @@ class TestDataEntity {
 
         product2.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
 
-        invoice1 = Invoice(
+        return Invoice(
             "ABCDEFGHIJ",
             1,
             "01.01.2019",
@@ -44,7 +40,7 @@ class TestDataEntity {
         )
     }
 
-    private fun createTestInvoice2() {
+    private fun createTestInvoice2(): Invoice {
 
         val product1 = Product(1, "6ES7322-1BL00-0AA1", "32 DI module v1", 1)
         val product2 = Product(
@@ -57,7 +53,7 @@ class TestDataEntity {
         product1.addResult(ResultStatus.COMPLETED, product1SerialNumber3)
         product2.addResult(ResultStatus.COMPLETED, product1SerialNumber2)
 
-        invoice2 = Invoice(
+        return Invoice(
             "KLMNOPRSTU",
             2,
             "02.01.2019",

@@ -5,8 +5,6 @@ import com.evartem.data.repository.InvoiceRepository
 import com.evartem.data.repository.InvoiceRepositoryResult
 import com.evartem.data.util.TestDataEntity
 import com.evartem.data.util.TestDataLocalModel
-import com.evartem.domain.entity.auth.User
-import com.evartem.domain.gateway.GatewayError
 import com.evartem.domain.gateway.InvoiceGateway
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import io.reactivex.Observable
@@ -41,8 +39,8 @@ class InvoiceGatewayImplTest {
     @Test
     fun `Should receive and map a list of invoices from the repository`() {
         // GIVEN a repository that is ready to emit invoices as local model
-        val twoInvoicesAsLocal = listOf(testDataLocal.invoice1, testDataLocal.invoice2)
-        val twoInvoicesAsEntity = listOf(testDataEntity.invoice1, testDataEntity.invoice2)
+        val twoInvoicesAsLocal = testDataLocal.invoice1And2
+        val twoInvoicesAsEntity = testDataEntity.invoice1And2
 
         Mockito.`when`(invoiceRepository.getInvoicesForUser(testDataLocal.user.id, false))
             .thenReturn(Observable.just(InvoiceRepositoryResult.Invoices(twoInvoicesAsLocal)))

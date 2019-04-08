@@ -14,18 +14,20 @@ class TestDataLocalModel {
         "Test error message",
         IllegalArgumentException("Bad JSON data")
     )
-    lateinit var invoice1: InvoiceLocalModel
-    lateinit var invoice2: InvoiceLocalModel
-    lateinit var result1: ResultLocalModel
+    val invoice1 = createTestInvoice1()
+    val invoice2 = createTestInvoice2()
+    val invoice1And2 = listOf(invoice1, invoice2)
+    val invoice1Updated: InvoiceLocalModel
 
     val user = User("test@test.com")
 
     init {
-        createTestInvoice1()
-        createTestInvoice2()
+        invoice1Updated = createTestInvoice1()
+        invoice1Updated.number = 81
+        invoice1Updated.date = "09.04.2019"
     }
 
-    private fun createTestInvoice1() {
+    private fun createTestInvoice1(): InvoiceLocalModel {
 
         val product1 = ProductLocalModel(1, "6ES7322-1BL00-0AA0", "32 DI module", 3)
         val product2 =
@@ -34,8 +36,8 @@ class TestDataLocalModel {
         val product1SerialNumber2 = "SABC4567890"
         val product1SerialNumber3 = "345678"
 
-        result1 = ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber1)
-        product1.insertOrUpdateResult(result1)
+        // result1 = ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber1)
+        product1.insertOrUpdateResult(ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber1))
         product1.insertOrUpdateResult(ResultLocalModel(2, ResultStatusLocalModel(), product1SerialNumber2))
         product1.insertOrUpdateResult(
             ResultLocalModel(
@@ -47,7 +49,7 @@ class TestDataLocalModel {
         )
         product2.insertOrUpdateResult(ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber2))
 
-        invoice1 = InvoiceLocalModel(
+        val invoice = InvoiceLocalModel(
             "ABCDEFGHIJ",
             1,
             "01.01.2019",
@@ -56,11 +58,12 @@ class TestDataLocalModel {
             scanCopyUrl = "https://google.com",
             comment = "Urgent!"
         )
-        invoice1.products.add(product1)
-        invoice1.products.add(product2)
+        invoice.products.add(product1)
+        invoice.products.add(product2)
+        return invoice
     }
 
-    private fun createTestInvoice2() {
+    private fun createTestInvoice2(): InvoiceLocalModel {
 
         val product1 = ProductLocalModel(1, "6ES7322-1BL00-0AA1", "32 DI module v1", 1)
         val product2 =
@@ -71,7 +74,7 @@ class TestDataLocalModel {
         product1.insertOrUpdateResult(ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber3))
         product2.insertOrUpdateResult(ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber2))
 
-        invoice2 = InvoiceLocalModel(
+        val invoice = InvoiceLocalModel(
             "KLMNOPRSTU",
             2,
             "02.01.2019",
@@ -79,7 +82,8 @@ class TestDataLocalModel {
             processedByUser = "User2",
             scanCopyUrl = "https://google.com"
         )
-        invoice2.products.add(product1)
-        invoice2.products.add(product2)
+        invoice.products.add(product1)
+        invoice.products.add(product2)
+        return invoice
     }
 }

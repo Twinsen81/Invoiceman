@@ -103,8 +103,7 @@ class TestDataJson {
          }
       ],
       "processedByUser":"User2",
-      "scanCopyUrl":"https://google.com",
-      "comment":"Urgent!"
+      "scanCopyUrl":"https://google.com"
    }
 ]
     """
