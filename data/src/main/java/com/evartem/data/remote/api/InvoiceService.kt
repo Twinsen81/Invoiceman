@@ -22,5 +22,4 @@ interface InvoiceService {
         @Field("userid") userId: String,
         @Field("invoiceid") invoiceId: String
     ): Single<Response<Void>>
-
 }

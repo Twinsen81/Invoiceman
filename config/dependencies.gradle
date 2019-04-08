@@ -174,7 +174,8 @@ ext {
     dataTestDependencies = [
             "junit:junit:$jUnit",
             "org.mockito:mockito-core:$mockito",
-            "org.mockito:mockito-inline:$mockito"
+            "org.mockito:mockito-inline:$mockito",
+            "com.github.andrzejchm.RESTMock:android:$restMock"
     ]
     //endregion
 }
