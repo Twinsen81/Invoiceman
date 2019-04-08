@@ -14,7 +14,7 @@ class InvoiceMapperToGatewayResult {
     fun toGateway(repoResult: InvoiceRepositoryResult): InvoiceGatewayResult =
         when (repoResult) {
             is InvoiceRepositoryResult.Invoices -> repoResult.let {
-                InvoiceGatewayResult.Invoices(localToEntity(it.invoices))
+                InvoiceGatewayResult.Invoices(localToEntity(it.invoices), it.gatewayError)
             }
             is InvoiceRepositoryResult.Invoice -> repoResult.let {
                 InvoiceGatewayResult.Invoice(localToEntity(it.invoice))

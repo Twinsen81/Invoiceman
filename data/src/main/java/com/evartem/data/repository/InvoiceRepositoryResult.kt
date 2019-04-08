@@ -5,7 +5,10 @@ import com.evartem.domain.gateway.GatewayError
 
 sealed class InvoiceRepositoryResult {
 
-    data class Invoices(val invoices: List<InvoiceLocalModel>) : InvoiceRepositoryResult()
+    data class Invoices(
+        val invoices: List<InvoiceLocalModel>,
+        val gatewayError: GatewayError? = null
+    ) : InvoiceRepositoryResult()
 
     data class Invoice(val invoice: InvoiceLocalModel) : InvoiceRepositoryResult()
 

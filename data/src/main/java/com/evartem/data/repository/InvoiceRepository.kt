@@ -87,7 +87,8 @@ class InvoiceRepository(
             unitedInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
         }.toCollection(unitedInvoices)
 
-        return InvoiceRepositoryResult.Invoices(unitedInvoices)
+        return InvoiceRepositoryResult.Invoices(unitedInvoices,
+            if (remote is InvoiceRepositoryResult.Error) remote.gatewayError else null)
     }
 
     fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceRepositoryResult> =
