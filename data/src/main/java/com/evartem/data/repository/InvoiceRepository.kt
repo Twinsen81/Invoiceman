@@ -2,7 +2,6 @@ package com.evartem.data.repository
 
 import com.evartem.data.local.InvoiceLocalDataSource
 import com.evartem.data.local.model.InvoiceLocalModel
-import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.remote.api.InvoiceService
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.entity.auth.User
@@ -71,7 +70,8 @@ class InvoiceRepository(
     ): InvoiceRepositoryResult {
 
         val localInvoices = (local as InvoiceRepositoryResult.Invoices).invoices
-        val remoteInvoices = (remote as InvoiceRepositoryResult.Invoices).invoices
+        val remoteInvoices =
+            if (remote is InvoiceRepositoryResult.Invoices) remote.invoices else listOf()
         val unitedInvoices: MutableList<InvoiceLocalModel> = mutableListOf()
 
         // Keep local invoices that are:
