@@ -135,6 +135,30 @@ class InvoiceRepositoryTest {
     }
 
     @Test
+    fun `Given the same invoice in local & remote, should not update in local if being processed`() {
+        // GIVEN a remote data source with an invoice
+        Mockito.`when`(remoteDataSource.getInvoicesForUser(testDataLocal.user.id))
+            .thenReturn(Single.just(Response.success<List<InvoiceRemoteModel>>(listOf(testDataRemote.invoice1Updated))))
+
+        // and a non-empty local data source with the same invoice ID but different data and the invoice is
+        // being processed by the user
+        Mockito.`when`(localDataSource.getInvoices()).thenReturn(Single.just(listOf(testDataLocal.invoice1BeingProcessed)))
+        Mockito.`when`(localDataSource.isEmpty).thenReturn(false)
+
+        // WHEN request invoices from the repository with refresh=true
+        val testObserver =
+            repository.getInvoicesForUser(testDataLocal.user.id, true).test()
+
+        // SHOULD return the invoice in the local data source without updating it from the remote
+        Mockito.verify(localDataSource).getInvoices()
+        Mockito.verify(remoteDataSource).getInvoicesForUser(testDataLocal.user.id)
+        testObserver
+            .assertNoErrors()
+            .assertComplete()
+            .assertValue(InvoiceRepositoryResult.Invoices(listOf(testDataLocal.invoice1BeingProcessed)))
+    }
+
+    @Test
     fun `Given a non-empty local, when exception is thrown in remote, should return local and error info`() {
         // GIVEN a remote data source that throws an exception when called
         Mockito.`when`(remoteDataSource.getInvoicesForUser(testDataLocal.user.id))

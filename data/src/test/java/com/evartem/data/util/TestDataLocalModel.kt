@@ -18,6 +18,7 @@ class TestDataLocalModel {
     val invoice2 = createTestInvoice2()
     val invoice1And2 = listOf(invoice1, invoice2)
     val invoice1Updated: InvoiceLocalModel
+    val invoice1BeingProcessed: InvoiceLocalModel
 
     val user = User("test@test.com")
 
@@ -25,6 +26,9 @@ class TestDataLocalModel {
         invoice1Updated = createTestInvoice1()
         invoice1Updated.number = 81
         invoice1Updated.date = "09.04.2019"
+
+        invoice1BeingProcessed = createTestInvoice1()
+        invoice1BeingProcessed.processedByUser = user.id
     }
 
     private fun createTestInvoice1(): InvoiceLocalModel {
