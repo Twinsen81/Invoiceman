@@ -5,7 +5,7 @@ import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.local.model.ResultStatusLocalModel
-import com.evartem.data.local.util.TestData
+import com.evartem.data.local.util.TestDataLocalModel
 import com.evartem.invoiceman.TheApp
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -27,13 +27,13 @@ class InvoiceLocalDataSourceTest {
 
     private lateinit var localDataSource: InvoiceLocalDataSource
 
-    private lateinit var testData: TestData
+    private lateinit var testData: TestDataLocalModel
 
     @Before
     fun setup() {
         localDataSource = InvoiceLocalDataSource()
         initRealm()
-        testData = TestData()
+        testData = TestDataLocalModel()
     }
 
     private fun initRealm() {

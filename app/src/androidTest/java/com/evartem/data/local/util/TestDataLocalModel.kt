@@ -5,7 +5,7 @@ import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.local.model.ResultStatusLocalModel
 
-class TestData {
+class TestDataLocalModel {
 
     lateinit var invoice1: InvoiceLocalModel
     lateinit var invoice2: InvoiceLocalModel
