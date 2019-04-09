@@ -2,17 +2,21 @@ package com.evartem.invoiceman.invoices.mvi
 
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.interactor.GetInvoicesForUserUseCase
+import com.evartem.domain.interactor.Schedulers
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.DateParser
 import com.evartem.invoiceman.util.SessionManager
+import com.evartem.invoiceman.util.SubscribeIoObserveUi
 import io.reactivex.Observable
 import timber.log.Timber
 
 class InvoicesViewModel(
     private val sessionManager: SessionManager,
-    private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase
+    private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase,
+    schedulers: Schedulers = SubscribeIoObserveUi()
 ) :
     MviViewModel<InvoicesUiState, InvoicesUiEffect, InvoicesEvent, InvoicesViewModelResult>(
+        schedulers,
         InvoicesEvent.LoadScreen(reloadFromServer = true),
         InvoicesUiState(isLoading = true)
     ) {
