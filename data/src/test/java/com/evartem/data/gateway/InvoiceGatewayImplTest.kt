@@ -54,6 +54,8 @@ class InvoiceGatewayImplTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.Invoices(twoInvoicesAsEntity))
+
+        testObserver.dispose()
     }
 
     @Test
@@ -71,6 +73,8 @@ class InvoiceGatewayImplTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.Invoice(testDataEntity.invoice1))
+
+        testObserver.dispose()
     }
 
     @Test
@@ -89,6 +93,8 @@ class InvoiceGatewayImplTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.AcceptConfirmed)
+
+        testObserver.dispose()
     }
 
     @Test
@@ -107,6 +113,8 @@ class InvoiceGatewayImplTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.ReturnConfirmed)
+
+        testObserver.dispose()
     }
 
     @Test
@@ -123,5 +131,7 @@ class InvoiceGatewayImplTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.Error(testDataLocal.error))
+
+        testObserver.dispose()
     }
 }

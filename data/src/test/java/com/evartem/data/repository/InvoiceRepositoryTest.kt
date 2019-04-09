@@ -60,6 +60,8 @@ class InvoiceRepositoryTest {
             .assertValue(InvoiceRepositoryResult.Invoices(testDataLocal.invoice1And2))
         // and insert them into the local data source
         Mockito.verify(localDataSource).deleteAllAndInsert(testDataLocal.invoice1And2)
+
+        testObserver.dispose()
     }
 
     @Test
@@ -83,6 +85,8 @@ class InvoiceRepositoryTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceRepositoryResult.Invoices(listOf(testDataLocal.invoice1)))
+
+        testObserver.dispose()
     }
 
     @Test
@@ -106,6 +110,8 @@ class InvoiceRepositoryTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceRepositoryResult.Invoices(testDataLocal.invoice1And2))
+
+        testObserver.dispose()
     }
 
     @Test
@@ -132,6 +138,8 @@ class InvoiceRepositoryTest {
             .assertValue(InvoiceRepositoryResult.Invoices(listOf(testDataLocal.invoice1Updated)))
         // and insert it into the local data source
         Mockito.verify(localDataSource).deleteAllAndInsert(listOf(testDataLocal.invoice1Updated))
+
+        testObserver.dispose()
     }
 
     @Test
@@ -156,6 +164,8 @@ class InvoiceRepositoryTest {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceRepositoryResult.Invoices(listOf(testDataLocal.invoice1BeingProcessed)))
+
+        testObserver.dispose()
     }
 
     @Test
@@ -183,5 +193,7 @@ class InvoiceRepositoryTest {
                 it is InvoiceRepositoryResult.Invoices &&
                         it.gatewayError?.exception?.message == "Test exception"
             }
+
+        testObserver.dispose()
     }
 }

@@ -31,5 +31,7 @@ class GetInvoicesForUserUseCaseTest : BaseUseCaseTest() {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.Invoices(twoInvoices))
+
+        testObserver.dispose()
     }
 }

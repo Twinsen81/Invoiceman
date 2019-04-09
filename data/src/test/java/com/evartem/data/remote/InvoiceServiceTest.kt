@@ -52,5 +52,7 @@ class InvoiceServiceTest {
             .assertValue { response ->
                 response.body() == listOf(testDataRemote.invoice1, testDataRemote.invoice2)
             }
+
+        testObserver.dispose()
     }
 }

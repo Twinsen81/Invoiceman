@@ -30,5 +30,7 @@ class RequestInvoiceReturnUseCaseTest : BaseUseCaseTest() {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.ReturnConfirmed)
+
+        testObserver.dispose()
     }
 }

@@ -30,5 +30,7 @@ class GetInvoiceUseCaseTest : BaseUseCaseTest() {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.Invoice(testData.invoice1))
+
+        testObserver.dispose()
     }
 }

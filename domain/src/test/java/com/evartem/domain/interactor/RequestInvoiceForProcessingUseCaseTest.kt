@@ -30,5 +30,7 @@ class RequestInvoiceForProcessingUseCaseTest : BaseUseCaseTest() {
             .assertNoErrors()
             .assertComplete()
             .assertValue(InvoiceGatewayResult.AcceptConfirmed)
+
+        testObserver.dispose()
     }
 }
