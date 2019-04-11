@@ -1,7 +1,6 @@
 package com.evartem.invoiceman.base
 
 import androidx.lifecycle.ViewModel
-import com.evartem.domain.interactor.Schedulers
 import com.evartem.invoiceman.util.stackToString
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -10,7 +9,7 @@ import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 
 abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
-    (private val schedulers: Schedulers, private val startingEvent: Event, private val startingUiState: UiState) : ViewModel() {
+    (private val startingEvent: Event, private val startingUiState: UiState) : ViewModel() {
 
     private val events: PublishSubject<Event> = PublishSubject.create()
 
@@ -47,8 +46,6 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
         Timber.d("MVI-Init")
 
         eventsDisposable = events
-//            .subscribeOn(schedulers.subscribeOn)
-//            .observeOn(schedulers.observeOn)
             .startWith(startingEvent)
             .doOnNext { Timber.d("MVI-Event: $it, thread: .doOnNext ${Thread.currentThread()}") }
             .flatMap { event -> eventToResult(event) }

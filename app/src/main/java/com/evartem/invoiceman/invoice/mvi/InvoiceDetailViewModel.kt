@@ -4,21 +4,17 @@ import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.interactor.GetInvoiceUseCase
 import com.evartem.domain.interactor.RequestInvoiceForProcessingUseCase
 import com.evartem.domain.interactor.RequestInvoiceReturnUseCase
-import com.evartem.domain.interactor.Schedulers
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.SessionManager
-import com.evartem.invoiceman.util.SubscribeIoObserveUi
 import io.reactivex.Observable
 
 class InvoiceDetailViewModel(
     private val sessionManager: SessionManager,
     private val getInvoiceUseCase: GetInvoiceUseCase,
     private val requestProcessingUseCase: RequestInvoiceForProcessingUseCase,
-    private val requestReturnUseCase: RequestInvoiceReturnUseCase,
-    schedulers: Schedulers = SubscribeIoObserveUi()
+    private val requestReturnUseCase: RequestInvoiceReturnUseCase
 ) :
     MviViewModel<InvoiceDetailUiState, InvoiceDetailUiEffect, InvoiceDetailEvent, InvoiceDetailViewModelResult>(
-        schedulers,
         InvoiceDetailEvent.LoadScreen,
         InvoiceDetailUiState.EmptyUiState
     ) {
