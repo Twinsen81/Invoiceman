@@ -3,12 +3,18 @@ package com.evartem.invoiceman.invoices.mvi.util
 import com.evartem.domain.entity.doc.Invoice
 import com.evartem.domain.entity.doc.Product
 import com.evartem.domain.entity.doc.ResultStatus
+import com.evartem.domain.gateway.GatewayError
 
 class TestDataEntity {
 
     val invoice1 = createTestInvoice1()
     val invoice2 = createTestInvoice2()
     val invoice1And2 = listOf(invoice1, invoice2)
+    val gatewayError = GatewayError(
+        GatewayError.ErrorCode.INTERNAL_SERVER_ERROR,
+        "The server said some gibberish",
+        RuntimeException("Meaningless response from the server")
+    )
 
     private fun createTestInvoice1(): Invoice {
 

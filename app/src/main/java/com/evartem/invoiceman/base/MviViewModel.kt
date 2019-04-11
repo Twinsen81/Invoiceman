@@ -47,12 +47,13 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
         Timber.d("MVI-Init")
 
         eventsDisposable = events
-            .subscribeOn(schedulers.observeOn)
+//            .subscribeOn(schedulers.subscribeOn)
+//            .observeOn(schedulers.observeOn)
             .startWith(startingEvent)
-            .doOnNext { Timber.d("MVI-Event: $it") }
+            .doOnNext { Timber.d("MVI-Event: $it, thread: .doOnNext ${Thread.currentThread()}") }
             .flatMap { event -> eventToResult(event) }
             .filter { event -> shouldUpdateUiState(event) }
-            .doOnNext { Timber.d("MVI-Result: $it") }
+            .doOnNext { Timber.d("MVI-Result: $it, thread: .doOnNext ${Thread.currentThread()}") }
             .scan(startingUiState) { previousUiState, newResult ->
                 reduceUiState(previousUiState, newResult)
             }
