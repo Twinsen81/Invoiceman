@@ -22,4 +22,3 @@ class GetInvoicesForUserUseCase(schedulers: Schedulers, private val gateway: Inv
         return gateway.getInvoicesForUser(user = param.first, refresh = param.second)
     }
 }
-
