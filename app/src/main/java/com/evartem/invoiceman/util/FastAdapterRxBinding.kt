@@ -15,6 +15,9 @@ fun <T : IItem<*, *>> FastAdapter<T>.itemClicks(): Observable<T> {
     return FastAdapterClickObservable(this)
 }
 
+/**
+ * RxBinding for the [FastAdapter] class. Converts onClick callback to an Observable.
+ */
 private class FastAdapterClickObservable<T : IItem<*, *>>(
     private val adapter: FastAdapter<T>
 ) : Observable<T>() {

@@ -10,6 +10,12 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
+/**
+ * Create the Retrofit implementation of the [InvoiceService] interface.
+ *
+ * @param baseUrl the URL of the REST server
+ * @param debug enable BODY-level logging
+ */
 fun createInvoiceNetworkClient(baseUrl: String, debug: Boolean): InvoiceService =
     Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -19,8 +25,7 @@ fun createInvoiceNetworkClient(baseUrl: String, debug: Boolean): InvoiceService 
         .build()
         .create(InvoiceService::class.java)
 
-fun createHttpClient(debug: Boolean, connectTimeout: Long = 5, readTimeout: Long = 10): OkHttpClient
-{
+fun createHttpClient(debug: Boolean, connectTimeout: Long = 5, readTimeout: Long = 10): OkHttpClient {
     val httpClientBuilder = OkHttpClient.Builder()
         .connectTimeout(connectTimeout, TimeUnit.SECONDS)
         .readTimeout(readTimeout, TimeUnit.SECONDS)

@@ -5,6 +5,9 @@ import com.evartem.domain.gateway.GatewayError
 import com.evartem.domain.gateway.GatewayErrorCode
 import com.evartem.invoiceman.R
 
+/**
+ * Error codes of the app as translatable string resources.
+ */
 fun getErrorMessageForUi(resources: Resources, gatewayError: GatewayError?): String {
     if (gatewayError == null) return R.string.network_error_general.resToString(resources).format(0)
     return when (gatewayError.code) {

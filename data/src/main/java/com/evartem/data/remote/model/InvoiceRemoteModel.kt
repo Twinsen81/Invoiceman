@@ -1,6 +1,9 @@
 package com.evartem.data.remote.model
 
-data class InvoiceRemoteModel (
+/**
+ * A DTO class for domain Invoice objects used in exchange with the server.
+ */
+data class InvoiceRemoteModel(
     val id: String,
     val number: Int,
     val date: String,

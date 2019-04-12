@@ -4,6 +4,10 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
+/**
+ * A DTO class for storing locally (caching) the domain Invoice objects
+ * Implemented as a Realm object.
+ */
 open class InvoiceLocalModel(
     @PrimaryKey var id: String = "",
     var number: Int = 0,

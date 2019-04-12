@@ -28,7 +28,7 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
 
     protected fun addUiEvent(event: Observable<Event>) = uiEvents.add(event)
 
-    protected fun subscribeToViewModel() {
+    private fun subscribeToViewModel() {
         getUiStateObservable()?.apply {
             observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ uiState ->

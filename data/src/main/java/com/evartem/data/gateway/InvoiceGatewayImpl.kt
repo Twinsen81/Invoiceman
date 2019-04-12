@@ -2,12 +2,20 @@ package com.evartem.data.gateway
 
 import com.evartem.data.gateway.mapper.InvoiceMapperToGatewayResult
 import com.evartem.data.repository.InvoiceRepository
+import com.evartem.data.repository.InvoiceRepositoryResult
 import com.evartem.domain.entity.auth.User
 import com.evartem.domain.entity.doc.Invoice
 import com.evartem.domain.gateway.InvoiceGateway
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import io.reactivex.Observable
 
+/**
+ * An [InvoiceGateway] interface implementation that just forwards all requests to repository and maps the
+ * return values from [InvoiceRepositoryResult] to [InvoiceGatewayResult].
+ *
+ * @property invoiceRepository the repository instance to do the actual work.
+ * @property invoiceMapper the mapper for repository -> entity data mapping
+ */
 class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository, val invoiceMapper: InvoiceMapperToGatewayResult) :
     InvoiceGateway {
 

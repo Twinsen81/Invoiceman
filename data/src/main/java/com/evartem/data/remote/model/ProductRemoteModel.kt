@@ -1,5 +1,8 @@
 package com.evartem.data.remote.model
 
+/**
+ * A DTO class for domain Product objects used in exchange with the server.
+ */
 data class ProductRemoteModel(
     val id: Int,
     val article: String,

@@ -3,6 +3,10 @@ package com.evartem.data.repository
 import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.domain.gateway.GatewayError
 
+/**
+ * Defines the types of results that gateway receives from the repository.
+ * See [com.evartem.domain.gateway.InvoiceGatewayResult] for details.
+ */
 sealed class InvoiceRepositoryResult {
 
     data class Invoices(

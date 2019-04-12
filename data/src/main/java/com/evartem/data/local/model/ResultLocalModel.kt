@@ -3,6 +3,10 @@ package com.evartem.data.local.model
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
+/**
+ * A DTO class for storing locally (caching) the domain Result objects
+ * Implemented as a Realm object.
+ */
 open class ResultLocalModel(
     var id: Int = 0,
     var status: ResultStatusLocalModel? = null,

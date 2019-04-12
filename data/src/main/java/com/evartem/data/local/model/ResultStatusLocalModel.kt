@@ -2,6 +2,10 @@ package com.evartem.data.local.model
 
 import io.realm.RealmObject
 
+/**
+ * A DTO class for storing locally (caching) the domain ResultStatus objects
+ * Implemented as a Realm object.
+ */
 open class ResultStatusLocalModel(
     /**
      * status = 0 = [com.evartem.domain.entity.doc.ResultStatus.COMPLETED]

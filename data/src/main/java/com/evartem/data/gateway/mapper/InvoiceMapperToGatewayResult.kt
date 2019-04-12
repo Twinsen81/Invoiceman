@@ -9,6 +9,9 @@ import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.domain.gateway.InvoiceGatewayResult
 
+/**
+ * Maps data from repository types (local model) to entity types.
+ */
 class InvoiceMapperToGatewayResult {
 
     fun toGateway(repoResult: InvoiceRepositoryResult): InvoiceGatewayResult =
