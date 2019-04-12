@@ -100,10 +100,7 @@ ext {
     ]
 
     appInstrumentationTestDependencies = [
-            //"androidx.test:core:$testCore",
-            //"androidx.test.ext:junit:$testJunit",
             "androidx.test:runner:$testRunner",
-            //"androidx.test.espresso:espresso-core:$espresso",
             "io.reactivex.rxjava2:rxkotlin:$rxKotlin",
             "com.squareup.retrofit2:retrofit:$retrofit",
     ]
