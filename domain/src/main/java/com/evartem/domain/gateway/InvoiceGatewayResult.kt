@@ -11,6 +11,7 @@ sealed class InvoiceGatewayResult {
 
     object AcceptConfirmed : InvoiceGatewayResult()
     object ReturnConfirmed : InvoiceGatewayResult()
+    object SubmitSucceeded : InvoiceGatewayResult()
 
     data class Error(val gatewayError: GatewayError) : InvoiceGatewayResult()
 }
