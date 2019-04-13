@@ -9,12 +9,15 @@ import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.domain.gateway.InvoiceGatewayResult
 
+/**
+ * Maps data from repository types (local model) to entity types.
+ */
 class InvoiceMapperToGatewayResult {
 
     fun toGateway(repoResult: InvoiceRepositoryResult): InvoiceGatewayResult =
         when (repoResult) {
             is InvoiceRepositoryResult.Invoices -> repoResult.let {
-                InvoiceGatewayResult.Invoices(localToEntity(it.invoices))
+                InvoiceGatewayResult.Invoices(localToEntity(it.invoices), it.gatewayError)
             }
             is InvoiceRepositoryResult.Invoice -> repoResult.let {
                 InvoiceGatewayResult.Invoice(localToEntity(it.invoice))
@@ -35,13 +38,13 @@ class InvoiceMapperToGatewayResult {
             localModel.number,
             localModel.date,
             localModel.seller,
-            localModel.products.toList().map { productRemoteToLocal(it) },
+            localModel.products.toList().map { productLocalToEntity(it) },
             localModel.processedByUser,
             localModel.scanCopyUrl,
             localModel.comment
         )
 
-    private fun productRemoteToLocal(localProduct: ProductLocalModel) =
+    private fun productLocalToEntity(localProduct: ProductLocalModel) =
         Product(
             localProduct.id,
             localProduct.article,

@@ -7,6 +7,10 @@ import com.bumptech.glide.Glide
 import com.evartem.invoiceman.R
 import kotlinx.android.synthetic.main.dialog_status.*
 
+/**
+ * A modal dialog with an infinite progress bar to display when long running (e.g. network) operations are
+ * under way.
+ */
 class StatusDialog(context: Context) {
     private val dialog: Dialog by lazy { createDialog(context) }
 
@@ -22,8 +26,10 @@ class StatusDialog(context: Context) {
         return dialog
     }
 
-    fun show(text: String)
-    {
+    /**
+     * Show the dialog with the specified [text] as the title.
+     */
+    fun show(text: String) {
         dialog.loading_text.text = text
         dialog.show()
     }

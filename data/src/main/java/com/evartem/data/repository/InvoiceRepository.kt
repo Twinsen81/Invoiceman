@@ -2,24 +2,48 @@ package com.evartem.data.repository
 
 import com.evartem.data.local.InvoiceLocalDataSource
 import com.evartem.data.local.model.InvoiceLocalModel
-import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.remote.api.InvoiceService
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.entity.auth.User
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 
+/**
+ * The repository pattern implementation that caches data locally on the device.
+ *
+ * @property localDataSource the local data source implementation
+ * @property remoteDataSource the remote data source implementation
+ * @property mapperToRepoResult a DTO mapper form remote to local and vice versa
+ */
 class InvoiceRepository(
     private val localDataSource: InvoiceLocalDataSource,
     private val remoteDataSource: InvoiceService,
     private val mapperToRepoResult: InvoiceMapperToRepoResult
 ) {
 
+    /**
+     * Get the invoice ([invoiceId]) from the local data source.
+     *
+     * returns either [InvoiceRepositoryResult.Invoice] or [InvoiceRepositoryResult.Error] if the given
+     * [invoiceId] isn't found.
+     */
     fun getInvoice(invoiceId: String): Observable<InvoiceRepositoryResult> =
-        localDataSource.getInvoice(invoiceId)
-            .map { invoice -> mapperToRepoResult.localToResult(invoice) }
-            .toObservable()
+        try {
+            localDataSource.getInvoice(invoiceId)
+                .map { invoice -> mapperToRepoResult.localToResult(invoice) }
+                .toObservable()
+        } catch (exception: Throwable) {
+            Observable.just(mapperToRepoResult.errorFromException(exception))
+        }
 
+    /**
+     * Get invoices that the user ([userId]) is allowed to process or has already accepted for processing.
+     * the invoices are taken from the local data source unless [refresh] = true or the local data source is empty
+     *
+     * @return the list of invoices as [InvoiceRepositoryResult.Invoices] (with an optional error info inside
+     * if [refresh]=true and request to the server failed) or [InvoiceRepositoryResult.Error] if there's no locally
+     * cached invoices and request to the server failed, or if failed to process the server's response.
+     */
     fun getInvoicesForUser(userId: String, refresh: Boolean = false): Observable<InvoiceRepositoryResult> {
 
         var refreshFromServer = refresh
@@ -43,6 +67,7 @@ class InvoiceRepository(
             } else
                 Observable.just(InvoiceRepositoryResult.Invoices(listOf()))
 
+        // Unite th two data sources into one Observable
         return Observable.zip(localResult, remoteResult,
             BiFunction { local: InvoiceRepositoryResult, remote: InvoiceRepositoryResult ->
                 joinLocalAndRemoteResults(local, remote, userId)
@@ -71,7 +96,8 @@ class InvoiceRepository(
     ): InvoiceRepositoryResult {
 
         val localInvoices = (local as InvoiceRepositoryResult.Invoices).invoices
-        val remoteInvoices = (remote as InvoiceRepositoryResult.Invoices).invoices
+        val remoteInvoices =
+            if (remote is InvoiceRepositoryResult.Invoices) remote.invoices else listOf()
         val unitedInvoices: MutableList<InvoiceLocalModel> = mutableListOf()
 
         // Keep local invoices that are:
@@ -87,9 +113,17 @@ class InvoiceRepository(
             unitedInvoices.none { localInvoice -> localInvoice.id == remoteInvoice.id }
         }.toCollection(unitedInvoices)
 
-        return InvoiceRepositoryResult.Invoices(unitedInvoices)
+        return InvoiceRepositoryResult.Invoices(
+            unitedInvoices,
+            if (remote is InvoiceRepositoryResult.Error) remote.gatewayError else null
+        )
     }
 
+    /**
+     * Ask the server if the [user] is allowed to process the invoice ([invoiceId]).
+     *
+     * @return [InvoiceRepositoryResult.AcceptConfirmed] if the request succeeded or [InvoiceRepositoryResult.Error] otherwise
+     */
     fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceRepositoryResult> =
         try {
             remoteDataSource.requestInvoiceForProcessing(user.id, invoiceId)
@@ -102,6 +136,11 @@ class InvoiceRepository(
             Observable.just(mapperToRepoResult.errorFromException(exception))
         }
 
+    /**
+     * Return the invoice back to the server so someone else could request it for processing.
+     *
+     * @return [InvoiceRepositoryResult.ReturnConfirmed] if the request succeeded or [InvoiceRepositoryResult.Error] otherwise
+     */
     fun requestInvoiceReturn(user: User, invoiceId: String): Observable<InvoiceRepositoryResult> =
         try {
             remoteDataSource.requestInvoiceReturn(user.id, invoiceId)
@@ -114,6 +153,9 @@ class InvoiceRepository(
             Observable.just(mapperToRepoResult.errorFromException(exception))
         }
 
+    /**
+     * Perform the "request for processing"/"request return" actions in the local data source.
+     */
     private fun assignInvoiceToUserInLocalDatasource(
         requestResult: InvoiceRepositoryResult,
         userId: String,

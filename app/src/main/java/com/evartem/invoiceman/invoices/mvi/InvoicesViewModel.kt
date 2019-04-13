@@ -60,8 +60,13 @@ class InvoicesViewModel(
             newUiState.isRefreshing = false
             newUiState.isLoading = false
 
-            if (newResult.gatewayResult is InvoiceGatewayResult.Invoices)
+            if (newResult.gatewayResult is InvoiceGatewayResult.Invoices) {
                 newUiState.invoices = newResult.gatewayResult.invoices.toMutableList()
+                newResult.gatewayResult.gatewayError?.let {
+                    Timber.d("### addEffect! - ${Thread.currentThread()}")
+                    addUiEffect(InvoicesUiEffect.Error(it))
+                }
+            }
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Error)
                 addUiEffect(InvoicesUiEffect.Error(newResult.gatewayResult.gatewayError))

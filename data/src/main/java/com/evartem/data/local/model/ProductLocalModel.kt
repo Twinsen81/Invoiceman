@@ -3,6 +3,10 @@ package com.evartem.data.local.model
 import io.realm.RealmList
 import io.realm.RealmObject
 
+/**
+ * A DTO class for storing locally (caching) the domain Product objects.
+ * Implemented as a Realm object.
+ */
 open class ProductLocalModel(
     var id: Int = 0,
     var article: String = "",
@@ -14,7 +18,7 @@ open class ProductLocalModel(
     var equalSerialNumbersAreOk: Boolean = false,
     var results: RealmList<ResultLocalModel> = RealmList(),
     var serialNumberPattern: String? = null
-): RealmObject() {
+) : RealmObject() {
 
     fun insertOrUpdateResult(newResult: ResultLocalModel) {
         val resultToUpdate = results.find { it.id == newResult.id }
@@ -34,9 +38,8 @@ open class ProductLocalModel(
         results.clear()
     }
 
-
     fun sortResults() {
-        results.sortWith(compareBy {it.id})
+        results.sortWith(compareBy { it.id })
     }
 
     override fun equals(other: Any?): Boolean {

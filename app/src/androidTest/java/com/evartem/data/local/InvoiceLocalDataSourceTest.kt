@@ -5,6 +5,7 @@ import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.local.model.ResultStatusLocalModel
+import com.evartem.data.local.util.TestDataLocalModel
 import com.evartem.invoiceman.TheApp
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -23,22 +24,20 @@ class InvoiceLocalDataSourceTest {
     val exception: ExpectedException = ExpectedException.none()
 
     private lateinit var realm: Realm
+
     private lateinit var localDataSource: InvoiceLocalDataSource
 
-    private lateinit var invoice1: InvoiceLocalModel
-    private lateinit var invoice2: InvoiceLocalModel
-    private lateinit var result1: ResultLocalModel
+    private lateinit var testData: TestDataLocalModel
 
     @Before
     fun setup() {
         localDataSource = InvoiceLocalDataSource()
         initRealm()
-        createTestInvoice1()
-        createTestInvoice2()
+        testData = TestDataLocalModel()
     }
 
     private fun initRealm() {
-        Realm.init(TheApp.get())//InstrumentationRegistry.getInstrumentation().context)
+        Realm.init(TheApp.get())
         val realmConfiguration = RealmConfiguration.Builder()
             .inMemory()
             .name("test-realm")
@@ -58,21 +57,21 @@ class InvoiceLocalDataSourceTest {
     fun insertedInvoiceShouldBeSuccessfullyRetrieved() {
         // GIVEN an invoice
         // WHEN insert it into the local data source
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // SHOULD be able to retrieve it with the same data
         localDataSource.getInvoices()
             .test()
             .assertNoErrors()
             .assertValue { retrievedInvoice: List<InvoiceLocalModel> ->
-                retrievedInvoice[0] == invoice1
+                retrievedInvoice[0] == testData.invoice1
             }
     }
 
     @Test
     fun insertedListOfInvoicesShouldBeSuccessfullyRetrieved() {
         // GIVEN a list of invoices
-        val twoInvoices = listOf(invoice1, invoice2)
+        val twoInvoices = listOf(testData.invoice1, testData.invoice2)
 
         // WHEN insert that list into the local data source
         localDataSource.insertOrUpdateInvoices(twoInvoices)
@@ -89,25 +88,25 @@ class InvoiceLocalDataSourceTest {
     @Test
     fun updatingInvoiceShouldBeSuccessful() {
         // GIVEN an invoice in the data source
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN update its data and insert into the data source again
-        addProduct3ToInvoice(invoice1)
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        addProduct3ToInvoice(testData.invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // SHOULD be able to retrieve it with the updated data
         localDataSource.getInvoices()
             .test()
             .assertNoErrors()
             .assertValue { retrievedInvoice: List<InvoiceLocalModel> ->
-                retrievedInvoice[0] == invoice1
+                retrievedInvoice[0] == testData.invoice1
             }
     }
 
     @Test
     fun updatingListOfInvoicesShouldBeSuccessful() {
         // GIVEN a list of invoices in the data source
-        val twoInvoices = listOf(invoice1, invoice2)
+        val twoInvoices = listOf(testData.invoice1, testData.invoice2)
         localDataSource.insertOrUpdateInvoices(twoInvoices)
 
         // WHEN update its data and insert into the data source again
@@ -127,11 +126,11 @@ class InvoiceLocalDataSourceTest {
     @Test
     fun insertedResultShouldBeSuccessfullyRetrieved() {
         // GIVEN an invoice in the data source, and a new result for that invoice
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
         val newResult = ResultLocalModel(2, ResultStatusLocalModel(), "S0123456789")
 
         // WHEN insert the result into the invoice
-        localDataSource.insertOrUpdateResult(invoice1.id, 2, newResult)
+        localDataSource.insertOrUpdateResult(testData.invoice1.id, 2, newResult)
 
         // SHOULD be able to retrieve the invoice with the new result
         localDataSource.getInvoices()
@@ -147,7 +146,7 @@ class InvoiceLocalDataSourceTest {
     @Test
     fun insertingResultWithUnknownInvoiceShouldFail() {
         // GIVEN an invoice in the data source, and a new result for that invoice
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
         val newResult = ResultLocalModel(2, ResultStatusLocalModel(), "S0123456789")
 
         // WHEN insert the result into a non-existent invoice
@@ -159,23 +158,23 @@ class InvoiceLocalDataSourceTest {
     @Test
     fun insertingResultWithUnknownProductShouldFail() {
         // GIVEN an invoice in the data source, and a new result for that invoice
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
         val newResult = ResultLocalModel(2, ResultStatusLocalModel(), "S0123456789")
 
         // WHEN insert the result into a non-existent product
         // SHOULD throw an IllegalArgumentException
         exception.expect(IllegalArgumentException::class.java)
-        localDataSource.insertOrUpdateResult(invoice1.id, 9999, newResult)
+        localDataSource.insertOrUpdateResult(testData.invoice1.id, 9999, newResult)
     }
 
     @Test
     fun updatingResultShouldBeSuccessful() {
         // GIVEN an invoice in the data source with a result
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN update the result's data and insert into the data source again
         val updatedResult = ResultLocalModel(1, ResultStatusLocalModel(1), null, "Not found")
-        localDataSource.insertOrUpdateResult(invoice1.id, 1, updatedResult)
+        localDataSource.insertOrUpdateResult(testData.invoice1.id, 1, updatedResult)
 
         // SHOULD be able to retrieve the invoice with the updated result
         localDataSource.getInvoices()
@@ -191,10 +190,10 @@ class InvoiceLocalDataSourceTest {
     @Test
     fun deletingResultShouldBeSuccessful() {
         // GIVEN an invoice in the data source with some results
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN deleting a result form the invoice
-        localDataSource.deleteResult(invoice1.id, 1, result1)
+        localDataSource.deleteResult(testData.invoice1.id, 1, testData.result1)
 
         // SHOULD retrieve the invoice without the deleted result
         localDataSource.getInvoices()
@@ -203,39 +202,39 @@ class InvoiceLocalDataSourceTest {
             .assertValue { retrievedInvoice: List<InvoiceLocalModel> ->
                 retrievedInvoice[0].products
                     .first { product -> product.id == 1 }
-                    .results.none { result -> result.id == result1.id }
+                    .results.none { result -> result.id == testData.result1.id }
             }
     }
 
     @Test
     fun deletingResultWithUnknownInvoiceShouldFail() {
         // GIVEN an invoice in the data source with some results
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN delete a result from a non-existent invoice
         // SHOULD throw an IllegalArgumentException
         exception.expect(IllegalArgumentException::class.java)
-        localDataSource.deleteResult("no-such-id", 1, result1)
+        localDataSource.deleteResult("no-such-id", 1, testData.result1)
     }
 
     @Test
     fun deletingResultWithUnknownProductShouldFail() {
         // GIVEN an invoice in the data source with some results
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN delete a result from a non-existent product
         // SHOULD throw an IllegalArgumentException
         exception.expect(IllegalArgumentException::class.java)
-        localDataSource.deleteResult(invoice1.id, 9999, result1)
+        localDataSource.deleteResult(testData.invoice1.id, 9999, testData.result1)
     }
 
     @Test
     fun deletingAllResultsShouldBeSuccessful() {
         // GIVEN an invoice in the data source with some results
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN delete all results from the invoice for a product
-        localDataSource.deleteAllResults(invoice1.id, 1)
+        localDataSource.deleteAllResults(testData.invoice1.id, 1)
 
         // SHOULD retrieve the invoice with the product containing no results
         localDataSource.getInvoices()
@@ -251,7 +250,7 @@ class InvoiceLocalDataSourceTest {
     @Test
     fun deletingAllResultsWithUnknownInvoiceShouldFail() {
         // GIVEN an invoice in the data source with some results
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN delete all results from a non-existent invoice
         // SHOULD throw an IllegalArgumentException
@@ -262,73 +261,15 @@ class InvoiceLocalDataSourceTest {
     @Test
     fun deletingAllResultsWithUnknownProductShouldFail() {
         // GIVEN an invoice in the data source with some results
-        localDataSource.insertOrUpdateInvoice(invoice1)
+        localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN delete all results from a non-existent product
         // SHOULD throw an IllegalArgumentException
         exception.expect(IllegalArgumentException::class.java)
-        localDataSource.deleteAllResults(invoice1.id, 9999)
+        localDataSource.deleteAllResults(testData.invoice1.id, 9999)
     }
 
     //region HELPER METHODS
-    private fun createTestInvoice1() {
-
-        val product1 = ProductLocalModel(1, "6ES7322-1BL00-0AA0", "32 DI module", 3)
-        val product2 =
-            ProductLocalModel(2, "6ES7322-1BL00-0AA0", "32 DI module", 2, serialNumberPattern = "S[A-Z\\d]{10}")
-        val product1SerialNumber1 = "123456"
-        val product1SerialNumber2 = "SABC4567890"
-        val product1SerialNumber3 = "345678"
-
-        result1 = ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber1)
-        product1.insertOrUpdateResult(result1)
-        product1.insertOrUpdateResult(ResultLocalModel(2, ResultStatusLocalModel(), product1SerialNumber2))
-        product1.insertOrUpdateResult(
-            ResultLocalModel(
-                3,
-                ResultStatusLocalModel(1),
-                product1SerialNumber3,
-                "Blurred serial"
-            )
-        )
-        product2.insertOrUpdateResult(ResultLocalModel(1, ResultStatusLocalModel(), product1SerialNumber2))
-
-        invoice1 = InvoiceLocalModel(
-            "ABCDEFGHIJ",
-            1,
-            "01.01.2019",
-            "ACME",
-            processedByUser = "User1",
-            scanCopyUrl = "https://google.com",
-            comment = "Urgent!"
-        )
-        invoice1.products.add(product1)
-        invoice1.products.add(product2)
-    }
-
-    private fun createTestInvoice2() {
-
-        val product1 = ProductLocalModel(1, "6ES7322-1BL00-0AA1", "32 DI module v1", 1)
-        val product2 =
-            ProductLocalModel(3, "6ES7322-1BL00-0AA1", "32 DI module v1", 1, serialNumberPattern = "S[A-Z\\d]{10}")
-        val product1SerialNumber2 = "SABC4567890"
-        val product1SerialNumber3 = "345678"
-
-        product1.insertOrUpdateResult(ResultLocalModel(10, ResultStatusLocalModel(), product1SerialNumber3))
-        product2.insertOrUpdateResult(ResultLocalModel(11, ResultStatusLocalModel(), product1SerialNumber2))
-
-        invoice2 = InvoiceLocalModel(
-            "KLMNOPRSTU",
-            2,
-            "02.01.2019",
-            "ACME 2",
-            processedByUser = "User2",
-            scanCopyUrl = "https://google.com"
-        )
-        invoice2.products.add(product1)
-        invoice2.products.add(product2)
-    }
-
     private fun addProduct3ToInvoice(invoice: InvoiceLocalModel) {
         val product3 = ProductLocalModel(3, "6ES7321-1BL00-0AA0", "32 DO module", 4)
         product3.insertOrUpdateResult(

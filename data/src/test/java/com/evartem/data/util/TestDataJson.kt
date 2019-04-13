@@ -1,0 +1,110 @@
+package com.evartem.data.util
+
+class TestDataJson {
+    val invoice1And2 = """
+[
+   {
+      "id":"ABCDEFGHIJ",
+      "number":1,
+      "date":"01.01.2019",
+      "seller":"ACME",
+      "products":[
+         {
+            "id":1,
+            "article":"6ES7322-1BL00-0AA0",
+            "description":"32 DI module",
+            "quantity":3,
+            "articleScanRequired":true,
+            "hasSerialNumber":true,
+            "serialNumberScanRequired":true,
+            "equalSerialNumbersAreOk":false,
+            "results":[
+               {
+                  "status":0,
+                  "serial":"123456",
+                  "id":1
+               },
+               {
+                  "status":0,
+                  "serial":"SABC4567890",
+                  "id":2
+               },
+               {
+                  "status":1,
+                  "serial":"345678",
+                  "comment":"Blurred serial",
+                  "id":3
+               }
+            ]
+         },
+         {
+            "id":2,
+            "article":"6ES7322-1BL00-0AA0",
+            "description":"32 DI module",
+            "quantity":2,
+            "articleScanRequired":true,
+            "hasSerialNumber":true,
+            "serialNumberScanRequired":true,
+            "equalSerialNumbersAreOk":false,
+            "results":[
+               {
+                  "status":0,
+                  "serial":"SABC4567890",
+                  "id":1
+               }
+            ],
+            "serialNumberPattern":"S[A-Z\\d]{10}"
+         }
+      ],
+      "processedByUser":"User1",
+      "scanCopyUrl":"https://google.com",
+      "comment":"Urgent!"
+   },
+   {
+      "id":"KLMNOPRSTU",
+      "number":2,
+      "date":"02.01.2019",
+      "seller":"ACME 2",
+      "products":[
+         {
+            "id":1,
+            "article":"6ES7322-1BL00-0AA1",
+            "description":"32 DI module v1",
+            "quantity":1,
+            "articleScanRequired":true,
+            "hasSerialNumber":true,
+            "serialNumberScanRequired":true,
+            "equalSerialNumbersAreOk":false,
+            "results":[
+               {
+                  "status":0,
+                  "serial":"345678",
+                  "id":1
+               }
+            ]
+         },
+         {
+            "id":3,
+            "article":"6ES7322-1BL00-0AA1",
+            "description":"32 DI module v1",
+            "quantity":1,
+            "articleScanRequired":true,
+            "hasSerialNumber":true,
+            "serialNumberScanRequired":true,
+            "equalSerialNumbersAreOk":false,
+            "results":[
+               {
+                  "status":0,
+                  "serial":"SABC4567890",
+                  "id":1
+               }
+            ],
+            "serialNumberPattern":"S[A-Z\\d]{10}"
+         }
+      ],
+      "processedByUser":"User2",
+      "scanCopyUrl":"https://google.com"
+   }
+]
+    """
+}

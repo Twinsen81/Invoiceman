@@ -54,6 +54,7 @@ class TheApp : Application() {
         InvoiceBackendSimulation.startServer(7, 1)
     }
 
+    // For Realm instrumentation tests
     companion object {
         private lateinit var INSTANCE: TheApp
         fun get() = INSTANCE

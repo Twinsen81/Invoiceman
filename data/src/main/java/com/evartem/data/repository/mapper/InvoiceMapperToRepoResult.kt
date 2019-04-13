@@ -15,6 +15,11 @@ import retrofit2.Response
 import java.io.EOFException
 import java.lang.Exception
 
+/**
+ * Maps DTOs between local and remote models, Converting responses from Retrofit to
+ * the corresponding [InvoiceRepositoryResult] objects.
+ * Unwraps the Retrofit's [Response] and maps the response code to the corresponding [GatewayErrorCode].
+ */
 class InvoiceMapperToRepoResult {
 
     fun localToResult(localModel: List<InvoiceLocalModel>): InvoiceRepositoryResult =
@@ -47,6 +52,10 @@ class InvoiceMapperToRepoResult {
         return errorFromResponse(remoteResponse)
     }
 
+    /**
+     * Create an [InvoiceRepositoryResult.Error] if an exception was thrown somewhere on the way of processing
+     * the server's response.
+     */
     fun errorFromException(exception: Throwable): InvoiceRepositoryResult =
         when (exception) {
             is JsonEncodingException, is EOFException -> createNetworkErrorResult(
@@ -57,6 +66,9 @@ class InvoiceMapperToRepoResult {
             )
         }
 
+    /**
+     * Create an [InvoiceRepositoryResult.Error] object if [Response.isSuccessful] = false.
+     */
     private fun <T> errorFromResponse(response: Response<T>) =
         createNetworkErrorResult(
             GatewayError.ErrorCode.getByValue(response.code()),
