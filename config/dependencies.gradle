@@ -96,7 +96,8 @@ ext {
 
     appTestDependencies = [
             "junit:junit:$jUnit",
-            "org.mockito:mockito-core:$mockito"
+            "org.mockito:mockito-core:$mockito",
+            "org.mockito:mockito-inline:$mockito"
     ]
 
     appInstrumentationTestDependencies = [
