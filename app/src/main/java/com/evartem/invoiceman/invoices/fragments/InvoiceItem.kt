@@ -3,7 +3,7 @@ package com.evartem.invoiceman.invoices.fragments
 import android.view.View
 import com.evartem.domain.entity.doc.Invoice
 import com.evartem.invoiceman.R
-import com.evartem.invoiceman.invoices.fragments.InvoicesAvailableFragment.Companion.INVOICE_ITEM_TYPE_BASIC
+import com.evartem.invoiceman.invoices.fragments.InvoicesFragment.Companion.INVOICE_ITEM_TYPE_BASIC
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.item_invoice.view.*
@@ -12,7 +12,7 @@ class InvoiceItem(val invoice: Invoice) : AbstractItem<InvoiceItem, InvoiceItem.
 
     override fun getType(): Int = INVOICE_ITEM_TYPE_BASIC
 
-    override fun getViewHolder(v: View): InvoiceItem.ViewHolder = ViewHolder(v)
+    override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
 
     override fun getLayoutRes(): Int = R.layout.item_invoice
 
