@@ -9,7 +9,7 @@ import com.evartem.invoiceman.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.navigation_bottom_sheet.*
 
-class BottomNavigationDrawerFragment: BottomSheetDialogFragment() {
+class BottomNavigationDrawerFragment : BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.navigation_bottom_sheet, container, false)
