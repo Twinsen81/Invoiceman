@@ -8,6 +8,9 @@ import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
 import timber.log.Timber
 
+/**
+ * Displays the list of invoices available for the user.
+ */
 class InvoicesViewModel(
     private val sessionManager: SessionManager,
     private val getInvoicesForUserUseCase: GetInvoicesForUserUseCase
@@ -16,10 +19,6 @@ class InvoicesViewModel(
         InvoicesEvent.LoadScreen(reloadFromServer = true),
         InvoicesUiState(isLoading = true)
     ) {
-
-    init {
-        Timber.d("lifecycle init model")
-    }
 
     override fun eventToResult(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
         when (event) {
@@ -136,6 +135,6 @@ class InvoicesViewModel(
         return newUiState
     }
 
-    private fun relay(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
+    override fun relay(event: InvoicesEvent): Observable<InvoicesViewModelResult> =
         Observable.just(InvoicesViewModelResult.RelayEvent(event))
 }

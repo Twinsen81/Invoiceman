@@ -18,6 +18,7 @@ import com.evartem.invoiceman.invoice.mvi.InvoiceDetailEvent
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailUiEffect
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailUiState
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailViewModel
+import com.evartem.invoiceman.navigation.BottomNavigationDrawerFragment
 import com.evartem.invoiceman.util.*
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
@@ -58,7 +59,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
     private lateinit var statusDialog: StatusDialog
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(com.evartem.invoiceman.R.layout.fragment_invoice_detail, container, false)
+        inflater.inflate(R.layout.fragment_invoice_detail, container, false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -76,6 +77,11 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         bottomAppBar.visibility = View.VISIBLE
         bottomAppBar.replaceMenu(R.menu.invoice_detail)
         fab.hide()
+
+        bottomAppBar.setNavigationOnClickListener {
+            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
+            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -188,9 +194,15 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
 
         // region Dialogs
         when {
-            uiState.isRequestingAccept -> statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoice_accepting))
-            uiState.isRequestingReturn -> statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoice_returning))
-            uiState.isSubmitting -> statusDialog.show(resources.getString(com.evartem.invoiceman.R.string.invoice_submitting))
+            uiState.isRequestingAccept -> statusDialog.show(
+                resources.getString(R.string.invoice_accepting)
+            )
+            uiState.isRequestingReturn -> statusDialog.show(
+                resources.getString(R.string.invoice_returning)
+            )
+            uiState.isSubmitting -> statusDialog.show(
+                resources.getString(R.string.invoice_submitting)
+            )
             else -> statusDialog.hide()
         }
         // endregion
@@ -235,7 +247,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         when (uiEffect) {
             is InvoiceDetailUiEffect.ProductClick -> {
                 sessionManager.currentProductId = uiEffect.productId
-                //findNavController().navigate(R.id.destination_invoiceDetail)
+                // findNavController().navigate(R.id.destination_invoiceDetail)
             }
             is InvoiceDetailUiEffect.Error -> {
                 Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")

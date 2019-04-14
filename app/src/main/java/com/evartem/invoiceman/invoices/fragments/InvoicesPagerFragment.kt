@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat.getDrawable
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoices.mvi.*
+import com.evartem.invoiceman.navigation.BottomNavigationDrawerFragment
 import com.evartem.invoiceman.util.getErrorMessageForUi
 import com.jakewharton.rxbinding3.appcompat.itemClicks
 import io.reactivex.Observable
@@ -91,6 +92,11 @@ class InvoicesPagerFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Inv
         bottomAppBar.visibility = View.VISIBLE
         bottomAppBar.replaceMenu(R.menu.invoices)
         fab.hide()
+
+        bottomAppBar.setNavigationOnClickListener {
+            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
+            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
+        }
     }
 
     override fun onRenderUiState(uiState: InvoicesUiState) {

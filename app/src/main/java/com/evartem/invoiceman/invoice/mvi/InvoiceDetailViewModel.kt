@@ -8,6 +8,9 @@ import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
 
+/**
+ * Displays the detailed info about an invoice, including the list of its products.
+ */
 class InvoiceDetailViewModel(
     private val sessionManager: SessionManager,
     private val getInvoiceUseCase: GetInvoiceUseCase,
@@ -135,6 +138,6 @@ class InvoiceDetailViewModel(
         return newUiState
     }
 
-    private fun relay(event: InvoiceDetailEvent): Observable<InvoiceDetailViewModelResult> =
+    override fun relay(event: InvoiceDetailEvent): Observable<InvoiceDetailViewModelResult> =
         Observable.just(InvoiceDetailViewModelResult.RelayEvent(event))
 }

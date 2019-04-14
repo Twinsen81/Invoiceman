@@ -12,9 +12,6 @@
     </fragment>
     <fragment android:id="@+id/destination_invoiceList" android:name="com.evartem.invoiceman.invoices.fragments.InvoicesPagerFragment"
               android:label="List of invoices" tools:layout="@layout/fragment_invoices_pager">
-        <action android:id="@+id/action_settings"
-                app:destination="@id/destination_settings" app:popUpTo="@+id/destination_invoiceList"
-                app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
         <action android:id="@+id/action_login" app:destination="@id/destination_login"
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
         <action android:id="@+id/action_destination_invoiceList_to_destination_invoiceDetail"
@@ -22,8 +19,6 @@
 
 
     </fragment>
-    <fragment android:id="@+id/destination_settings" android:name="com.evartem.invoiceman.settings.SettingsFragment"
-              android:label="App's settings" tools:layout="@layout/fragment_settings"/>
     <fragment android:id="@+id/destination_invoiceDetail"
               android:name="com.evartem.invoiceman.invoice.fragments.InvoiceDetailFragment"
               android:label="InvoiceDetailFragment"/>

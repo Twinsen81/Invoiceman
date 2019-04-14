@@ -45,9 +45,13 @@ import java.util.concurrent.TimeUnit
 class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
     companion object {
+        // A FastAdapter item type
         const val INVOICE_ITEM_TYPE_BASIC = 1
     }
 
+    /**
+     * The options define the fragment's behaviour. Passed by the parent through [setArguments].
+     */
     private lateinit var fragmentOptions: InvoicesFragmentOptions
 
     private val viewModel by sharedViewModel<InvoicesViewModel>(from = { parentFragment!! })
@@ -56,8 +60,16 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
     private lateinit var itemsAdapter: ItemAdapter<InvoiceItem>
 
     private var disposables: CompositeDisposable = CompositeDisposable()
+
+    /**
+     * A subject to diff and render the recycler view asynchronously.
+     */
     private val listOfInvoices: PublishSubject<List<Invoice>> = PublishSubject.create()
 
+    /**
+     * By default, upon resume the fragment just renders the last UI state. If this property is true,
+     * then the data is also refreshed upon resume (since the data might have changed by now).
+     */
     private var reloadDataOnResume: Boolean = false
 
     private lateinit var statusDialog: StatusDialog

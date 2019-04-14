@@ -121,6 +121,12 @@ abstract class MviViewModel<UiState, UiEffect, Event, ViewModelResult>
      */
     protected abstract fun reduceUiState(previousUiState: UiState, newResult: ViewModelResult): UiState
 
+    /**
+     * Wrap the [Event] into [ViewModelResult] so it would go through the UI
+     * reducer. The reducer will change the UI according to the event type.
+     */
+    protected abstract fun relay(event: Event): Observable<ViewModelResult>
+
     override fun onCleared() {
         super.onCleared()
         eventsDisposable.dispose()
