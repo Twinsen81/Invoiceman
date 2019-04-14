@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="none">
         <item
-                android:id="@+id/navigation_settings"
-                android:icon="@drawable/ic_settings"
-                android:title="@string/main_settings" />
-        <item
                 android:id="@+id/navigation_logout"
                 android:icon="@drawable/ic_lock"
                 android:title="@string/main_logout" />

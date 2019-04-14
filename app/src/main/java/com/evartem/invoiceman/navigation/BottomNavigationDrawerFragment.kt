@@ -19,7 +19,6 @@ class BottomNavigationDrawerFragment: BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         navigation_view.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.navigation_settings -> findNavController().navigate(R.id.action_settings)
                 R.id.navigation_logout -> findNavController().navigate(R.id.action_login)
             }
             dismiss()
