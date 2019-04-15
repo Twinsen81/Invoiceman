@@ -5,6 +5,7 @@ import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.data.remote.api.InvoiceService
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.entity.auth.User
+import com.evartem.domain.entity.doc.Result
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 
@@ -31,6 +32,52 @@ class InvoiceRepository(
         try {
             localDataSource.getInvoice(invoiceId)
                 .map { invoice -> mapperToRepoResult.localToResult(invoice) }
+                .toObservable()
+        } catch (exception: Throwable) {
+            Observable.just(mapperToRepoResult.errorFromException(exception))
+        }
+
+    /**
+     * Get the product ([invoiceId].[productId]) from the local data source.
+     *
+     * returns either [InvoiceRepositoryResult.Product] or [InvoiceRepositoryResult.Error] if the given
+     * [invoiceId] or [productId] isn't found.
+     */
+    fun getProduct(invoiceId: String, productId: Int): Observable<InvoiceRepositoryResult> =
+        try {
+            localDataSource.getProduct(invoiceId, productId)
+                .map { product -> mapperToRepoResult.localToResult(product) }
+                .toObservable()
+        } catch (exception: Throwable) {
+            Observable.just(mapperToRepoResult.errorFromException(exception))
+        }
+
+
+    /**
+     * Add or update the specified result ([invoiceId].[productId].[result]) to/in the local data source.
+     *
+     * returns either [InvoiceRepositoryResult.ResultOperationSucceeded] or [InvoiceRepositoryResult.Error]
+     * if the given [invoiceId], [productId] or isn't found.
+     */
+    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: Result): Observable<InvoiceRepositoryResult> =
+        try {
+            localDataSource.insertOrUpdateResult(invoiceId, productId, result)
+                //.map { product -> mapperToRepoResult.localToResult(product) }
+                .toObservable()
+        } catch (exception: Throwable) {
+            Observable.just(mapperToRepoResult.errorFromException(exception))
+        }
+
+    /**
+     * Delete the specified result ([invoiceId].[productId].[resultId]) from the local data source.
+     *
+     * returns either [InvoiceRepositoryResult.ResultOperationSucceeded] or [InvoiceRepositoryResult.Error]
+     * if the given [invoiceId], [productId] or [resultId] isn't found.
+     */
+    fun deleteResult(invoiceId: String, productId: Int, resultId: Int): Observable<InvoiceRepositoryResult> =
+        try {
+            localDataSource.deleteResult(invoiceId, productId, resultId)
+                //.map { product -> mapperToRepoResult.localToResult(product) }
                 .toObservable()
         } catch (exception: Throwable) {
             Observable.just(mapperToRepoResult.errorFromException(exception))

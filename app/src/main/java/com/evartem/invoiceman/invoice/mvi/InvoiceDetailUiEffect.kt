@@ -6,4 +6,5 @@ sealed class InvoiceDetailUiEffect {
     data class Error(val gatewayError: GatewayError?) : InvoiceDetailUiEffect()
     data class ProductClick(val productId: Int) : InvoiceDetailUiEffect()
     object SuccessMessage : InvoiceDetailUiEffect()
+    object NotAcceptedYetMessage : InvoiceDetailUiEffect()
 }

@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/invoice_info_panel"
+                android:id="@+id/product_info_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="3dp"
@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/invoice_info_panel"
+                app:layout_constraintTop_toBottomOf="@id/product_info_panel"
                 app:queryHint="@string/invoices_search_hint"
                 app:defaultQueryHint="@string/invoices_search_hint"
                 android:elevation="2dp"

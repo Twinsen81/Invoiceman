@@ -2,6 +2,7 @@ package com.evartem.domain.gateway
 
 import com.evartem.domain.entity.auth.User
 import com.evartem.domain.entity.doc.Invoice
+import com.evartem.domain.entity.doc.Result
 import io.reactivex.Observable
 
 /**
@@ -22,11 +23,34 @@ interface InvoiceGateway {
     fun getInvoicesForUser(user: User, refresh: Boolean = false): Observable<InvoiceGatewayResult>
 
     /**
-     * Look for the specified invoice ID in the local data source.
+     * Look for the specified invoice ([invoiceId]) in the local data source.
      *
      * @return [InvoiceGatewayResult.Invoice] if the request succeeded or [InvoiceGatewayResult.Error] otherwise
      */
     fun getInvoice(invoiceId: String): Observable<InvoiceGatewayResult>
+
+    /**
+     * Look for the specified product ([invoiceId].[productId]) in the local data source.
+     *
+     * @return [InvoiceGatewayResult.Product] if the request succeeded or [InvoiceGatewayResult.Error] otherwise
+     */
+    fun getProduct(invoiceId: String, productId: Int): Observable<InvoiceGatewayResult>
+
+    /**
+     * Add or update the specified result ([invoiceId].[productId].[result]) to/in the local data source.
+     *
+     * @return [InvoiceGatewayResult.ResultOperationSucceeded] if the request succeeded or
+     * [InvoiceGatewayResult.Error] otherwise
+     */
+    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: Result): Observable<InvoiceGatewayResult>
+
+    /**
+     * Delete the specified result ([invoiceId].[productId].[resultId]) in the local data source.
+     *
+     * @return [InvoiceGatewayResult.ResultOperationSucceeded] if the request succeeded or
+     * [InvoiceGatewayResult.Error] otherwise
+     */
+    fun deleteResult(invoiceId: String, productId: Int, resultId: Int): Observable<InvoiceGatewayResult>
 
     /**
      * Ask the server if the [user] is allowed to process the invoice ([invoiceId]).

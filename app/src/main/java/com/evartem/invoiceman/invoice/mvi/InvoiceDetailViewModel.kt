@@ -34,8 +34,8 @@ class InvoiceDetailViewModel(
         }
 
     private fun onAcceptInvoiceClicked(): Observable<InvoiceDetailViewModelResult> =
-    requestProcessingUseCase.execute(sessionManager.currentUser to sessionManager.currentInvoiceId)
-        .map { InvoiceDetailViewModelResult.AcceptRequest(it) }
+        requestProcessingUseCase.execute(sessionManager.currentUser to sessionManager.currentInvoiceId)
+            .map { InvoiceDetailViewModelResult.AcceptRequest(it) }
 
     private fun onReturnInvoiceClicked(): Observable<InvoiceDetailViewModelResult> =
         requestReturnUseCase.execute(sessionManager.currentUser to sessionManager.currentInvoiceId)
@@ -50,7 +50,10 @@ class InvoiceDetailViewModel(
             } else true
 
     private fun onProductClicked(event: InvoiceDetailEvent.Click): Observable<InvoiceDetailViewModelResult> {
-        addUiEffect(InvoiceDetailUiEffect.ProductClick(event.productId))
+        if (uiState.value?.isBeingProcessedByUser == true)
+            addUiEffect(InvoiceDetailUiEffect.ProductClick(event.productId))
+        else
+            addUiEffect(InvoiceDetailUiEffect.NotAcceptedYetMessage)
         return relay(event)
     }
 
@@ -134,6 +137,9 @@ class InvoiceDetailViewModel(
                 newUiState.isRequestingReturn = true
         }
         // endregion
+
+        newUiState.isBeingProcessedByUser =
+            newUiState.invoice.processedByUser?.equals(sessionManager.currentUser.id) == true
 
         return newUiState
     }

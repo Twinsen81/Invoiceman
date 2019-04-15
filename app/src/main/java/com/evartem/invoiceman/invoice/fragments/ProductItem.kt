@@ -17,8 +17,7 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
     override fun getLayoutRes(): Int = R.layout.item_product
 
     class ViewHolder(view: View) : FastAdapter.ViewHolder<ProductItem>(view) {
-        override fun unbindView(item: ProductItem) {
-        }
+        override fun unbindView(item: ProductItem) = Unit
 
         override fun bindView(item: ProductItem, payloads: MutableList<Any>) {
             itemView.product_article.text = item.product.article

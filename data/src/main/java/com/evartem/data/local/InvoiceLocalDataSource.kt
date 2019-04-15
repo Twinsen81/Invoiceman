@@ -33,6 +33,22 @@ class InvoiceLocalDataSource {
     }
 
     /**
+     * Get the product by its ID.
+     */
+    fun getProduct(invoiceId: String, productId: Int): Single<ProductLocalModel> {
+        var product : ProductLocalModel? = null
+        Realm.getDefaultInstance().use { realm ->
+            // A detached from Realm copy of the invoice that won't be updated by Realm anymore
+            val invoice = realm.copyFromRealm(
+                realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()!!
+            )
+            product = invoice.products.find { it.id == productId }
+        }
+        // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        return Single.just(product!!)
+    }
+
+    /**
      * Mark the invoice as being processed by the user.
      * If the [userId] is empty, the invoice is marked as not being processed.
      */

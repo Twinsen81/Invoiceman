@@ -12,6 +12,7 @@ import com.evartem.domain.interactor.*
 import com.evartem.invoiceman.BuildConfig
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailViewModel
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
+import com.evartem.invoiceman.product.mvi.ProductDetailViewModel
 import com.evartem.invoiceman.util.DEMO_USER
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Scheduler
@@ -29,13 +30,24 @@ val viewModelModule: Module = module {
             requestReturnUseCase = get()
         )
     }
+    viewModel {
+        ProductDetailViewModel(
+            sessionManager = get(),
+            getProductUseCase = get(),
+            insertOrUpdateResultUseCase = get(),
+            deleteResultUseCase = get()
+        )
+    }
 }
 
 val useCasesModule: Module = module {
     factory { GetInvoicesForUserUseCase(schedulers = get(), gateway = get()) }
     factory { GetInvoiceUseCase(schedulers = get(), gateway = get()) }
+    factory { GetProductUseCase(schedulers = get(), gateway = get()) }
     factory { RequestInvoiceForProcessingUseCase(schedulers = get(), gateway = get()) }
     factory { RequestInvoiceReturnUseCase(schedulers = get(), gateway = get()) }
+    factory { InsertOrUpdateResultUseCase(schedulers = get(), gateway = get()) }
+    factory { DeleteResultUseCase(schedulers = get(), gateway = get()) }
 }
 
 val gatewaysModule: Module = module {

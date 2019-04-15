@@ -28,6 +28,9 @@ class InvoiceMapperToRepoResult {
     fun localToResult(localModel: InvoiceLocalModel): InvoiceRepositoryResult =
         InvoiceRepositoryResult.Invoice(localModel)
 
+    fun localToResult(localModel: ProductLocalModel): InvoiceRepositoryResult =
+        InvoiceRepositoryResult.Product(localModel)
+
     fun remoteAcceptToResult(remoteResponse: Response<Void>): InvoiceRepositoryResult {
 
         if (remoteResponse.isSuccessful)

@@ -5,6 +5,7 @@ import com.evartem.data.repository.InvoiceRepository
 import com.evartem.data.repository.InvoiceRepositoryResult
 import com.evartem.domain.entity.auth.User
 import com.evartem.domain.entity.doc.Invoice
+import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.gateway.InvoiceGateway
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import io.reactivex.Observable
@@ -27,12 +28,28 @@ class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository, val invoiceMa
         invoiceRepository.getInvoice(invoiceId)
             .map { invoiceMapper.toGateway(it) }
 
+    override fun getProduct(invoiceId: String, productId: Int): Observable<InvoiceGatewayResult> =
+        invoiceRepository.getProduct(invoiceId, productId)
+            .map { invoiceMapper.toGateway(it) }
+
     override fun requestInvoiceForProcessing(user: User, invoiceId: String): Observable<InvoiceGatewayResult> =
         invoiceRepository.requestInvoiceForProcessing(user, invoiceId)
             .map { invoiceMapper.toGateway(it) }
 
     override fun requestInvoiceReturn(user: User, invoiceId: String): Observable<InvoiceGatewayResult> =
         invoiceRepository.requestInvoiceReturn(user, invoiceId)
+            .map { invoiceMapper.toGateway(it) }
+
+    override fun insertOrUpdateResult(
+        invoiceId: String,
+        productId: Int,
+        result: Result
+    ): Observable<InvoiceGatewayResult> =
+        invoiceRepository.insertOrUpdateResult(invoiceId, productId, result)
+            .map { invoiceMapper.toGateway(it) }
+
+    override fun deleteResult(invoiceId: String, productId: Int, resultId: Int): Observable<InvoiceGatewayResult> =
+        invoiceRepository.deleteResult(invoiceId, productId, resultId)
             .map { invoiceMapper.toGateway(it) }
 
     override fun submitInvoicesWithResults(user: User, invoices: List<Invoice>): Observable<InvoiceGatewayResult> {

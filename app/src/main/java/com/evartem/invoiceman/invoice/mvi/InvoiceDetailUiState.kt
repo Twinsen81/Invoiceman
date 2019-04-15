@@ -12,7 +12,8 @@ data class InvoiceDetailUiState(
     var isSubmitting: Boolean = false,
     var searchRequest: String = "",
     var searchViewOpen: Boolean = false,
-    var setFocusToSearchView: Boolean = false
+    var setFocusToSearchView: Boolean = false,
+    var isBeingProcessedByUser: Boolean = false
 ) {
     override fun toString(): String {
         return StringBuilder()
@@ -24,6 +25,7 @@ data class InvoiceDetailUiState(
             .append(" isRequestingAccept=").append(isRequestingAccept)
             .append(" isRequestingReturn=").append(isRequestingReturn)
             .append(" isSubmitting=").append(isSubmitting)
+            .append(" isBeingProcessedByUser=").append(isBeingProcessedByUser)
             .append(" products=${invoice.products.size}").toString()
     }
 

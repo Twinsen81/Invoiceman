@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.invoiceman.R
@@ -141,7 +143,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             .map { ProductItem -> InvoiceDetailEvent.Click(ProductItem.product.id) })
 
         addUiEvent(
-            searchView.findViewById<ImageView>(com.evartem.invoiceman.R.id.search_close_btn).clicks()
+            searchView.findViewById<ImageView>(R.id.search_close_btn).clicks()
                 .doOnNext { hideKeyboard(activity!!) }
                 .map { InvoiceDetailEvent.Search(stopSearch = true) })
 
@@ -211,7 +213,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         invoice_number.text = uiState.invoice.number.toString()
         invoice_date.text = uiState.invoice.date
 
-        if (uiState.invoice.processedByUser?.equals(sessionManager.currentUser.id) == true) {
+        if (uiState.isBeingProcessedByUser) {
             invoice_action_accept.visibility = View.GONE
             invoice_action_return.visibility = View.VISIBLE
             invoice_action_submit.visibility = View.VISIBLE
@@ -247,7 +249,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         when (uiEffect) {
             is InvoiceDetailUiEffect.ProductClick -> {
                 sessionManager.currentProductId = uiEffect.productId
-                // findNavController().navigate(R.id.destination_invoiceDetail)
+                findNavController().navigate(R.id.action_destination_invoiceDetail_to_productDetailFragment)
             }
             is InvoiceDetailUiEffect.Error -> {
                 Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
@@ -255,9 +257,10 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
                 Toast.makeText(context, getErrorMessageForUi(resources, uiEffect.gatewayError), Toast.LENGTH_LONG)
                     .show()
             }
-            is InvoiceDetailUiEffect.SuccessMessage -> {
+            is InvoiceDetailUiEffect.SuccessMessage ->
                 Toast.makeText(context, R.string.success_exclamation, Toast.LENGTH_LONG).show()
-            }
+            is InvoiceDetailUiEffect.NotAcceptedYetMessage ->
+                Toast.makeText(context, R.string.invoice_accept_before_editing, Toast.LENGTH_LONG).show()
         }
     }
 

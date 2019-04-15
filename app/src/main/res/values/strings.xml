@@ -5,6 +5,8 @@
     <string name="main_settings">Settings</string>
     <string name="main_logout">Logout</string>
     <string name="success_exclamation">Success!</string>
+    <string name="invoice_accept_before_editing">You must accept the invoice before editing!</string>
+    <string name="product_article">Article:</string>
     <string name="invoice_no">No:</string>
     <string name="invoice_seller">Seller:</string>
     <string name="invoice_comment">Comment:</string>
@@ -38,6 +40,8 @@
     <string name="invoice_accept">accept</string>
     <string name="invoice_return">return</string>
     <string name="invoice_submit">submit</string>
+    <string name="result_edit">edit</string>
+    <string name="result_delete">delete</string>
     <string name="password">Password</string>
     <string name="enter_your_password">Enter your password</string>
     <string name="sign_in">sign in</string>
