@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.item_invoice.view.*
 
 class InvoiceItem(val invoice: Invoice) : AbstractItem<InvoiceItem, InvoiceItem.ViewHolder>() {
 
+    override fun getIdentifier() = invoice.hashCode().toLong()
+
     override fun getType(): Int = INVOICE_ITEM_TYPE_BASIC
 
     override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)

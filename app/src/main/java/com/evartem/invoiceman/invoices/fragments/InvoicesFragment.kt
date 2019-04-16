@@ -258,7 +258,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
     override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) {
         if (fragmentOptions.navigateToDetailOnClick && uiEffect is InvoicesUiEffect.InvoiceClick) {
             reloadDataOnResume = true
-            sessionManager.currentInvoiceId = uiEffect.invoiceId
+            sessionManager.setInvoice(uiEffect.invoice)
             findNavController().navigate(R.id.action_destination_invoiceList_to_destination_invoiceDetail)
         }
     }
