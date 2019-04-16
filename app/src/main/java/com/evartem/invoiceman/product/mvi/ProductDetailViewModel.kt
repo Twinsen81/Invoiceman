@@ -25,21 +25,49 @@ class ProductDetailViewModel(
     override fun eventToResult(event: ProductDetailEvent): Observable<ProductDetailViewModelResult> =
         when (event) {
             is ProductDetailEvent.LoadScreen -> onLoadProductData()
-            is ProductDetailEvent.Click,
+            is ProductDetailEvent.FabClick -> onFabClicked(event)
+            is ProductDetailEvent.AddResult -> onAddResult(event)
+            is ProductDetailEvent.DeleteResult -> onDeleteResult(event)
+            is ProductDetailEvent.EditResult,
             is ProductDetailEvent.Empty -> relay(event)
         }
 
     override fun shouldUpdateUiState(result: ProductDetailViewModelResult): Boolean =
         if (result is ProductDetailViewModelResult.RelayEvent)
             when (result.uiEvent) {
-                is ProductDetailEvent.Click,
+                is ProductDetailEvent.FabClick,
                 is ProductDetailEvent.Empty -> false
                 else -> true
             } else true
 
     private fun onLoadProductData(): Observable<ProductDetailViewModelResult> =
-        getProductUseCase.execute(Pair(sessionManager.currentInvoiceId, sessionManager.currentProductId))
+        getProductUseCase.execute(Pair(sessionManager.getInvoiceId(), sessionManager.getProductId()))
             .map { ProductDetailViewModelResult.Product(it) }
+
+    private fun onFabClicked(event: ProductDetailEvent): Observable<ProductDetailViewModelResult> {
+        addUiEffect(ProductDetailUiEffect.StartScan(uiState.value!!.product))
+        return relay(event)
+    }
+
+    private fun onAddResult(event: ProductDetailEvent.AddResult): Observable<ProductDetailViewModelResult> =
+        insertOrUpdateResultUseCase.execute(
+            Triple(
+                sessionManager.getInvoiceId(),
+                sessionManager.getProductId(),
+                event.result
+            )
+        )
+            .map { ProductDetailViewModelResult.ResultOperation(it) }
+
+    private fun onDeleteResult(event: ProductDetailEvent.DeleteResult): Observable<ProductDetailViewModelResult> =
+        deleteResultUseCase.execute(
+            Triple(
+                sessionManager.getInvoiceId(),
+                sessionManager.getProductId(),
+                event.resultId
+            )
+        )
+            .map { ProductDetailViewModelResult.ResultOperation(it) }
 
     override fun reduceUiState(
         previousUiState: ProductDetailUiState,
@@ -47,12 +75,22 @@ class ProductDetailViewModel(
     ): ProductDetailUiState {
         val newUiState = previousUiState.copy()
 
-        // region Received a response - the invoice
+        // region Received a response - the current product
         if (newResult is ProductDetailViewModelResult.Product) {
             newUiState.isLoading = false
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Product)
                 newUiState.product = newResult.gatewayResult.product
+
+            if (newResult.gatewayResult is InvoiceGatewayResult.Error)
+                addUiEffect(ProductDetailUiEffect.Error(newResult.gatewayResult.gatewayError))
+        }
+        // endregion
+
+        // region Received a response - a result operation (add/delete/update)
+        if (newResult is ProductDetailViewModelResult.ResultOperation) {
+            if (newResult.gatewayResult is InvoiceGatewayResult.ResultOperationSucceeded)
+                newUiState.product = newResult.gatewayResult.updatedProduct
 
             if (newResult.gatewayResult is InvoiceGatewayResult.Error)
                 addUiEffect(ProductDetailUiEffect.Error(newResult.gatewayResult.gatewayError))

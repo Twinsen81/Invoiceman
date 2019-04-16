@@ -13,23 +13,13 @@ import com.squareup.moshi.JsonEncodingException
 import io.realm.RealmList
 import retrofit2.Response
 import java.io.EOFException
-import java.lang.Exception
 
 /**
- * Maps DTOs between local and remote models, Converting responses from Retrofit to
+ * Maps DTOs between local and remote models, converting responses from Retrofit to
  * the corresponding [InvoiceRepositoryResult] objects.
  * Unwraps the Retrofit's [Response] and maps the response code to the corresponding [GatewayErrorCode].
  */
 class InvoiceMapperToRepoResult {
-
-    fun localToResult(localModel: List<InvoiceLocalModel>): InvoiceRepositoryResult =
-        InvoiceRepositoryResult.Invoices(localModel)
-
-    fun localToResult(localModel: InvoiceLocalModel): InvoiceRepositoryResult =
-        InvoiceRepositoryResult.Invoice(localModel)
-
-    fun localToResult(localModel: ProductLocalModel): InvoiceRepositoryResult =
-        InvoiceRepositoryResult.Product(localModel)
 
     fun remoteAcceptToResult(remoteResponse: Response<Void>): InvoiceRepositoryResult {
 

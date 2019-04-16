@@ -45,7 +45,7 @@ class InvoiceGatewayImpl(val invoiceRepository: InvoiceRepository, val invoiceMa
         productId: Int,
         result: Result
     ): Observable<InvoiceGatewayResult> =
-        invoiceRepository.insertOrUpdateResult(invoiceId, productId, result)
+        invoiceRepository.insertOrUpdateResult(invoiceId, productId, invoiceMapper.entityToLocal(result))
             .map { invoiceMapper.toGateway(it) }
 
     override fun deleteResult(invoiceId: String, productId: Int, resultId: Int): Observable<InvoiceGatewayResult> =

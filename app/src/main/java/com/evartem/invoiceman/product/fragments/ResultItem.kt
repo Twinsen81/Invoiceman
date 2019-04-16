@@ -1,7 +1,9 @@
 package com.evartem.invoiceman.product.fragments
 
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.evartem.domain.entity.doc.Result
+import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.product.fragments.ProductDetailFragment.Companion.RESULT_ITEM_TYPE_BASIC
 import com.mikepenz.fastadapter.FastAdapter
@@ -10,26 +12,38 @@ import kotlinx.android.synthetic.main.item_result.view.*
 
 class ResultItem(val result: Result) : AbstractItem<ResultItem, ResultItem.ViewHolder>() {
 
-        override fun getType(): Int = RESULT_ITEM_TYPE_BASIC
+    override fun getIdentifier() = result.id.toLong()
 
-        override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
+    override fun getType(): Int = RESULT_ITEM_TYPE_BASIC
 
-        override fun getLayoutRes(): Int = R.layout.item_result
+    override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
 
-        class ViewHolder(view: View) : FastAdapter.ViewHolder<ResultItem>(view) {
-            override fun unbindView(item: ResultItem) = Unit
+    override fun getLayoutRes(): Int = R.layout.item_result
 
-            override fun bindView(item: ResultItem, payloads: MutableList<Any>) {
+    class ViewHolder(view: View) : FastAdapter.ViewHolder<ResultItem>(view) {
+        override fun unbindView(item: ResultItem) = Unit
 
-                itemView.result_serial.text = item.result.serial
+        override fun bindView(item: ResultItem, payloads: MutableList<Any>) {
 
-                if (item.result.comment != null) {
-                    itemView.result_comment.text = item.result.comment
-                    itemView.result_comment.visibility = View.VISIBLE
-                } else {
-                    itemView.result_comment.text = ""
-                    itemView.result_comment.visibility = View.GONE
-                }
+            itemView.result_serial.text = item.result.serial
+
+            if (item.result.comment != null) {
+                itemView.result_comment.text = item.result.comment
+                itemView.result_comment.visibility = View.VISIBLE
+            } else {
+                itemView.result_comment.text = ""
+                itemView.result_comment.visibility = View.GONE
             }
+
+            itemView.background.setTint(
+                ContextCompat.getColor(
+                    itemView.context,
+                    if (item.result.status == ResultStatus.COMPLETED)
+                        R.color.resultCompletedBackground
+                    else
+                        R.color.resultFailedBackground
+                )
+            )
         }
+    }
 }

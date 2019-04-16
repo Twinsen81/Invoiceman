@@ -13,6 +13,9 @@
     <color name="gradChartMinusColorEnd">#727272</color>
 
     <color name="semiTransparentBackground">#ADFFFFFF</color>
+    <color name="resultActionBackground">#D8FFFFFF</color>
+    <color name="resultCompletedBackground">#AD7CB342</color>
+    <color name="resultFailedBackground">#ADE53935</color>
     <color name="noInvoicesMessageColor">#E1474747</color>
     <color name="ic_launcher_background">#FFFFFF</color>
 </resources>

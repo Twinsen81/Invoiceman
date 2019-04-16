@@ -2,6 +2,8 @@ package com.evartem.data.repository
 
 import com.evartem.data.local.InvoiceLocalDataSource
 import com.evartem.data.local.model.InvoiceLocalModel
+import com.evartem.data.local.model.ProductLocalModel
+import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.remote.api.InvoiceService
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.entity.auth.User
@@ -31,7 +33,7 @@ class InvoiceRepository(
     fun getInvoice(invoiceId: String): Observable<InvoiceRepositoryResult> =
         try {
             localDataSource.getInvoice(invoiceId)
-                .map { invoice -> mapperToRepoResult.localToResult(invoice) }
+                .map { invoice -> InvoiceRepositoryResult.Invoice(invoice) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
             Observable.just(mapperToRepoResult.errorFromException(exception))
@@ -46,12 +48,11 @@ class InvoiceRepository(
     fun getProduct(invoiceId: String, productId: Int): Observable<InvoiceRepositoryResult> =
         try {
             localDataSource.getProduct(invoiceId, productId)
-                .map { product -> mapperToRepoResult.localToResult(product) }
+                .map { product -> InvoiceRepositoryResult.Product(product) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
             Observable.just(mapperToRepoResult.errorFromException(exception))
         }
-
 
     /**
      * Add or update the specified result ([invoiceId].[productId].[result]) to/in the local data source.
@@ -59,10 +60,14 @@ class InvoiceRepository(
      * returns either [InvoiceRepositoryResult.ResultOperationSucceeded] or [InvoiceRepositoryResult.Error]
      * if the given [invoiceId], [productId] or isn't found.
      */
-    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: Result): Observable<InvoiceRepositoryResult> =
+    fun insertOrUpdateResult(
+        invoiceId: String,
+        productId: Int,
+        result: ResultLocalModel
+    ): Observable<InvoiceRepositoryResult> =
         try {
             localDataSource.insertOrUpdateResult(invoiceId, productId, result)
-                //.map { product -> mapperToRepoResult.localToResult(product) }
+                .map { product -> InvoiceRepositoryResult.ResultOperationSucceeded(product) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
             Observable.just(mapperToRepoResult.errorFromException(exception))
@@ -77,7 +82,7 @@ class InvoiceRepository(
     fun deleteResult(invoiceId: String, productId: Int, resultId: Int): Observable<InvoiceRepositoryResult> =
         try {
             localDataSource.deleteResult(invoiceId, productId, resultId)
-                //.map { product -> mapperToRepoResult.localToResult(product) }
+                .map { product -> InvoiceRepositoryResult.ResultOperationSucceeded(product) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
             Observable.just(mapperToRepoResult.errorFromException(exception))
@@ -97,7 +102,7 @@ class InvoiceRepository(
         if (localDataSource.isEmpty) refreshFromServer = true
 
         val localResult = localDataSource.getInvoices()
-            .map { invoiceList -> mapperToRepoResult.localToResult(invoiceList) }
+            .map { invoiceList -> InvoiceRepositoryResult.Invoices(invoiceList) }
             .toObservable()
 
         val remoteResult =

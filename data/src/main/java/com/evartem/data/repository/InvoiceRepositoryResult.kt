@@ -20,7 +20,7 @@ sealed class InvoiceRepositoryResult {
 
     object AcceptConfirmed : InvoiceRepositoryResult()
     object ReturnConfirmed : InvoiceRepositoryResult()
-    object ResultOperationSucceeded : InvoiceRepositoryResult()
+    data class ResultOperationSucceeded(val updatedProduct: ProductLocalModel) : InvoiceRepositoryResult()
 
     data class Error(val gatewayError: GatewayError) : InvoiceRepositoryResult()
 }

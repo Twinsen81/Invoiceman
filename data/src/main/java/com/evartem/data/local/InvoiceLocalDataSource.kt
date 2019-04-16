@@ -112,20 +112,30 @@ class InvoiceLocalDataSource {
 
     /**
      * Insert or update (if already exists) one result for the given product.
+     *
+     * @return the updated product
      */
-    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: ResultLocalModel) {
+    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: ResultLocalModel) : Single<ProductLocalModel> {
+        var product : ProductLocalModel? = null
         doForProduct(invoiceId, productId) {
             it.insertOrUpdateResult(result)
+            product = it.realm.copyFromRealm(it)
         }
+        return Single.just(product!!)
     }
 
     /**
      * Delete one result for the given product.
+     *
+     * @return the updated product
      */
-    fun deleteResult(invoiceId: String, productId: Int, result: ResultLocalModel) {
+    fun deleteResult(invoiceId: String, productId: Int, resultId: Int) : Single<ProductLocalModel> {
+        var product : ProductLocalModel? = null
         doForProduct(invoiceId, productId) {
-            it.deleteResult(result)
+            it.deleteResult(resultId)
+            product = it.realm.copyFromRealm(it)
         }
+        return Single.just(product!!)
     }
 
     /**
