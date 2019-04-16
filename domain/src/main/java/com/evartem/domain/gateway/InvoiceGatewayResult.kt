@@ -44,7 +44,8 @@ sealed class InvoiceGatewayResult {
     /**
      * The operation on the result (add/update/delete) has been successfully completed.
      */
-    object ResultOperationSucceeded : InvoiceGatewayResult()
+    data class ResultOperationSucceeded(val updatedProduct: com.evartem.domain.entity.doc.Product) :
+        InvoiceGatewayResult()
 
     /**
      * The description of the error occurred while executing a gateway request.
