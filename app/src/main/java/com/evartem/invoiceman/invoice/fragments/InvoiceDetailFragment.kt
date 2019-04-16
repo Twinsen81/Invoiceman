@@ -224,12 +224,12 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         }
 
         if (uiState.invoice.comment.isNullOrEmpty()) {
+            invoice_comment.visibility = View.GONE
+            invoice_label_comment.visibility = View.GONE
+        } else {
             invoice_comment.visibility = View.VISIBLE
             invoice_comment.text = uiState.invoice.comment
             invoice_label_comment.visibility = View.VISIBLE
-        } else {
-            invoice_comment.visibility = View.GONE
-            invoice_label_comment.visibility = View.GONE
         }
 
         searchView.visibility = if (uiState.searchViewOpen) View.VISIBLE else View.GONE
@@ -248,7 +248,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
     override fun onRenderUiEffect(uiEffect: InvoiceDetailUiEffect) {
         when (uiEffect) {
             is InvoiceDetailUiEffect.ProductClick -> {
-                sessionManager.currentProductId = uiEffect.productId
+                sessionManager.setProduct(uiEffect.product)
                 findNavController().navigate(R.id.action_destination_invoiceDetail_to_productDetailFragment)
             }
             is InvoiceDetailUiEffect.Error -> {

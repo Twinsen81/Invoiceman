@@ -7,6 +7,7 @@ import com.evartem.domain.interactor.RequestInvoiceReturnUseCase
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
+import timber.log.Timber
 
 /**
  * Displays the detailed info about an invoice, including the list of its products.
@@ -34,11 +35,11 @@ class InvoiceDetailViewModel(
         }
 
     private fun onAcceptInvoiceClicked(): Observable<InvoiceDetailViewModelResult> =
-        requestProcessingUseCase.execute(sessionManager.currentUser to sessionManager.currentInvoiceId)
+        requestProcessingUseCase.execute(sessionManager.currentUser to sessionManager.getInvoiceId())
             .map { InvoiceDetailViewModelResult.AcceptRequest(it) }
 
     private fun onReturnInvoiceClicked(): Observable<InvoiceDetailViewModelResult> =
-        requestReturnUseCase.execute(sessionManager.currentUser to sessionManager.currentInvoiceId)
+        requestReturnUseCase.execute(sessionManager.currentUser to sessionManager.getInvoiceId())
             .map { InvoiceDetailViewModelResult.ReturnRequest(it) }
 
     override fun shouldUpdateUiState(result: InvoiceDetailViewModelResult): Boolean =
@@ -51,14 +52,24 @@ class InvoiceDetailViewModel(
 
     private fun onProductClicked(event: InvoiceDetailEvent.Click): Observable<InvoiceDetailViewModelResult> {
         if (uiState.value?.isBeingProcessedByUser == true)
-            addUiEffect(InvoiceDetailUiEffect.ProductClick(event.productId))
+        {
+            try {
+                val product = uiState.value?.invoice?.products?.first { it.id == event.productId }
+                addUiEffect(InvoiceDetailUiEffect.ProductClick(product!!))
+            }
+            catch (exception: NoSuchElementException)
+            {
+                Timber.wtf(exception, "The clicked product:${event.productId} is not found in the uiState")
+            }
+        }
+
         else
             addUiEffect(InvoiceDetailUiEffect.NotAcceptedYetMessage)
         return relay(event)
     }
 
     private fun onLoadInvoiceData(): Observable<InvoiceDetailViewModelResult> =
-        getInvoiceUseCase.execute(sessionManager.currentInvoiceId)
+        getInvoiceUseCase.execute(sessionManager.getInvoiceId())
             .map { InvoiceDetailViewModelResult.Invoice(it) }
 
     override fun reduceUiState(

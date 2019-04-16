@@ -10,9 +10,11 @@ import kotlinx.android.synthetic.main.item_product.view.*
 
 class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.ViewHolder>() {
 
+    override fun getIdentifier() = product.id.toLong()
+
     override fun getType(): Int = PRODUCT_ITEM_TYPE_BASIC
 
-    override fun getViewHolder(v: View): ProductItem.ViewHolder = ViewHolder(v)
+    override fun getViewHolder(v: View): ViewHolder = ViewHolder(v)
 
     override fun getLayoutRes(): Int = R.layout.item_product
 
@@ -32,6 +34,8 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
                     if (item.product.serialNumberScanRequired) View.VISIBLE else View.GONE
             itemView.product_serial_same.visibility =
                     if (item.product.equalSerialNumbersAreOk) View.VISIBLE else View.GONE
+            itemView.product_serial_pattern_used.visibility =
+                    if (item.product.serialNumberPattern != null) View.VISIBLE else View.GONE
         }
     }
 }
