@@ -8,7 +8,8 @@ import com.evartem.invoiceman.R
 import com.evartem.invoiceman.product.fragments.ProductDetailFragment.Companion.RESULT_ITEM_TYPE_BASIC
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import kotlinx.android.synthetic.main.item_result.view.*
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_result.*
 
 class ResultItem(val result: Result) : AbstractItem<ResultItem, ResultItem.ViewHolder>() {
 
@@ -20,19 +21,21 @@ class ResultItem(val result: Result) : AbstractItem<ResultItem, ResultItem.ViewH
 
     override fun getLayoutRes(): Int = R.layout.item_result
 
-    class ViewHolder(view: View) : FastAdapter.ViewHolder<ResultItem>(view) {
+    class ViewHolder(override val containerView: View) : FastAdapter.ViewHolder<ResultItem>(containerView),
+        LayoutContainer {
+
         override fun unbindView(item: ResultItem) = Unit
 
         override fun bindView(item: ResultItem, payloads: MutableList<Any>) {
 
-            itemView.result_serial.text = item.result.serial
+            result_serial.text = item.result.serial
 
             if (item.result.comment != null) {
-                itemView.result_comment.text = item.result.comment
-                itemView.result_comment.visibility = View.VISIBLE
+                result_comment.text = item.result.comment
+                result_comment.visibility = View.VISIBLE
             } else {
-                itemView.result_comment.text = ""
-                itemView.result_comment.visibility = View.GONE
+                result_comment.text = ""
+                result_comment.visibility = View.GONE
             }
 
             itemView.background.setTint(

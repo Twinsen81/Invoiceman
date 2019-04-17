@@ -7,7 +7,8 @@ import com.evartem.invoiceman.invoice.fragments.InvoiceDetailFragment.Companion.
 import com.evartem.invoiceman.invoice.fragments.InvoiceDetailFragment.Companion.processingStatusBackground
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
-import kotlinx.android.synthetic.main.item_product.view.*
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_product.*
 
 class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.ViewHolder>() {
 
@@ -19,24 +20,26 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
 
     override fun getLayoutRes(): Int = R.layout.item_product
 
-    class ViewHolder(view: View) : FastAdapter.ViewHolder<ProductItem>(view) {
+    class ViewHolder(override val containerView: View) : FastAdapter.ViewHolder<ProductItem>(containerView),
+        LayoutContainer {
+
         override fun unbindView(item: ProductItem) = Unit
 
         override fun bindView(item: ProductItem, payloads: MutableList<Any>) {
-            itemView.product_article.text = item.product.article
-            itemView.product_description.text = item.product.description
+            product_article.text = item.product.article
+            product_description.text = item.product.description
 
-            itemView.product_qty.text = item.product.quantity.toString()
+            product_qty.text = item.product.quantity.toString()
             if (item.product.isProcessingStarted && !item.product.isProcessingFinished) {
-                itemView.product_qty_done.text = item.product.getResults().size.toString()
-                itemView.product_qty_done.visibility = View.VISIBLE
-                itemView.product_qty_of.visibility = View.VISIBLE
+                product_qty_done.text = item.product.getResults().size.toString()
+                product_qty_done.visibility = View.VISIBLE
+                product_qty_of.visibility = View.VISIBLE
             } else {
-                itemView.product_qty_done.visibility = View.GONE
-                itemView.product_qty_of.visibility = View.GONE
+                product_qty_done.visibility = View.GONE
+                product_qty_of.visibility = View.GONE
             }
 
-            itemView.item_product_card.background.setTint(
+            item_product_card.background.setTint(
                 when {
                     item.product.isProcessingFinishedSuccessfully ->
                         processingStatusBackground.finishedWithoutErrors
@@ -48,15 +51,15 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
                 }
             )
 
-            itemView.product_article_scan_required.visibility =
+            product_article_scan_required.visibility =
                 if (item.product.articleScanRequired) View.VISIBLE else View.GONE
-            itemView.product_has_serial.visibility =
+            product_has_serial.visibility =
                 if (item.product.hasSerialNumber) View.VISIBLE else View.GONE
-            itemView.product_serial_scan_required.visibility =
+            product_serial_scan_required.visibility =
                 if (item.product.serialNumberScanRequired) View.VISIBLE else View.GONE
-            itemView.product_serial_same.visibility =
+            product_serial_same.visibility =
                 if (item.product.equalSerialNumbersAreOk) View.VISIBLE else View.GONE
-            itemView.product_serial_pattern_used.visibility =
+            product_serial_pattern_used.visibility =
                 if (item.product.serialNumberPattern != null) View.VISIBLE else View.GONE
         }
     }
