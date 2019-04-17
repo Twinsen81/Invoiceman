@@ -30,8 +30,8 @@ open class ProductLocalModel(
         }
     }
 
-    fun deleteResult(result: ResultLocalModel) {
-        results.removeAll { it.id == result.id }
+    fun deleteResult(resultId: Int) {
+        results.removeAll { it.id == resultId }
     }
 
     fun deleteAllResults() {

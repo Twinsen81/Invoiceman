@@ -22,6 +22,11 @@ sealed class InvoiceGatewayResult {
     data class Invoice(val invoice: com.evartem.domain.entity.doc.Invoice) : InvoiceGatewayResult()
 
     /**
+     * The result of requesting a product from the local data source.
+     */
+    data class Product(val product: com.evartem.domain.entity.doc.Product) : InvoiceGatewayResult()
+
+    /**
      * The server confirmed that the user can start processing the invoice.
      */
     object AcceptConfirmed : InvoiceGatewayResult()
@@ -35,6 +40,12 @@ sealed class InvoiceGatewayResult {
      * The server confirmed successful receipt of the submitted results.
      */
     object SubmitSucceeded : InvoiceGatewayResult()
+
+    /**
+     * The operation on the result (add/update/delete) has been successfully completed.
+     */
+    data class ResultOperationSucceeded(val updatedProduct: com.evartem.domain.entity.doc.Product) :
+        InvoiceGatewayResult()
 
     /**
      * The description of the error occurred while executing a gateway request.

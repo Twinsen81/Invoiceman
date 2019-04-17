@@ -129,6 +129,9 @@ data class Product(
         results[indexToUpdate] = newResult
     }
 
+    val isProcessingStarted
+        get() = results.isNotEmpty()
+
     val isProcessingFinished
         get() = results.size == quantity
 
@@ -137,4 +140,8 @@ data class Product(
 
     val isProcessingFinishedSuccessfully
         get() = results.size == quantity && results.all { it.status == ResultStatus.COMPLETED }
+
+    val totalQuantityFinished
+        get() = results.size
+
 }

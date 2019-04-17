@@ -1,6 +1,7 @@
 package com.evartem.data.repository
 
 import com.evartem.data.local.model.InvoiceLocalModel
+import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.domain.gateway.GatewayError
 
 /**
@@ -15,9 +16,11 @@ sealed class InvoiceRepositoryResult {
     ) : InvoiceRepositoryResult()
 
     data class Invoice(val invoice: InvoiceLocalModel) : InvoiceRepositoryResult()
+    data class Product(val product: ProductLocalModel) : InvoiceRepositoryResult()
 
     object AcceptConfirmed : InvoiceRepositoryResult()
     object ReturnConfirmed : InvoiceRepositoryResult()
+    data class ResultOperationSucceeded(val updatedProduct: ProductLocalModel) : InvoiceRepositoryResult()
 
     data class Error(val gatewayError: GatewayError) : InvoiceRepositoryResult()
 }

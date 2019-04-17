@@ -5,6 +5,7 @@
         android:layout_width="match_parent"
         android:background="@drawable/seamless_background"
         android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:focusableInTouchMode="true"
         tools:context=".login.LoginFragment">
 
     <TextView
@@ -23,10 +24,11 @@
             android:id="@+id/password"
             style="@style/Widget.MaterialComponents.TextInputEditText.OutlinedBox.Dense"
             android:background="@color/semiTransparentBackground" tools:text="password"
-            android:text="password" android:textAlignment="center"
+            android:textAlignment="center"
             app:layout_constraintStart_toStartOf="@+id/email"
             android:hint="@string/enter_your_password"
             android:inputType="textPassword"
+            android:text="demo@invoiceman.com"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" android:focusableInTouchMode="false"/>
     <Button

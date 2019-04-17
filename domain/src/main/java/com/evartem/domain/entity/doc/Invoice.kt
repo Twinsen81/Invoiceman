@@ -26,8 +26,8 @@ data class Invoice (
     val scanCopyUrl: String? = null,
     val comment: String? = null
 ) {
-    val isProcessingFinished
-        get() = products.all { it.isProcessingFinished }
+    val isProcessingStarted
+        get() = products.any { it.isProcessingStarted }
 
     val isProcessingFinishedWithErrors
         get() = isProcessingFinished && products.any { it.isProcessingFinishedWithErrors }
@@ -37,4 +37,10 @@ data class Invoice (
 
     val totalProductsQuantity
         get() = products.sumBy { it.quantity }
+
+    val totalProductsQuantityFinished
+        get() = products.sumBy { it.totalQuantityFinished }
+
+    val isProcessingFinished
+        get() = products.all { it.isProcessingFinished }
 }

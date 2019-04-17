@@ -133,15 +133,15 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
      */
     open fun onBackPressed(): Boolean = false
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         subscribeToViewModel()
         onSetupUiEvents()
         subscribeToUiEvents()
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         uiEvents.clear()
         disposables.clear()
     }
