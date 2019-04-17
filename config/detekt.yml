@@ -109,8 +109,8 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    thresholdInFiles: 17
-    thresholdInClasses: 17
+    thresholdInFiles: 25
+    thresholdInClasses: 25
     thresholdInInterfaces: 17
     thresholdInObjects: 17
     thresholdInEnums: 11
@@ -259,7 +259,7 @@ formatting:
     active: true
     autoCorrect: true
   NoWildcardImports:
-    active: true
+    active: false
     autoCorrect: true
   PackageName:
     active: true
