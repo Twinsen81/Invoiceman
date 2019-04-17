@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/product_info_panel"
+                android:id="@+id/invoice_info_panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="3dp"
@@ -45,7 +45,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/progress_and_qty"
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center_vertical"
                     android:layout_marginTop="4dp"
@@ -266,7 +266,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/product_info_panel"
+                app:layout_constraintTop_toBottomOf="@id/invoice_info_panel"
                 tools:listitem="@layout/item_result"/>
 
 

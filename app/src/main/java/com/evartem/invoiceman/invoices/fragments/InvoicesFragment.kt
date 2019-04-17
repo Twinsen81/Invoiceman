@@ -17,10 +17,7 @@ import com.evartem.invoiceman.invoices.mvi.InvoicesEvent
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiEffect
 import com.evartem.invoiceman.invoices.mvi.InvoicesUiState
 import com.evartem.invoiceman.invoices.mvi.InvoicesViewModel
-import com.evartem.invoiceman.util.SessionManager
-import com.evartem.invoiceman.util.StatusDialog
-import com.evartem.invoiceman.util.hideKeyboard
-import com.evartem.invoiceman.util.itemClicks
+import com.evartem.invoiceman.util.*
 import com.jakewharton.rxbinding3.appcompat.queryTextChangeEvents
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.jakewharton.rxbinding3.view.clicks
@@ -45,8 +42,8 @@ import java.util.concurrent.TimeUnit
 class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, InvoicesEvent>() {
 
     companion object {
-        // A FastAdapter item type
         const val INVOICE_ITEM_TYPE_BASIC = 1
+        lateinit var processingStatusBackground: ProcessingStatusBackground
     }
 
     /**
@@ -88,9 +85,10 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         super.onActivityCreated(savedInstanceState)
 
         setupRecyclerView()
-        setupRecyclerViewAsyncRenderingWithDiff()
 
         statusDialog = StatusDialog(context!!)
+
+        processingStatusBackground = ProcessingStatusBackground(context!!)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -102,7 +100,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
     override fun onResume() {
         super.onResume()
 
-        // The user has come back from the invoiceDetail fragment where he possibly changed
+        // The user has come back from the InvoiceDetail fragment where he possibly changed
         // the state of invoices (accepted, returned or submitted) - hence, reload data
         // from the local data source to reflect those changes
         if (fragmentOptions.reloadDataOnResume && reloadDataOnResume) {
@@ -138,6 +136,8 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
                         linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0)
             }
         })
+
+        setupRecyclerViewAsyncRenderingWithDiff()
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {

@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +38,9 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_invoice_detail.*
+import kotlinx.android.synthetic.main.fragment_invoice_detail.bottomAppBar
+import kotlinx.android.synthetic.main.fragment_invoice_detail.fab
+import kotlinx.android.synthetic.main.fragment_invoice_detail.invoice_info_panel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -48,6 +50,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
 
     companion object {
         const val PRODUCT_ITEM_TYPE_BASIC = 1
+        lateinit var processingStatusBackground: ProcessingStatusBackground
     }
 
     private val viewModel by viewModel<InvoiceDetailViewModel>()
@@ -58,20 +61,52 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
     private var disposables: CompositeDisposable = CompositeDisposable()
     private val uiStates: PublishSubject<InvoiceDetailUiState> = PublishSubject.create()
 
+    /**
+     * By default, upon resume the fragment just renders the last UI state. If this property is true,
+     * then the data is also refreshed upon resume (since the data might have changed by now).
+     */
+    private var reloadDataOnResume: Boolean = false
+
     private lateinit var statusDialog: StatusDialog
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_invoice_detail, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        savedInstanceState?.let {
+            reloadDataOnResume = it.getBoolean("reloadDataOnResume", false)
+        }
+
+        return inflater.inflate(R.layout.fragment_invoice_detail, container, false)
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         setupRecyclerView()
-        setupRecyclerViewAsyncRenderingWithDiff()
 
         configureBottomAppBar()
 
         statusDialog = StatusDialog(context!!)
+
+        processingStatusBackground = ProcessingStatusBackground(context!!)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean("reloadDataOnResume", reloadDataOnResume)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // The user has come back from the ProductDetail fragment where he possibly changed
+        // the state of products (add/edit/delete results) - hence, reload data
+        // from the local data source to reflect those changes
+        if (reloadDataOnResume) {
+            reloadDataOnResume = false
+            viewModel.addEvent(InvoiceDetailEvent.LoadScreen)
+            return
+        }
     }
 
     private fun configureBottomAppBar() {
@@ -102,6 +137,8 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             item.product.article.contains(constraint ?: "", true) ||
                     item.product.description.contains(constraint ?: "", true)
         }
+
+        setupRecyclerViewAsyncRenderingWithDiff()
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
@@ -213,6 +250,15 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         invoice_number.text = uiState.invoice.number.toString()
         invoice_date.text = uiState.invoice.date
 
+        invoice_info_panel.background.setTint(
+        when {
+            uiState.invoice.isProcessingFinishedSuccessfully ->
+                processingStatusBackground.finishedWithoutErrors
+            uiState.invoice.isProcessingFinishedWithErrors ->
+                processingStatusBackground.finishedWithErrors
+            else -> processingStatusBackground.notEvenStarted
+        })
+
         if (uiState.isBeingProcessedByUser) {
             invoice_action_accept.visibility = View.GONE
             invoice_action_return.visibility = View.VISIBLE
@@ -249,6 +295,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         when (uiEffect) {
             is InvoiceDetailUiEffect.ProductClick -> {
                 sessionManager.setProduct(uiEffect.product)
+                reloadDataOnResume = true
                 findNavController().navigate(R.id.action_destination_invoiceDetail_to_productDetailFragment)
             }
             is InvoiceDetailUiEffect.Error -> {

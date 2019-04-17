@@ -1,17 +1,16 @@
 package com.evartem.invoiceman.product.fragments
 
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.domain.entity.doc.Product
-import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
@@ -20,9 +19,11 @@ import com.evartem.invoiceman.product.mvi.ProductDetailEvent
 import com.evartem.invoiceman.product.mvi.ProductDetailUiEffect
 import com.evartem.invoiceman.product.mvi.ProductDetailUiState
 import com.evartem.invoiceman.product.mvi.ProductDetailViewModel
+import com.evartem.invoiceman.util.ProcessingStatusBackground
 import com.evartem.invoiceman.util.SessionManager
 import com.evartem.invoiceman.util.StatusDialog
 import com.evartem.invoiceman.util.getErrorMessageForUi
+import com.google.android.material.snackbar.Snackbar
 import com.jakewharton.rxbinding3.view.clicks
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
@@ -41,7 +42,6 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import kotlinx.android.synthetic.main.fragment_product_detail.bottomAppBar
 import kotlinx.android.synthetic.main.fragment_product_detail.fab
-import kotlinx.android.synthetic.main.item_result.*
 import kotlinx.android.synthetic.main.item_result.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -53,6 +53,8 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
 
     companion object {
         const val RESULT_ITEM_TYPE_BASIC = 1
+
+        lateinit var processingStatusBackground: ProcessingStatusBackground
     }
 
     private val viewModel by viewModel<ProductDetailViewModel>()
@@ -74,11 +76,38 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         super.onActivityCreated(savedInstanceState)
 
         setupRecyclerView()
-        setupRecyclerViewAsyncRenderingWithDiff()
+
+        setupBadgeHints()
 
         configureBottomAppBar()
 
         statusDialog = StatusDialog(context!!)
+
+        processingStatusBackground = ProcessingStatusBackground(context!!)
+    }
+
+    private fun setupBadgeHints() {
+        product_article_scan_required.setOnClickListener {
+            showHintSnackbar(R.string.product_scan_article_hint)
+        }
+        product_has_serial.setOnClickListener {
+            showHintSnackbar(R.string.product_has_serial_hint)
+        }
+        product_serial_scan_required.setOnClickListener {
+            showHintSnackbar(R.string.product_scan_serial_hint)
+        }
+        product_serial_same.setOnClickListener {
+            showHintSnackbar(R.string.product_same_serial_hint)
+        }
+        product_serial_pattern_used.setOnClickListener {
+            showHintSnackbar(R.string.product_serial_pattern_hint)
+        }
+    }
+
+    private fun showHintSnackbar(@StringRes resId: Int) {
+        Snackbar.make(view!!, resId, Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.got_it) {}
+            .show()
     }
 
     private fun configureBottomAppBar() {
@@ -121,6 +150,8 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
                     resultOperationEvents.onNext(ProductDetailEvent.EditResult(item!!.result.id))
             }
         })
+
+        setupRecyclerViewAsyncRenderingWithDiff()
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
@@ -185,20 +216,15 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         else
             fab.show()
 
-        when {
-            uiState.product.isProcessingFinishedSuccessfully ->
-            {
-                product_info_panel.background.setTint(
-                    ContextCompat.getColor(context!!, R.color.resultCompletedBackground))
+        invoice_info_panel.background.setTint(
+            when {
+                uiState.product.isProcessingFinishedSuccessfully ->
+                    processingStatusBackground.finishedWithoutErrors
+                uiState.product.isProcessingFinishedWithErrors ->
+                    processingStatusBackground.finishedWithErrors
+                else -> processingStatusBackground.notEvenStarted
             }
-            uiState.product.isProcessingFinishedWithErrors -> {
-                product_info_panel.background = GradientDrawable(
-                    GradientDrawable.Orientation.BR_TL, arrayOf(ContextCompat.getColor(context!!, R.color.resultCompletedBackground),
-                        ContextCompat.getColor(context!!, R.color.resultFailedBackground)).toIntArray())
-            }
-            else -> product_info_panel.background.setTint(
-                ContextCompat.getColor(context!!, R.color.semiTransparentBackground))
-        }
+        )
 
         product_article_scan_required.visibility =
             if (uiState.product.articleScanRequired) View.VISIBLE else View.GONE
