@@ -1,5 +1,7 @@
 package com.evartem.invoiceman.di
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.evartem.backendsim.InvoiceBackendSimulation
 import com.evartem.data.gateway.InvoiceGatewayImpl
 import com.evartem.data.gateway.mapper.InvoiceMapperToGatewayResult
@@ -16,8 +18,10 @@ import com.evartem.invoiceman.product.mvi.ProductDetailViewModel
 import com.evartem.invoiceman.util.DEMO_USER
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Scheduler
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val viewModelModule: Module = module {
@@ -78,7 +82,15 @@ val networkModule: Module = module {
 }
 
 val commonModule: Module = module {
-    single { SessionManager() }
+    single { SessionManager(sharedPrefs = get(named("session"))) }
+
+    single<SharedPreferences>(named("session")) {
+        androidContext().getSharedPreferences(
+            "session",
+            Context.MODE_PRIVATE
+        )
+    }
+
     single<Schedulers> {
         object : Schedulers {
             override val subscribeOn: Scheduler
