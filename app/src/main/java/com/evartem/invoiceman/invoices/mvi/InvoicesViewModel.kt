@@ -48,9 +48,7 @@ class InvoicesViewModel(
         try {
             val invoice = uiState.value?.invoices?.first { it.id == event.invoiceId }
             addUiEffect(InvoicesUiEffect.InvoiceClick(invoice!!))
-        }
-        catch (exception: NoSuchElementException)
-        {
+        } catch (exception: NoSuchElementException) {
             Timber.wtf(exception, "The clicked invoice:${event.invoiceId} is not found in the uiState")
         }
         return relay(event)

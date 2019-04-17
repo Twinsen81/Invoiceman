@@ -13,14 +13,14 @@ class SessionManager {
     private var currentInvoice: Invoice? = null
     private var currentProduct: Product? = null
 
-    fun setInvoice(invoice: Invoice)  {
+    fun setInvoice(invoice: Invoice) {
         currentInvoice = invoice.copy()
     }
 
     fun getInvoice(): Invoice = currentInvoice!!
     fun getInvoiceId(): String = currentInvoice!!.id
 
-    fun setProduct(product: Product)  {
+    fun setProduct(product: Product) {
         currentProduct = product.copy()
     }
 

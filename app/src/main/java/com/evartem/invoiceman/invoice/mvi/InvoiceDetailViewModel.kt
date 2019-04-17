@@ -51,19 +51,14 @@ class InvoiceDetailViewModel(
             } else true
 
     private fun onProductClicked(event: InvoiceDetailEvent.Click): Observable<InvoiceDetailViewModelResult> {
-        if (uiState.value?.isBeingProcessedByUser == true)
-        {
+        if (uiState.value?.isBeingProcessedByUser == true) {
             try {
                 val product = uiState.value?.invoice?.products?.first { it.id == event.productId }
                 addUiEffect(InvoiceDetailUiEffect.ProductClick(product!!))
-            }
-            catch (exception: NoSuchElementException)
-            {
+            } catch (exception: NoSuchElementException) {
                 Timber.wtf(exception, "The clicked product:${event.productId} is not found in the uiState")
             }
-        }
-
-        else
+        } else
             addUiEffect(InvoiceDetailUiEffect.NotAcceptedYetMessage)
         return relay(event)
     }

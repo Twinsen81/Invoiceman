@@ -143,5 +143,4 @@ data class Product(
 
     val totalQuantityFinished
         get() = results.size
-
 }

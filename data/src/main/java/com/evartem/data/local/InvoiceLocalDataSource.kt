@@ -36,7 +36,7 @@ class InvoiceLocalDataSource {
      * Get the product by its ID.
      */
     fun getProduct(invoiceId: String, productId: Int): Single<ProductLocalModel> {
-        var product : ProductLocalModel? = null
+        var product: ProductLocalModel? = null
         Realm.getDefaultInstance().use { realm ->
             // A detached from Realm copy of the invoice that won't be updated by Realm anymore
             val invoice = realm.copyFromRealm(
@@ -115,8 +115,8 @@ class InvoiceLocalDataSource {
      *
      * @return the updated product
      */
-    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: ResultLocalModel) : Single<ProductLocalModel> {
-        var product : ProductLocalModel? = null
+    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: ResultLocalModel): Single<ProductLocalModel> {
+        var product: ProductLocalModel? = null
         doForProduct(invoiceId, productId) {
             it.insertOrUpdateResult(result)
             product = it.realm.copyFromRealm(it)
@@ -129,8 +129,8 @@ class InvoiceLocalDataSource {
      *
      * @return the updated product
      */
-    fun deleteResult(invoiceId: String, productId: Int, resultId: Int) : Single<ProductLocalModel> {
-        var product : ProductLocalModel? = null
+    fun deleteResult(invoiceId: String, productId: Int, resultId: Int): Single<ProductLocalModel> {
+        var product: ProductLocalModel? = null
         doForProduct(invoiceId, productId) {
             it.deleteResult(resultId)
             product = it.realm.copyFromRealm(it)
@@ -159,7 +159,8 @@ class InvoiceLocalDataSource {
             val invoice = realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()
             val product =
                 invoice?.products?.findLast { product -> product.id == productId }
-                    ?: throw IllegalArgumentException("Unable to find the product with id=$productId for invoice id=$invoiceId")
+                    ?: throw IllegalArgumentException("Unable to find the product with " +
+                            "id=$productId for invoice id=$invoiceId")
 
             realm.executeTransaction {
                 block(product)

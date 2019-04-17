@@ -2,12 +2,10 @@ package com.evartem.data.repository
 
 import com.evartem.data.local.InvoiceLocalDataSource
 import com.evartem.data.local.model.InvoiceLocalModel
-import com.evartem.data.local.model.ProductLocalModel
 import com.evartem.data.local.model.ResultLocalModel
 import com.evartem.data.remote.api.InvoiceService
 import com.evartem.data.repository.mapper.InvoiceMapperToRepoResult
 import com.evartem.domain.entity.auth.User
-import com.evartem.domain.entity.doc.Result
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 

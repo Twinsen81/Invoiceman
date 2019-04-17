@@ -47,7 +47,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         lateinit var processingStatusBackground: ProcessingStatusBackground
     }
 
-    //The options define the fragment's behaviour. Passed by the parent through [setArguments]
+    // The options define the fragment's behaviour. Passed by the parent through [setArguments]
     private lateinit var fragmentOptions: InvoicesFragmentOptions
 
     private val viewModel by sharedViewModel<InvoicesViewModel>(from = { parentFragment!! })

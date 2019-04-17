@@ -44,7 +44,7 @@ open class ProductLocalModel(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        //if (javaClass != other?.javaClass) return false // Will always be false, since Realm changes the class type
+        // if (javaClass != other?.javaClass) return false // Will always be false, since Realm changes the class type
 
         other as ProductLocalModel
 

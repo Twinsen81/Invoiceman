@@ -19,6 +19,6 @@ val DEMO_USER = User(
                 Permission.EDIT_RESULT
             )
         )
-    )
-    , UserStatus.READY
+    ),
+    UserStatus.READY
 )

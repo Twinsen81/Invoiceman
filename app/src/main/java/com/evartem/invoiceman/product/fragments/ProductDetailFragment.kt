@@ -40,8 +40,6 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_product_detail.*
-import kotlinx.android.synthetic.main.fragment_product_detail.bottomAppBar
-import kotlinx.android.synthetic.main.fragment_product_detail.fab
 import kotlinx.android.synthetic.main.item_result.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -222,7 +220,6 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
 
         product_article.text = uiState.product.article
         product_description.text = uiState.product.description
-
 
         product_qty_done.text = uiState.product.getResults().size.toString()
         product_qty.text = uiState.product.quantity.toString()

@@ -2,8 +2,6 @@ package com.evartem.invoiceman.util
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
@@ -14,7 +12,6 @@ import com.bumptech.glide.module.AppGlideModule
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.evartem.invoiceman.R
-import com.evartem.invoiceman.product.fragments.ProductDetailFragment
 
 @GlideModule
 class TheAppGlideModule : AppGlideModule() {

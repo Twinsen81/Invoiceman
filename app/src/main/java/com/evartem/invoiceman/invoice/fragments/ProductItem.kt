@@ -31,8 +31,7 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
                 itemView.product_qty_done.text = item.product.getResults().size.toString()
                 itemView.product_qty_done.visibility = View.VISIBLE
                 itemView.product_qty_of.visibility = View.VISIBLE
-            } else
-            {
+            } else {
                 itemView.product_qty_done.visibility = View.GONE
                 itemView.product_qty_of.visibility = View.GONE
             }
