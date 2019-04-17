@@ -53,7 +53,6 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
 
     companion object {
         const val RESULT_ITEM_TYPE_BASIC = 1
-
         lateinit var processingStatusBackground: ProcessingStatusBackground
     }
 
@@ -63,62 +62,34 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
     private lateinit var itemsAdapter: ItemAdapter<ResultItem>
 
     private var disposables: CompositeDisposable = CompositeDisposable()
-    private val uiStates: PublishSubject<ProductDetailUiState> = PublishSubject.create()
+
+    // A subject to diff and render the recycler view asynchronously
+    private val resultsObservable: PublishSubject<ProductDetailUiState> = PublishSubject.create()
 
     private val resultOperationEvents: PublishSubject<ProductDetailEvent> = PublishSubject.create()
 
     private lateinit var statusDialog: StatusDialog
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_product_detail, container, false)
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setupRecyclerView()
-
-        setupBadgeHints()
-
-        configureBottomAppBar()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         statusDialog = StatusDialog(context!!)
 
         processingStatusBackground = ProcessingStatusBackground(context!!)
     }
 
-    private fun setupBadgeHints() {
-        product_article_scan_required.setOnClickListener {
-            showHintSnackbar(R.string.product_scan_article_hint)
-        }
-        product_has_serial.setOnClickListener {
-            showHintSnackbar(R.string.product_has_serial_hint)
-        }
-        product_serial_scan_required.setOnClickListener {
-            showHintSnackbar(R.string.product_scan_serial_hint)
-        }
-        product_serial_same.setOnClickListener {
-            showHintSnackbar(R.string.product_same_serial_hint)
-        }
-        product_serial_pattern_used.setOnClickListener {
-            showHintSnackbar(R.string.product_serial_pattern_hint)
-        }
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_product_detail, container, false)
 
-    private fun showHintSnackbar(@StringRes resId: Int) {
-        Snackbar.make(view!!, resId, Snackbar.LENGTH_INDEFINITE)
-            .setAction(R.string.got_it) {}
-            .show()
-    }
+    // KTX synthetic will work only from here (not in onCreateView)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    private fun configureBottomAppBar() {
-        bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
-        bottomAppBar.visibility = View.VISIBLE
-        fab.show()
+        setupRecyclerView()
 
-        bottomAppBar.setNavigationOnClickListener {
-            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
-            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
-        }
+        setupBadgeHints()
+
+        configureBottomAppBar()
     }
 
     private fun setupRecyclerView() {
@@ -150,12 +121,57 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
                     resultOperationEvents.onNext(ProductDetailEvent.EditResult(item!!.result.id))
             }
         })
+    }
+
+    private fun setupBadgeHints() {
+        product_article_scan_required.setOnClickListener {
+            showHintSnackbar(R.string.product_scan_article_hint)
+        }
+        product_has_serial.setOnClickListener {
+            showHintSnackbar(R.string.product_has_serial_hint)
+        }
+        product_serial_scan_required.setOnClickListener {
+            showHintSnackbar(R.string.product_scan_serial_hint)
+        }
+        product_serial_same.setOnClickListener {
+            showHintSnackbar(R.string.product_same_serial_hint)
+        }
+        product_serial_pattern_used.setOnClickListener {
+            showHintSnackbar(R.string.product_serial_pattern_hint)
+        }
+    }
+
+    private fun configureBottomAppBar() {
+        bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
+        bottomAppBar.visibility = View.VISIBLE
+        fab.show()
+
+        bottomAppBar.setNavigationOnClickListener {
+            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
+            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
+        }
+    }
+
+    private fun showHintSnackbar(@StringRes resId: Int) {
+        Snackbar.make(view!!, resId, Snackbar.LENGTH_INDEFINITE)
+            .setAction(R.string.got_it) {}
+            .show()
+    }
+
+    override fun getUiStateObservable(): Observable<ProductDetailUiState>? = viewModel.uiState
+
+    override fun getUiEffectObservable(): Observable<ProductDetailUiEffect>? = viewModel.uiEffects
+
+    override fun getUiEventsConsumer(): (ProductDetailEvent) -> Unit = viewModel::addEvent
+
+    override fun onStart() {
+        super.onStart()
 
         setupRecyclerViewAsyncRenderingWithDiff()
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
-        uiStates
+        resultsObservable
             .subscribeOn(Schedulers.io())
             .map { it.product.getResults() }
             .flatMap { listOfResults ->
@@ -200,7 +216,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
 
         // Render the recycler view asynchronously with diffing
         if (uiState.product.getResults().isNotEmpty())
-            uiStates.onNext(uiState)
+            resultsObservable.onNext(uiState)
         else // Diffing crashes when updating from an non-empty list -> empty
             itemsAdapter.clear()
 
@@ -277,17 +293,16 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         }
     }
 
-    override fun getUiStateObservable(): Observable<ProductDetailUiState>? = viewModel.uiState
-
-    override fun getUiEffectObservable(): Observable<ProductDetailUiEffect>? = viewModel.uiEffects
-
-    override fun getUiEventsConsumer(): (ProductDetailEvent) -> Unit = viewModel::addEvent
-
-    override fun onDestroyView() {
-        // Clear the reference to the adapter to prevent leaking this layout
-        results_recyclerView.adapter = null
+    override fun onStop() {
+        super.onStop()
 
         disposables.clear()
+    }
+
+    override fun onDestroyView() {
         super.onDestroyView()
+
+        // Clear the reference to the adapter to prevent FastAdapter leaking this layout
+        results_recyclerView.adapter = null
     }
 }

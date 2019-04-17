@@ -43,12 +43,11 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
     companion object {
         const val INVOICE_ITEM_TYPE_BASIC = 1
+        const val FRAGMENT_STATE_RELOAD_DATA_ON_RESUME = "reloadDataOnResume"
         lateinit var processingStatusBackground: ProcessingStatusBackground
     }
 
-    /**
-     * The options define the fragment's behaviour. Passed by the parent through [setArguments].
-     */
+    //The options define the fragment's behaviour. Passed by the parent through [setArguments]
     private lateinit var fragmentOptions: InvoicesFragmentOptions
 
     private val viewModel by sharedViewModel<InvoicesViewModel>(from = { parentFragment!! })
@@ -58,56 +57,37 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
     private var disposables: CompositeDisposable = CompositeDisposable()
 
-    /**
-     * A subject to diff and render the recycler view asynchronously.
-     */
-    private val listOfInvoices: PublishSubject<List<Invoice>> = PublishSubject.create()
+    // A subject to diff and render the recycler view asynchronously
+    private val invoicesObservable: PublishSubject<List<Invoice>> = PublishSubject.create()
 
-    /**
-     * By default, upon resume the fragment just renders the last UI state. If this property is true,
-     * then the data is also refreshed upon resume (since the data might have changed by now).
-     */
+    // By default, upon resume the fragment just renders the last UI state. If this property is true,
+    // then the data is also refreshed upon resume (since the data might have changed by now)
     private var reloadDataOnResume: Boolean = false
 
     private lateinit var statusDialog: StatusDialog
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         fragmentOptions = InvoicesFragmentOptions.fromBundle(arguments!!)
-
-        savedInstanceState?.let {
-            reloadDataOnResume = it.getBoolean("reloadDataOnResume", false)
-        }
-        return inflater.inflate(R.layout.fragment_invoices, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setupRecyclerView()
 
         statusDialog = StatusDialog(context!!)
 
         processingStatusBackground = ProcessingStatusBackground(context!!)
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putBoolean("reloadDataOnResume", reloadDataOnResume)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // The user has come back from the InvoiceDetail fragment where he possibly changed
-        // the state of invoices (accepted, returned or submitted) - hence, reload data
-        // from the local data source to reflect those changes
-        if (fragmentOptions.reloadDataOnResume && reloadDataOnResume) {
-            reloadDataOnResume = false
-            viewModel.addEvent(InvoicesEvent.LoadScreen(false))
-            return
+        savedInstanceState?.let {
+            reloadDataOnResume = it.getBoolean(FRAGMENT_STATE_RELOAD_DATA_ON_RESUME, false)
         }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_invoices, container, false)
+
+    // KTX synthetic will work only from here (not in onCreateView)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
@@ -127,8 +107,34 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
                     item.invoice.number.toString().contains(constraint ?: "", true) ||
                     item.invoice.date.contains(constraint ?: "", true)
         }
+    }
 
-        // Fix a problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
+    override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
+
+    override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
+
+    override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
+
+    override fun onStart() {
+        super.onStart()
+
+        setupRecyclerViewListeners()
+        setupRecyclerViewAsyncRenderingWithDiff()
+
+        // If the user has come back from the InvoiceDetail fragment where he possibly changed
+        // the state of invoices (accepted, returned or submitted) - reload data
+        // from the local data source to reflect those changes
+        if (fragmentOptions.reloadDataOnResume && reloadDataOnResume) {
+            reloadDataOnResume = false
+            viewModel.addEvent(InvoicesEvent.LoadScreen(false))
+            return
+        }
+    }
+
+    private fun setupRecyclerViewListeners() {
+        val linearLayoutManager = invoices_recyclerView.layoutManager as LinearLayoutManager
+
+        // Fix the problem when user scrolls up and upon reaching the top of the list the Refresh event is triggered
         invoices_recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -136,12 +142,10 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
                         linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0)
             }
         })
-
-        setupRecyclerViewAsyncRenderingWithDiff()
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
-        listOfInvoices
+        invoicesObservable
             .subscribeOn(Schedulers.io())
             .flatMap { listOfInvoices ->
                 Observable.fromIterable(listOfInvoices)
@@ -194,6 +198,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
                 .map { searchEvent -> InvoicesEvent.Search(searchEvent.queryText.toString()) })
     }
 
+    // Hide the searchView and the keyboard on the Back tap
     override fun onBackPressed(): Boolean {
         if (lifecycle.currentState != Lifecycle.State.RESUMED) return false
         return when {
@@ -210,7 +215,7 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
 
         // Render the recycler view asynchronously with diffing
         if (uiState.invoices.isNotEmpty())
-            listOfInvoices.onNext(uiState.invoices.filter {
+            invoicesObservable.onNext(uiState.invoices.filter {
                 if (fragmentOptions.filterTypeInProgress)
                     it.processedByUser == sessionManager.currentUser.id
                 else
@@ -263,16 +268,22 @@ class InvoicesFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Invoices
         }
     }
 
-    override fun getUiStateObservable(): Observable<InvoicesUiState>? = viewModel.uiState
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
 
-    override fun getUiEffectObservable(): Observable<InvoicesUiEffect>? = viewModel.uiEffects
+        outState.putBoolean(FRAGMENT_STATE_RELOAD_DATA_ON_RESUME, reloadDataOnResume)
+    }
 
-    override fun getUiEventsConsumer(): (InvoicesEvent) -> Unit = viewModel::addEvent
+    override fun onStop() {
+        super.onStop()
+
+        disposables.clear()
+    }
 
     override fun onDestroyView() {
-        // Clear the reference to the adapter to prevent leaking this layout
-        invoices_recyclerView.adapter = null
-        disposables.clear()
         super.onDestroyView()
+
+        // Clear the reference to the adapter to prevent FastAdapter leaking this layout
+        invoices_recyclerView.adapter = null
     }
 }

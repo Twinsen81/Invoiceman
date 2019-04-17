@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.evartem.domain.entity.doc.Product
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
 import com.evartem.invoiceman.invoice.mvi.InvoiceDetailEvent
@@ -50,6 +51,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
 
     companion object {
         const val PRODUCT_ITEM_TYPE_BASIC = 1
+        const val FRAGMENT_STATE_RELOAD_DATA_ON_RESUME = "reloadDataOnResume"
         lateinit var processingStatusBackground: ProcessingStatusBackground
     }
 
@@ -59,66 +61,38 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
     private lateinit var itemsAdapter: ItemAdapter<ProductItem>
 
     private var disposables: CompositeDisposable = CompositeDisposable()
-    private val uiStates: PublishSubject<InvoiceDetailUiState> = PublishSubject.create()
 
-    /**
-     * By default, upon resume the fragment just renders the last UI state. If this property is true,
-     * then the data is also refreshed upon resume (since the data might have changed by now).
-     */
+    // A subject to diff and render the recycler view asynchronously
+    private val productsObservable: PublishSubject<List<Product>> = PublishSubject.create()
+
+    // By default, upon resume the fragment just renders the last UI state. If this property is true,
+    // then the data is also refreshed upon resume (since the data might have changed by now).
     private var reloadDataOnResume: Boolean = false
 
     private lateinit var statusDialog: StatusDialog
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
-        savedInstanceState?.let {
-            reloadDataOnResume = it.getBoolean("reloadDataOnResume", false)
-        }
-
-        return inflater.inflate(R.layout.fragment_invoice_detail, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setupRecyclerView()
-
-        configureBottomAppBar()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         statusDialog = StatusDialog(context!!)
 
         processingStatusBackground = ProcessingStatusBackground(context!!)
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putBoolean("reloadDataOnResume", reloadDataOnResume)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // The user has come back from the ProductDetail fragment where he possibly changed
-        // the state of products (add/edit/delete results) - hence, reload data
-        // from the local data source to reflect those changes
-        if (reloadDataOnResume) {
-            reloadDataOnResume = false
-            viewModel.addEvent(InvoiceDetailEvent.LoadScreen)
-            return
+        savedInstanceState?.let {
+            reloadDataOnResume = it.getBoolean(FRAGMENT_STATE_RELOAD_DATA_ON_RESUME, false)
         }
     }
 
-    private fun configureBottomAppBar() {
-        bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
-        bottomAppBar.visibility = View.VISIBLE
-        bottomAppBar.replaceMenu(R.menu.invoice_detail)
-        fab.hide()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_invoice_detail, container, false)
 
-        bottomAppBar.setNavigationOnClickListener {
-            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
-            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
-        }
+    // KTX synthetic will work only from here (not in onCreateView)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+
+        configureBottomAppBar()
     }
 
     private fun setupRecyclerView() {
@@ -137,14 +111,44 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
             item.product.article.contains(constraint ?: "", true) ||
                     item.product.description.contains(constraint ?: "", true)
         }
+    }
+
+    private fun configureBottomAppBar() {
+        bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
+        bottomAppBar.visibility = View.VISIBLE
+        bottomAppBar.replaceMenu(R.menu.invoice_detail)
+        fab.hide()
+
+        bottomAppBar.setNavigationOnClickListener {
+            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
+            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
+        }
+    }
+
+    override fun getUiStateObservable(): Observable<InvoiceDetailUiState>? = viewModel.uiState
+
+    override fun getUiEffectObservable(): Observable<InvoiceDetailUiEffect>? = viewModel.uiEffects
+
+    override fun getUiEventsConsumer(): (InvoiceDetailEvent) -> Unit = viewModel::addEvent
+
+    override fun onStart() {
+        super.onStart()
 
         setupRecyclerViewAsyncRenderingWithDiff()
+
+        // If the user has come back from the ProductDetail fragment where he possibly changed
+        // the state of products (add/edit/delete results) - reload data
+        // from the local data source to reflect those changes
+        if (reloadDataOnResume) {
+            reloadDataOnResume = false
+            viewModel.addEvent(InvoiceDetailEvent.LoadScreen)
+            return
+        }
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
-        uiStates
+        productsObservable
             .subscribeOn(Schedulers.io())
-            .map { it.invoice.products }
             .flatMap { listOfProducts ->
                 Observable.fromIterable(listOfProducts)
                     .map { item -> ProductItem(item) }
@@ -211,6 +215,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
                 .map { InvoiceDetailEvent.Return })
     }
 
+    // Hide the searchView and the keyboard on the Back tap
     override fun onBackPressed(): Boolean {
         if (lifecycle.currentState != Lifecycle.State.RESUMED) return false
         return when {
@@ -227,7 +232,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
 
         // Render the recycler view asynchronously with diffing
         if (uiState.invoice.products.isNotEmpty())
-            uiStates.onNext(uiState)
+            productsObservable.onNext(uiState.invoice.products)
         else // Diffing crashes when updating from an non-empty list -> empty
             itemsAdapter.clear()
 
@@ -251,13 +256,14 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         invoice_date.text = uiState.invoice.date
 
         invoice_info_panel.background.setTint(
-        when {
-            uiState.invoice.isProcessingFinishedSuccessfully ->
-                processingStatusBackground.finishedWithoutErrors
-            uiState.invoice.isProcessingFinishedWithErrors ->
-                processingStatusBackground.finishedWithErrors
-            else -> processingStatusBackground.notEvenStarted
-        })
+            when {
+                uiState.invoice.isProcessingFinishedSuccessfully ->
+                    processingStatusBackground.finishedWithoutErrors
+                uiState.invoice.isProcessingFinishedWithErrors ->
+                    processingStatusBackground.finishedWithErrors
+                else -> processingStatusBackground.notEvenStarted
+            }
+        )
 
         if (uiState.isBeingProcessedByUser) {
             invoice_action_accept.visibility = View.GONE
@@ -311,17 +317,22 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         }
     }
 
-    override fun getUiStateObservable(): Observable<InvoiceDetailUiState>? = viewModel.uiState
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
 
-    override fun getUiEffectObservable(): Observable<InvoiceDetailUiEffect>? = viewModel.uiEffects
+        outState.putBoolean(FRAGMENT_STATE_RELOAD_DATA_ON_RESUME, reloadDataOnResume)
+    }
 
-    override fun getUiEventsConsumer(): (InvoiceDetailEvent) -> Unit = viewModel::addEvent
-
-    override fun onDestroyView() {
-        // Clear the reference to the adapter to prevent leaking this layout
-        products_recyclerView.adapter = null
+    override fun onStop() {
+        super.onStop()
 
         disposables.clear()
+    }
+
+    override fun onDestroyView() {
         super.onDestroyView()
+
+        // Clear the reference to the adapter to prevent FastAdapter leaking this layout
+        products_recyclerView.adapter = null
     }
 }
