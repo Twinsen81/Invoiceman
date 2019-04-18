@@ -234,7 +234,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         else
             fab.show()
 
-        product_info_panel.background =
+        product_info_panel.setBackgroundColor(
             when {
                 uiState.product.isProcessingFinishedSuccessfully ->
                     processingStatusBackground.finishedWithoutErrors
@@ -242,6 +242,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
                     processingStatusBackground.finishedWithErrors
                 else -> processingStatusBackground.notEvenStarted
             }
+        )
 
         product_article_scan_required.visibility =
             if (uiState.product.articleScanRequired) View.VISIBLE else View.GONE
@@ -278,6 +279,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         }
     }
 
+    // TODO: DOES NOT WORK WELL! Replace this with a camera view inside your layout!
     private fun startBarcodeScanner() {
         val integrator = IntentIntegrator.forSupportFragment(this)
         integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES)

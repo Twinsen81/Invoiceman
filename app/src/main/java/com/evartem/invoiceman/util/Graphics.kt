@@ -40,6 +40,31 @@ class ProcessingStatusBackground(context: Context) {
 
     val finishedWithErrors
         get() = finishedWithErrorsInternal
+    private var finishedWithErrorsInternal = ContextCompat.getColor(context, R.color.gotFailedBackground)
+
+    val finishedWithoutErrors
+        get() = finishedWithoutErrorsInternal
+    private var finishedWithoutErrorsInternal = ContextCompat.getColor(context, R.color.resultCompletedBackground)
+
+    val startedButNotFinishedYet
+        get() = startedButNotFinishedYetInternal
+    private var startedButNotFinishedYetInternal = ContextCompat.getColor(context, R.color.inProgressBackground)
+
+    val notEvenStarted
+        get() = notEvenStartedInternal
+    private var notEvenStartedInternal = ContextCompat.getColor(context, R.color.semiTransparentBackground)
+
+    val resultCompleted
+        get() = resultCompletedInternal
+    private var resultCompletedInternal = ContextCompat.getColor(context, R.color.resultCompletedBackground)
+
+    val resultFailed
+        get() = resultFailedInternal
+    private var resultFailedInternal = ContextCompat.getColor(context, R.color.resultFailedBackground)
+}/*class ProcessingStatusBackground(context: Context) {
+
+    val finishedWithErrors
+        get() = finishedWithErrorsInternal
     private var finishedWithErrorsInternal = ColorDrawable(ContextCompat.getColor(context, R.color.gotFailedBackground))
 
     val finishedWithoutErrors
@@ -61,4 +86,4 @@ class ProcessingStatusBackground(context: Context) {
     val resultFailed
         get() = resultFailedInternal
     private var resultFailedInternal = ColorDrawable(ContextCompat.getColor(context, R.color.resultFailedBackground))
-}
+}*/

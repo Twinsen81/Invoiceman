@@ -43,7 +43,7 @@ class InvoiceItem(val invoice: Invoice) : AbstractItem<InvoiceItem, InvoiceItem.
                 visibility = if (item.invoice.comment != null) View.VISIBLE else View.GONE
             }
 
-            item_invoice_card.background =
+            item_invoice_card.setCardBackgroundColor(
                 when {
                     item.invoice.isProcessingFinishedSuccessfully ->
                         processingStatusBackground.finishedWithoutErrors
@@ -53,6 +53,7 @@ class InvoiceItem(val invoice: Invoice) : AbstractItem<InvoiceItem, InvoiceItem.
                         processingStatusBackground.startedButNotFinishedYet
                     else -> processingStatusBackground.notEvenStarted
                 }
+            )
 
             if (item.invoice.products.isNotEmpty()) {
                 invoice_products_list.visibility = View.VISIBLE
