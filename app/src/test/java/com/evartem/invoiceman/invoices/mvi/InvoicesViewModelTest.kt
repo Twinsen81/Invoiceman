@@ -383,7 +383,7 @@ class InvoicesViewModelTest {
         // and receive the click effect with proper invoice ID
         testObserverUiEffect.awaitCount(1)
             .assertNoErrors()
-            .assertValue(InvoicesUiEffect.InvoiceClick(testDataEntity.invoice1.id))
+            .assertValue(InvoicesUiEffect.InvoiceClick(testDataEntity.invoice1))
 
         Mockito.verify(getInvoicesUseCase, Times(1)).execute(Pair(sessionManager.currentUser, true))
 
