@@ -55,7 +55,6 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
     }
 
     private val viewModel by viewModel<ProductDetailViewModel>()
-    private val sessionManager: SessionManager by inject()
 
     private lateinit var itemsAdapter: ItemAdapter<ResultItem>
 
