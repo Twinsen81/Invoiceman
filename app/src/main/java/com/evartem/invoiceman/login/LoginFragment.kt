@@ -7,10 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import com.evartem.domain.entity.auth.Group
+import com.evartem.domain.entity.auth.Permission
+import com.evartem.domain.entity.auth.User
+import com.evartem.domain.entity.auth.UserStatus
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.util.SessionManager
 import kotlinx.android.synthetic.main.fragment_login.*
-import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 
 class LoginFragment : Fragment() {
@@ -21,15 +24,49 @@ class LoginFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_login, container, false)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    /*override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
 
-        // TODO: Implement authorization trough Auth0.com
+
+
+    }*/
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
         buttonSignIn.setOnClickListener {
             buttonSignIn.isEnabled = false
-            sessionManager.currentUser = get() // injecting DEMO_USER
+            login()
             findNavController().navigate(R.id.action_invoices)
         }
+    }
+
+    // TODO: Implement authorization trough Auth0.com
+    private fun login() {
+        sessionManager.currentUser = User(
+            if (email.text.isNotBlank()) email.text.toString() else "demo@invoiceman.com",
+            "Demo Demov",
+            "http://www.avatarsdb.com/avatars/einteins_tongue.jpg", "Warehouse worker",
+            listOf(
+                Group(
+                    1,
+                    "Simple worker",
+                    listOf(
+                        Permission.VIEW_INVOICE,
+                        Permission.PROCESS_INVOICE,
+                        Permission.ENTER_SERIAL_MANUALLY,
+                        Permission.EDIT_RESULT
+                    )
+                )
+            ),
+            UserStatus.READY
+        )
     }
 }
