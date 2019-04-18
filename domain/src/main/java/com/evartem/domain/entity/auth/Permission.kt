@@ -8,6 +8,6 @@ enum class Permission {
     /** view existing invoices */ VIEW_INVOICE,
     /** edit an invoice */ EDIT_INVOICE,
     /** process an invoice - add serials to products */ PROCESS_INVOICE,
-    /** edit the result (serials) */  EDIT_RESULT,
+    /** edit the result (serials) */ EDIT_RESULT,
     /** enter serials manually */ ENTER_SERIAL_MANUALLY
 }

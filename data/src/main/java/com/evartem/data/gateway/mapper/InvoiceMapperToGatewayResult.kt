@@ -2,6 +2,8 @@ package com.evartem.data.gateway.mapper
 
 import com.evartem.data.local.model.InvoiceLocalModel
 import com.evartem.data.local.model.ProductLocalModel
+import com.evartem.data.local.model.ResultLocalModel
+import com.evartem.data.local.model.ResultStatusLocalModel
 import com.evartem.data.repository.InvoiceRepositoryResult
 import com.evartem.domain.entity.doc.Invoice
 import com.evartem.domain.entity.doc.Product
@@ -22,12 +24,20 @@ class InvoiceMapperToGatewayResult {
             is InvoiceRepositoryResult.Invoice -> repoResult.let {
                 InvoiceGatewayResult.Invoice(localToEntity(it.invoice))
             }
+            is InvoiceRepositoryResult.Product -> repoResult.let {
+                InvoiceGatewayResult.Product(productLocalToEntity(it.product))
+            }
             is InvoiceRepositoryResult.Error -> repoResult.let {
                 InvoiceGatewayResult.Error(it.gatewayError)
             }
             is InvoiceRepositoryResult.AcceptConfirmed -> InvoiceGatewayResult.AcceptConfirmed
             is InvoiceRepositoryResult.ReturnConfirmed -> InvoiceGatewayResult.ReturnConfirmed
+            is InvoiceRepositoryResult.ResultOperationSucceeded ->
+                InvoiceGatewayResult.ResultOperationSucceeded(productLocalToEntity(repoResult.updatedProduct))
         }
+
+    fun entityToLocal(entity: Result) =
+        ResultLocalModel(entity.id, ResultStatusLocalModel(entity.status.ordinal), entity.serial, entity.comment)
 
     private fun localToEntity(localModel: List<InvoiceLocalModel>) =
         localModel.map { localToEntity(it) }

@@ -16,7 +16,7 @@ fun getErrorMessageForUi(resources: Resources, gatewayError: GatewayError?): Str
         GatewayErrorCode.NOT_FOUND -> R.string.network_error_not_found.resToString(resources)
         GatewayErrorCode.ALREADY_TAKEN_BY_OTHER -> R.string.network_error_taken.resToString(resources)
         GatewayErrorCode.INTERNAL_SERVER_ERROR -> R.string.network_error_server.resToString(resources)
-        GatewayErrorCode.GENERAL_NETWORK_ERROR -> R.string.network_error_server_not_available.resToString(resources)
+        GatewayErrorCode.GENERAL_ERROR -> R.string.network_error_server_not_available.resToString(resources)
         GatewayErrorCode.WRONG_SERVER_RESPONSE -> R.string.network_error_server_wrong_response.resToString(resources)
         else -> R.string.network_error_general.resToString(resources).format(gatewayError.code.value)
     }

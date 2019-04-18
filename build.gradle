@@ -9,7 +9,7 @@ buildscript {
     dependencies {
         apply from: 'config/android.gradle'
         apply from: 'config/dependencies.gradle'
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:3.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$compiler.kotlin"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$compiler.dokka"
         classpath "io.realm:realm-gradle-plugin:5.9.1"

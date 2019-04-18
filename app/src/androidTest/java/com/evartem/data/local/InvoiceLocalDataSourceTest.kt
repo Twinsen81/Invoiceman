@@ -193,7 +193,7 @@ class InvoiceLocalDataSourceTest {
         localDataSource.insertOrUpdateInvoice(testData.invoice1)
 
         // WHEN deleting a result form the invoice
-        localDataSource.deleteResult(testData.invoice1.id, 1, testData.result1)
+        localDataSource.deleteResult(testData.invoice1.id, 1, testData.result1.id)
 
         // SHOULD retrieve the invoice without the deleted result
         localDataSource.getInvoices()
@@ -214,7 +214,7 @@ class InvoiceLocalDataSourceTest {
         // WHEN delete a result from a non-existent invoice
         // SHOULD throw an IllegalArgumentException
         exception.expect(IllegalArgumentException::class.java)
-        localDataSource.deleteResult("no-such-id", 1, testData.result1)
+        localDataSource.deleteResult("no-such-id", 1, testData.result1.id)
     }
 
     @Test
@@ -225,7 +225,7 @@ class InvoiceLocalDataSourceTest {
         // WHEN delete a result from a non-existent product
         // SHOULD throw an IllegalArgumentException
         exception.expect(IllegalArgumentException::class.java)
-        localDataSource.deleteResult(testData.invoice1.id, 9999, testData.result1)
+        localDataSource.deleteResult(testData.invoice1.id, 9999, testData.result1.id)
     }
 
     @Test

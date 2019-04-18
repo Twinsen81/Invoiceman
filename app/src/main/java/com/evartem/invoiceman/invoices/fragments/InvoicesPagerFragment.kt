@@ -25,8 +25,9 @@ class InvoicesPagerFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Inv
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         inflater.inflate(R.layout.fragment_invoices_pager, container, false)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    // KTX synthetic will work only from here (not in onCreateView)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupTabs()
 
@@ -59,6 +60,18 @@ class InvoicesPagerFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Inv
         return fragment
     }
 
+    private fun configureBottomAppBar() {
+        bottomAppBar.navigationIcon = getDrawable(context!!, R.drawable.ic_menu)
+        bottomAppBar.visibility = View.VISIBLE
+        bottomAppBar.replaceMenu(R.menu.invoices)
+        fab.hide()
+
+        bottomAppBar.setNavigationOnClickListener {
+            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
+            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
+        }
+    }
+
     override fun onSetupUiEvents() {
         addUiEvent(
             bottomAppBar.itemClicks()
@@ -73,8 +86,14 @@ class InvoicesPagerFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Inv
                 }.filter { it !is InvoicesEvent.Empty })
     }
 
-    override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =
+    override fun onRenderUiState(uiState: InvoicesUiState) {
 
+        val allowSortAndSearch = uiState.invoices.isNotEmpty() && !uiState.isRefreshing
+        bottomAppBar.menu.findItem(R.id.invoices_sort).isEnabled = allowSortAndSearch
+        bottomAppBar.menu.findItem(R.id.invoices_search).isEnabled = allowSortAndSearch
+    }
+
+    override fun onRenderUiEffect(uiEffect: InvoicesUiEffect) =
         when (uiEffect) {
             is InvoicesUiEffect.Error -> {
                 Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
@@ -87,25 +106,7 @@ class InvoicesPagerFragment : MviFragment<InvoicesUiState, InvoicesUiEffect, Inv
             is InvoicesUiEffect.InvoiceClick -> Unit
         }
 
-    private fun configureBottomAppBar() {
-        bottomAppBar.navigationIcon = getDrawable(context!!, R.drawable.ic_menu)
-        bottomAppBar.visibility = View.VISIBLE
-        bottomAppBar.replaceMenu(R.menu.invoices)
-        fab.hide()
-
-        bottomAppBar.setNavigationOnClickListener {
-            val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
-            bottomNavDrawerFragment.show(activity!!.supportFragmentManager, bottomNavDrawerFragment.tag)
-        }
-    }
-
-    override fun onRenderUiState(uiState: InvoicesUiState) {
-
-        val allowSortAndSearch = uiState.invoices.isNotEmpty() && !uiState.isRefreshing
-        bottomAppBar.menu.findItem(R.id.invoices_sort).isEnabled = allowSortAndSearch
-        bottomAppBar.menu.findItem(R.id.invoices_search).isEnabled = allowSortAndSearch
-    }
-
+    // Just let the child fragments handle the Back event
     override fun onBackPressed(): Boolean {
 
         var isProcessed = false

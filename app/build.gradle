@@ -35,6 +35,9 @@ android {
     }
 }
 
+// LayoutContainer support
+androidExtensions { experimental = true }
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation appDependencies

@@ -33,6 +33,22 @@ class InvoiceLocalDataSource {
     }
 
     /**
+     * Get the product by its ID.
+     */
+    fun getProduct(invoiceId: String, productId: Int): Single<ProductLocalModel> {
+        var product: ProductLocalModel? = null
+        Realm.getDefaultInstance().use { realm ->
+            // A detached from Realm copy of the invoice that won't be updated by Realm anymore
+            val invoice = realm.copyFromRealm(
+                realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()!!
+            )
+            product = invoice.products.find { it.id == productId }
+        }
+        // Realm does not restore order of items in a list -> sort manually to restore the ascending order
+        return Single.just(product!!)
+    }
+
+    /**
      * Mark the invoice as being processed by the user.
      * If the [userId] is empty, the invoice is marked as not being processed.
      */
@@ -96,20 +112,30 @@ class InvoiceLocalDataSource {
 
     /**
      * Insert or update (if already exists) one result for the given product.
+     *
+     * @return the updated product
      */
-    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: ResultLocalModel) {
+    fun insertOrUpdateResult(invoiceId: String, productId: Int, result: ResultLocalModel): Single<ProductLocalModel> {
+        var product: ProductLocalModel? = null
         doForProduct(invoiceId, productId) {
             it.insertOrUpdateResult(result)
+            product = it.realm.copyFromRealm(it)
         }
+        return Single.just(product!!)
     }
 
     /**
      * Delete one result for the given product.
+     *
+     * @return the updated product
      */
-    fun deleteResult(invoiceId: String, productId: Int, result: ResultLocalModel) {
+    fun deleteResult(invoiceId: String, productId: Int, resultId: Int): Single<ProductLocalModel> {
+        var product: ProductLocalModel? = null
         doForProduct(invoiceId, productId) {
-            it.deleteResult(result)
+            it.deleteResult(resultId)
+            product = it.realm.copyFromRealm(it)
         }
+        return Single.just(product!!)
     }
 
     /**
@@ -133,7 +159,8 @@ class InvoiceLocalDataSource {
             val invoice = realm.where<InvoiceLocalModel>().equalTo("id", invoiceId).findFirst()
             val product =
                 invoice?.products?.findLast { product -> product.id == productId }
-                    ?: throw IllegalArgumentException("Unable to find the product with id=$productId for invoice id=$invoiceId")
+                    ?: throw IllegalArgumentException("Unable to find the product with " +
+                            "id=$productId for invoice id=$invoiceId")
 
             realm.executeTransaction {
                 block(product)
