@@ -3,7 +3,6 @@
     <string name="sort">Sort</string>
     <string name="search">Search</string>
     <string name="got_it">GOT IT</string>
-    <string name="main_settings">Settings</string>
     <string name="main_logout">Logout</string>
     <string name="success_exclamation">Success!</string>
     <string name="invoice_accept_before_editing">Please, accept the invoice first</string>
@@ -11,7 +10,6 @@
     <string name="invoice_no">No:</string>
     <string name="invoice_seller">Seller:</string>
     <string name="invoice_comment">Comment:</string>
-    <string name="invoice_progress">Progress:</string>
     <string name="invoice_quantity">Quantity:</string>
     <string name="invoice_date">Date:</string>
     <string name="invoice_accepting">Requesting permission …</string>
@@ -47,12 +45,13 @@
     <string name="invoice_accept">accept</string>
     <string name="invoice_return">return</string>
     <string name="invoice_submit">submit</string>
-    <string name="result_edit">edit</string>
-    <string name="result_delete">delete</string>
+    <string name="result_add_failed">Could not add the result</string>
+    <string name="result_add_failed_comment">Could not scan the barcode</string>
     <string name="password">Password</string>
     <string name="enter_your_password">Enter your password</string>
     <string name="sign_in">sign in</string>
     <string name="enter_your_email">Enter your email</string>
     <string name="email">Email</string>
     <string name="quantity_of">of</string>
+    <string name="scan_prompt">Scan the barcode on the item/packaging</string>
 </resources>
