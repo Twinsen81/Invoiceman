@@ -1,5 +1,6 @@
 package com.evartem.invoiceman.product.mvi
 
+import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.gateway.InvoiceGatewayResult
 import com.evartem.domain.interactor.DeleteResultUseCase
 import com.evartem.domain.interactor.GetProductUseCase
@@ -7,6 +8,7 @@ import com.evartem.domain.interactor.InsertOrUpdateResultUseCase
 import com.evartem.invoiceman.base.MviViewModel
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
+import timber.log.Timber
 
 /**
  * Displays the detailed info about an invoice, including the list of its products.
@@ -49,15 +51,28 @@ class ProductDetailViewModel(
         return relay(event)
     }
 
-    private fun onAddResult(event: ProductDetailEvent.AddResult): Observable<ProductDetailViewModelResult> =
-        insertOrUpdateResultUseCase.execute(
+    private fun onAddResult(event: ProductDetailEvent.AddResult): Observable<ProductDetailViewModelResult> {
+
+        val resultWithId: Result?
+
+        try {
+            resultWithId =
+                uiState.value!!.product.addResult(event.result.status, event.result.serial, event.result.comment)
+        } catch (exception: IllegalArgumentException) {
+            Timber.d(exception)
+            addUiEffect(ProductDetailUiEffect.AddingResultFailed(exception.localizedMessage))
+            return relay(ProductDetailEvent.Empty)
+        }
+
+        return insertOrUpdateResultUseCase.execute(
             Triple(
                 sessionManager.getInvoiceId(),
                 sessionManager.getProductId(),
-                event.result
+                resultWithId
             )
         )
             .map { ProductDetailViewModelResult.ResultOperation(it) }
+    }
 
     private fun onDeleteResult(event: ProductDetailEvent.DeleteResult): Observable<ProductDetailViewModelResult> =
         deleteResultUseCase.execute(

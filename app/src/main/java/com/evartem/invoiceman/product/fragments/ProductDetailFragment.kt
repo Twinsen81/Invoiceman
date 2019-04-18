@@ -1,5 +1,6 @@
 package com.evartem.invoiceman.product.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.evartem.domain.entity.doc.Product
+import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.base.MviFragment
@@ -19,11 +21,9 @@ import com.evartem.invoiceman.product.mvi.ProductDetailEvent
 import com.evartem.invoiceman.product.mvi.ProductDetailUiEffect
 import com.evartem.invoiceman.product.mvi.ProductDetailUiState
 import com.evartem.invoiceman.product.mvi.ProductDetailViewModel
-import com.evartem.invoiceman.util.ProcessingStatusBackground
-import com.evartem.invoiceman.util.SessionManager
-import com.evartem.invoiceman.util.StatusDialog
-import com.evartem.invoiceman.util.getErrorMessageForUi
+import com.evartem.invoiceman.util.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.integration.android.IntentIntegrator
 import com.jakewharton.rxbinding3.view.clicks
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
@@ -67,6 +67,9 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
     private val resultOperationEvents: PublishSubject<ProductDetailEvent> = PublishSubject.create()
 
     private lateinit var statusDialog: StatusDialog
+
+    // Temporary workaround (see below)
+    private var scanResult: Result? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,7 +119,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
                 if (v.id == R.id.result_action_delete)
                     resultOperationEvents.onNext(ProductDetailEvent.DeleteResult(item!!.result.id))
                 if (v.id == R.id.result_action_edit)
-                    // resultOperationEvents.onNext(ProductDetailEvent.EditResult(item!!.result.id))
+                // resultOperationEvents.onNext(ProductDetailEvent.EditResult(item!!.result.id))
                     Toast.makeText(context, "Under construction...", Toast.LENGTH_LONG).show()
             }
         })
@@ -167,6 +170,8 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         super.onStart()
 
         setupRecyclerViewAsyncRenderingWithDiff()
+
+        processScanResult()
     }
 
     private fun setupRecyclerViewAsyncRenderingWithDiff() {
@@ -254,8 +259,17 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
     override fun onRenderUiEffect(uiEffect: ProductDetailUiEffect) {
         when (uiEffect) {
             is ProductDetailUiEffect.StartScan -> {
-                getNextResult(uiEffect.product)
+                // getNextSimulatedResult(uiEffect.product)
+                startBarcodeScanner()
             }
+
+            is ProductDetailUiEffect.AddingResultFailed ->
+                Toast.makeText(
+                    context,
+                    if (uiEffect.reason.isBlank()) R.string.result_add_failed.toString(resources) else uiEffect.reason,
+                    Toast.LENGTH_LONG
+                ).show()
+
             is ProductDetailUiEffect.Error -> {
                 Timber.e("Network error: ${uiEffect.gatewayError?.code} - ${uiEffect.gatewayError?.message}")
                 uiEffect.gatewayError?.exception?.also { Timber.e(Log.getStackTraceString(it)) }
@@ -265,7 +279,44 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         }
     }
 
-    private fun getNextResult(product: Product) {
+    private fun startBarcodeScanner() {
+        val integrator = IntentIntegrator.forSupportFragment(this)
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES)
+        integrator.setPrompt(R.string.scan_prompt.toString(resources))
+        integrator.setBeepEnabled(false)
+        integrator.initiateScan()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            setScanResult(result.contents)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun setScanResult(barcode: String?) {
+        scanResult = if (barcode.isNullOrBlank())
+            Result(ResultStatus.FAILED, "0", R.string.result_add_failed.toString(resources), 0)
+        else
+            Result(ResultStatus.COMPLETED, barcode, null, 0)
+    }
+
+    /**
+     * This is a temporary workaround until the scanning function is moved to a fragment.
+     * onActivityResult is called BEFORE onStart -> the fragment won't be subscribed to the viewModel's
+     * uiEffects observable when viewModel pushes a ui effect about the result of the scanning
+     * operation. Thus, the ui effect is lost.
+     */
+    private fun processScanResult() {
+        if (scanResult != null) {
+            viewModel.addEvent(ProductDetailEvent.AddResult(scanResult!!))
+            scanResult = null
+        }
+    }
+
+    private fun simulateScanning(product: Product) {
         val serials = listOf("2384294238", "24323423423", "S2349-SFSDF-445", "GDFGDF-3534534", "S454444FF")
         val comments = listOf(
             "Broken packaging",
@@ -274,20 +325,17 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
             "There's oil inside the box and it looks like the box was repackaged somewhere along the way"
         )
         val status = if (Random.nextBoolean()) ResultStatus.COMPLETED else ResultStatus.FAILED
-        try {
-            val result = product.addResult(
-                status,
-                serials[Random.nextInt(serials.size)],
-                if (status == ResultStatus.FAILED || Random.nextBoolean())
-                    comments[Random.nextInt(comments.size)]
-                else null
-            )
-            resultOperationEvents.onNext(ProductDetailEvent.AddResult(result))
-        } catch (exception: IllegalArgumentException) {
-            Timber.wtf(exception)
-            Toast.makeText(context, "Could not add the result", Toast.LENGTH_LONG)
-                .show()
-        }
+
+        addNewResult(
+            status, serials[Random.nextInt(serials.size)],
+            if (status == ResultStatus.FAILED || Random.nextBoolean())
+                comments[Random.nextInt(comments.size)]
+            else null
+        )
+    }
+
+    private fun addNewResult(status: ResultStatus, serial: String, comment: String? = null) {
+        viewModel.addEvent(ProductDetailEvent.AddResult(Result(status, serial, comment, 0)))
     }
 
     override fun onStop() {

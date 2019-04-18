@@ -12,7 +12,7 @@ data class ProductDetailUiState(
         return StringBuilder()
             .append("product_id=").append(product.id)
             .append(" isLoading=").append(isLoading)
-            .append(" products=${product.getResults().size}").toString()
+            .append(" results=${product.getResults().size}").toString()
     }
 
     companion object {
