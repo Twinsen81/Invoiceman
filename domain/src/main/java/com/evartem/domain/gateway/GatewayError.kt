@@ -22,7 +22,7 @@ data class GatewayError(val code: ErrorCode, val message: String? = null, val ex
         NOT_FOUND(404),
         ALREADY_TAKEN_BY_OTHER(409),
         INTERNAL_SERVER_ERROR(500),
-        GENERAL_NETWORK_ERROR(1000),
+        GENERAL_ERROR(1000),
         WRONG_SERVER_RESPONSE(1001);
 
         companion object {
