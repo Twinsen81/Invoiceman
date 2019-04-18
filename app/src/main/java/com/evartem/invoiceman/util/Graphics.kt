@@ -2,6 +2,7 @@ package com.evartem.invoiceman.util
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
@@ -39,17 +40,25 @@ class ProcessingStatusBackground(context: Context) {
 
     val finishedWithErrors
         get() = finishedWithErrorsInternal
-    private var finishedWithErrorsInternal = ContextCompat.getColor(context, R.color.gotFailedBackground)
+    private var finishedWithErrorsInternal = ColorDrawable(ContextCompat.getColor(context, R.color.gotFailedBackground))
 
     val finishedWithoutErrors
         get() = finishedWithoutErrorsInternal
-    private var finishedWithoutErrorsInternal = ContextCompat.getColor(context, R.color.resultCompletedBackground)
+    private var finishedWithoutErrorsInternal = ColorDrawable(ContextCompat.getColor(context, R.color.resultCompletedBackground))
 
     val startedButNotFinishedYet
         get() = startedButNotFinishedYetInternal
-    private var startedButNotFinishedYetInternal = ContextCompat.getColor(context, R.color.inProgressBackground)
+    private var startedButNotFinishedYetInternal = ColorDrawable(ContextCompat.getColor(context, R.color.inProgressBackground))
 
     val notEvenStarted
         get() = notEvenStartedInternal
-    private var notEvenStartedInternal = ContextCompat.getColor(context, R.color.semiTransparentBackground)
+    private var notEvenStartedInternal = ColorDrawable(ContextCompat.getColor(context, R.color.semiTransparentBackground))
+
+    val resultCompleted
+        get() = resultCompletedInternal
+    private var resultCompletedInternal = ColorDrawable(ContextCompat.getColor(context, R.color.resultCompletedBackground))
+
+    val resultFailed
+        get() = resultFailedInternal
+    private var resultFailedInternal = ColorDrawable(ContextCompat.getColor(context, R.color.resultFailedBackground))
 }

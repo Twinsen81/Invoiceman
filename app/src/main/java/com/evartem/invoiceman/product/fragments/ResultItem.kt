@@ -6,6 +6,7 @@ import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.product.fragments.ProductDetailFragment.Companion.RESULT_ITEM_TYPE_BASIC
+import com.evartem.invoiceman.product.fragments.ProductDetailFragment.Companion.processingStatusBackground
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.extensions.LayoutContainer
@@ -38,15 +39,11 @@ class ResultItem(val result: Result) : AbstractItem<ResultItem, ResultItem.ViewH
                 result_comment.visibility = View.GONE
             }
 
-            itemView.background.setTint(
-                ContextCompat.getColor(
-                    itemView.context,
-                    if (item.result.status == ResultStatus.COMPLETED)
-                        R.color.resultCompletedBackground
-                    else
-                        R.color.resultFailedBackground
-                )
-            )
+            item_result_card.background =
+                if (item.result.status == ResultStatus.COMPLETED)
+                    processingStatusBackground.resultCompleted
+                else
+                    processingStatusBackground.resultFailed
         }
     }
 }

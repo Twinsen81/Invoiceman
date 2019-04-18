@@ -39,9 +39,6 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_invoice_detail.*
-import kotlinx.android.synthetic.main.fragment_invoice_detail.bottomAppBar
-import kotlinx.android.synthetic.main.fragment_invoice_detail.fab
-import kotlinx.android.synthetic.main.fragment_invoice_detail.invoice_info_panel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -255,7 +252,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         invoice_number.text = uiState.invoice.number.toString()
         invoice_date.text = uiState.invoice.date
 
-        invoice_info_panel.background.setTint(
+        invoice_info_panel.background =
             when {
                 uiState.invoice.isProcessingFinishedSuccessfully ->
                     processingStatusBackground.finishedWithoutErrors
@@ -263,7 +260,6 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
                     processingStatusBackground.finishedWithErrors
                 else -> processingStatusBackground.notEvenStarted
             }
-        )
 
         if (uiState.isBeingProcessedByUser) {
             invoice_action_accept.visibility = View.GONE

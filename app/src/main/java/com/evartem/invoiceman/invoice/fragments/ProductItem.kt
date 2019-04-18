@@ -39,7 +39,7 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
                 product_qty_of.visibility = View.GONE
             }
 
-            item_product_card.background.setTint(
+            item_product_card.background =
                 when {
                     item.product.isProcessingFinishedSuccessfully ->
                         processingStatusBackground.finishedWithoutErrors
@@ -49,7 +49,6 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
                         processingStatusBackground.startedButNotFinishedYet
                     else -> processingStatusBackground.notEvenStarted
                 }
-            )
 
             product_article_scan_required.visibility =
                 if (item.product.articleScanRequired) View.VISIBLE else View.GONE

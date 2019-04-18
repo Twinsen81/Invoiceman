@@ -116,7 +116,8 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
                 if (v.id == R.id.result_action_delete)
                     resultOperationEvents.onNext(ProductDetailEvent.DeleteResult(item!!.result.id))
                 if (v.id == R.id.result_action_edit)
-                    resultOperationEvents.onNext(ProductDetailEvent.EditResult(item!!.result.id))
+                    // resultOperationEvents.onNext(ProductDetailEvent.EditResult(item!!.result.id))
+                    Toast.makeText(context, "Under construction...", Toast.LENGTH_LONG).show()
             }
         })
     }
@@ -229,7 +230,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         else
             fab.show()
 
-        invoice_info_panel.background.setTint(
+        product_info_panel.background =
             when {
                 uiState.product.isProcessingFinishedSuccessfully ->
                     processingStatusBackground.finishedWithoutErrors
@@ -237,7 +238,6 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
                     processingStatusBackground.finishedWithErrors
                 else -> processingStatusBackground.notEvenStarted
             }
-        )
 
         product_article_scan_required.visibility =
             if (uiState.product.articleScanRequired) View.VISIBLE else View.GONE
