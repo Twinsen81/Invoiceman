@@ -134,6 +134,7 @@
                                                        android:id="@+id/invoice_action_submit"
                                                        android:layout_height="wrap_content"
                                                        app:chipIconTint="#1E88E5"
+                                                       android:enabled="false"
                                                        android:elevation="2dp"
                                                        app:chipBackgroundColor="@color/primaryLightColor"
                                                        app:layout_constraintEnd_toEndOf="parent"
@@ -195,6 +196,6 @@
             style="@style/Widget.MaterialComponents.FloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_go_back"
+            android:src="@drawable/ic_add"
             app:layout_anchor="@id/bottomAppBar"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
