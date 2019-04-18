@@ -34,7 +34,7 @@ class InvoiceRepository(
                 .map { invoice -> InvoiceRepositoryResult.Invoice(invoice) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
-            Observable.just(mapperToRepoResult.errorFromException(exception))
+            Observable.just(mapperToRepoResult.errorResultFromException(exception))
         }
 
     /**
@@ -49,7 +49,7 @@ class InvoiceRepository(
                 .map { product -> InvoiceRepositoryResult.Product(product) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
-            Observable.just(mapperToRepoResult.errorFromException(exception))
+            Observable.just(mapperToRepoResult.errorResultFromException(exception))
         }
 
     /**
@@ -68,7 +68,7 @@ class InvoiceRepository(
                 .map { product -> InvoiceRepositoryResult.ResultOperationSucceeded(product) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
-            Observable.just(mapperToRepoResult.errorFromException(exception))
+            Observable.just(mapperToRepoResult.errorResultFromException(exception))
         }
 
     /**
@@ -83,7 +83,7 @@ class InvoiceRepository(
                 .map { product -> InvoiceRepositoryResult.ResultOperationSucceeded(product) as InvoiceRepositoryResult }
                 .toObservable()
         } catch (exception: Throwable) {
-            Observable.just(mapperToRepoResult.errorFromException(exception))
+            Observable.just(mapperToRepoResult.errorResultFromException(exception))
         }
 
     /**
@@ -101,6 +101,7 @@ class InvoiceRepository(
 
         val localResult = localDataSource.getInvoices()
             .map { invoiceList -> InvoiceRepositoryResult.Invoices(invoiceList) }
+            .onErrorReturn { exception -> mapperToRepoResult.emptyListFromException(exception) }
             .toObservable()
 
         val remoteResult =
@@ -108,11 +109,11 @@ class InvoiceRepository(
                 try {
                     remoteDataSource.getInvoicesForUser(userId)
                         .map { invoiceList -> mapperToRepoResult.remoteToResult(invoiceList) }
-                        .onErrorReturn { exception -> mapperToRepoResult.errorFromException(exception) }
+                        .onErrorReturn { exception -> mapperToRepoResult.errorResultFromException(exception) }
                         .toObservable()
                 } catch (exception: Throwable) {
                     // If exception is thrown while creating an Observable -> onErrorReturn isn't called
-                    Observable.just(mapperToRepoResult.errorFromException(exception))
+                    Observable.just(mapperToRepoResult.errorResultFromException(exception))
                 }
             } else
                 Observable.just(InvoiceRepositoryResult.Invoices(listOf()))
@@ -126,6 +127,7 @@ class InvoiceRepository(
                 if (refreshFromServer)
                     localDataSource.deleteAllAndInsert((result as InvoiceRepositoryResult.Invoices).invoices)
             }
+            .onErrorReturn { exception -> mapperToRepoResult.errorResultFromException(exception) }
     }
 
     /**
@@ -178,12 +180,12 @@ class InvoiceRepository(
         try {
             remoteDataSource.requestInvoiceForProcessing(user.id, invoiceId)
                 .map { response -> mapperToRepoResult.remoteAcceptToResult(response) }
-                .onErrorReturn { exception -> mapperToRepoResult.errorFromException(exception) }
+                .onErrorReturn { exception -> mapperToRepoResult.errorResultFromException(exception) }
                 .doOnEvent { result, _ -> assignInvoiceToUserInLocalDatasource(result, user.id, invoiceId) }
                 .toObservable()
         } catch (exception: Throwable) {
             // If exception is thrown while creating an Observable -> onErrorReturn isn't called
-            Observable.just(mapperToRepoResult.errorFromException(exception))
+            Observable.just(mapperToRepoResult.errorResultFromException(exception))
         }
 
     /**
@@ -195,12 +197,12 @@ class InvoiceRepository(
         try {
             remoteDataSource.requestInvoiceReturn(user.id, invoiceId)
                 .map { response -> mapperToRepoResult.remoteReturnToResult(response) }
-                .onErrorReturn { exception -> mapperToRepoResult.errorFromException(exception) }
+                .onErrorReturn { exception -> mapperToRepoResult.errorResultFromException(exception) }
                 .doOnEvent { result, _ -> assignInvoiceToUserInLocalDatasource(result, "", invoiceId) }
                 .toObservable()
         } catch (exception: Throwable) {
             // If exception is thrown while creating an Observable -> onErrorReturn isn't called
-            Observable.just(mapperToRepoResult.errorFromException(exception))
+            Observable.just(mapperToRepoResult.errorResultFromException(exception))
         }
 
     /**
