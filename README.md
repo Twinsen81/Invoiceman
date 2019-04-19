@@ -9,7 +9,7 @@
 
 A pet project for processing invoices at a storage facility (warehouse). The app is not finished yet. The backend doesn't exist yet,
 so it is simulated within the app.   
-<BR/><BR/>
+<BR/>
 <p align="center">
   <img alt='Sample screenshots' src="/art/sampleshots.jpg">
 </p>
@@ -50,8 +50,9 @@ depicts the objects and relationships used in this implementation of the clean a
 
 * Frameworks, libraries & tools: Koin, Moshi, Retrofit, Okhttp, RxJava2 + RxKotlin, RxBinding, FastAdapter, Glide,
 zxing-android-embedded ,leinardi.android:speed-dial, Timber, LeakCanary, Mockito, RESTMock, detekt
-* Free logo at [LogoMakr.com](https://logomakr.com)
-* Diagrams at [Lucidchart.com](https://www.lucidchart.com)
+* Free logo by [LogoMakr.com](https://logomakr.com)
+* Diagrams by [Lucidchart.com](https://www.lucidchart.com)
+* Screenshots by [theapplaunchpad.com](https://theapplaunchpad.com)
 
 ## License
 
