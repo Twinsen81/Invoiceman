@@ -7,13 +7,11 @@
 
 # INVOICEMAN
 
-A pet project for processing invoices at a storage facility (warehouse). The app is not finished yet. The backend doesn't exist at all,
+A pet project for processing invoices at a storage facility (warehouse). The app is not finished yet. The backend doesn't exist yet,
 so it is simulated within the app.   
-
+<BR/><BR/>
 <p align="center">
-  <img alt='Sample screenshot 1' src="/art/sampleshot1.jpg">
-  <img alt='Sample screenshot 2' src="/art/sampleshot2.jpg">
-  <img alt='Sample screenshot 3' src="/art/sampleshot3.jpg">
+  <img alt='Sample screenshots' src="/art/sampleshots.jpg">
 </p>
 
 #### The Workflow
@@ -42,6 +40,7 @@ depicts the objects and relationships used in this implementation of the clean a
  * [The State of Managing State with RxJava by Jake Wharton](https://jakewharton.com/the-state-of-managing-state-with-rxjava/)
  * [Reactive Apps with Model-View-Intent by Hannes Dorfmann](http://hannesdorfmann.com/android/mosby3-mvi-1)
  * [Kaushik Gopal's approach](https://fragmentedpodcast.com/episodes/148/)
+ <BR/>
  The gist of the implementation is depicted on the following diagram:
 <p align="center">
   <img alt='MVI implementation' src="/art/invoiceman_mvi.png">
