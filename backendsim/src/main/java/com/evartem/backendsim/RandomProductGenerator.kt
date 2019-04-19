@@ -20,7 +20,7 @@ object RandomProductGenerator {
         )
     }
 
-    private val quantity get() = (1..3).random()
+    private val quantity get() = (1..23).random()
 
     private val serialPattern
         get() = listOf(
