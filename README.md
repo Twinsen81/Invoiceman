@@ -15,7 +15,7 @@ so it is simulated within the app.
 </p>
 
 #### The Workflow
-The app is designed to use in the following workflow:
+The app is designed to be used in the following workflow:
 1. An employee at the office receives an invoice from a supplier;
 2. The employee enters data from the invoice into the backend's DB using a GUI app or a web frontend;
 3. The supplier ships products listed in the invoice to the company's warehouse;
@@ -40,7 +40,7 @@ depicts the objects and relationships used in this implementation of the clean a
  * [The State of Managing State with RxJava by Jake Wharton](https://jakewharton.com/the-state-of-managing-state-with-rxjava/)
  * [Reactive Apps with Model-View-Intent by Hannes Dorfmann](http://hannesdorfmann.com/android/mosby3-mvi-1)
  * [Kaushik Gopal's approach](https://fragmentedpodcast.com/episodes/148/)
- <BR/>
+<BR/>
  The gist of the implementation is depicted on the following diagram:
 <p align="center">
   <img alt='MVI implementation' src="/art/invoiceman_mvi.png">
