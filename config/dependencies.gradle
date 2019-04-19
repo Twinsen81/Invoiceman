@@ -32,6 +32,7 @@ ext {
     glide = '4.9.0'
     koin = '2.0.0-rc-1'
     zxing = '3.6.0'
+    fabSpeedDial = '2.0.1'
     //endregion
 
     //region VERSIONS: Testing
