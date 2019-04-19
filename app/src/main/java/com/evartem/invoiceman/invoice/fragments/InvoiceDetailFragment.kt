@@ -114,7 +114,6 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
         bottomAppBar.visibility = View.VISIBLE
         bottomAppBar.replaceMenu(R.menu.invoice_detail)
-        fab.hide()
 
         bottomAppBar.setNavigationOnClickListener {
             val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
