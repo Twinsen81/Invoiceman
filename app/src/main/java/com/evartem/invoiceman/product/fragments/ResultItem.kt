@@ -39,11 +39,12 @@ class ResultItem(val result: Result) : AbstractItem<ResultItem, ResultItem.ViewH
                 result_comment.visibility = View.GONE
             }
 
-            item_result_card.background =
+            item_result_card.setCardBackgroundColor(
                 if (item.result.status == ResultStatus.COMPLETED)
                     processingStatusBackground.resultCompleted
                 else
                     processingStatusBackground.resultFailed
+            )
         }
     }
 }

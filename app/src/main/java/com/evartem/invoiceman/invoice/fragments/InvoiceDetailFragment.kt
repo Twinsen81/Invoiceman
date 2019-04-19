@@ -114,7 +114,6 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
         bottomAppBar.visibility = View.VISIBLE
         bottomAppBar.replaceMenu(R.menu.invoice_detail)
-        fab.hide()
 
         bottomAppBar.setNavigationOnClickListener {
             val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
@@ -252,7 +251,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
         invoice_number.text = uiState.invoice.number.toString()
         invoice_date.text = uiState.invoice.date
 
-        invoice_info_panel.background =
+        invoice_info_panel.setBackgroundColor(
             when {
                 uiState.invoice.isProcessingFinishedSuccessfully ->
                     processingStatusBackground.finishedWithoutErrors
@@ -260,6 +259,7 @@ class InvoiceDetailFragment : MviFragment<InvoiceDetailUiState, InvoiceDetailUiE
                     processingStatusBackground.finishedWithErrors
                 else -> processingStatusBackground.notEvenStarted
             }
+        )
 
         if (uiState.isBeingProcessedByUser) {
             invoice_action_accept.visibility = View.GONE

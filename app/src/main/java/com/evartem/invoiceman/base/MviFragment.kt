@@ -67,7 +67,7 @@ abstract class MviFragment<UiState, UiEffect, Event> : Fragment() {
     /**
      * Add your UI events here (as Observables) using the [addUiEvent] function.
      */
-    protected abstract fun onSetupUiEvents()
+    protected open fun onSetupUiEvents() = Unit
 
     /**
      * Add a UI event (as an Observable) that the view model will listen to.

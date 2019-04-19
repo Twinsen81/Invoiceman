@@ -1,6 +1,7 @@
 package com.evartem.invoiceman.invoice.fragments
 
 import android.view.View
+import androidx.core.content.ContextCompat
 import com.evartem.domain.entity.doc.Product
 import com.evartem.invoiceman.R
 import com.evartem.invoiceman.invoice.fragments.InvoiceDetailFragment.Companion.PRODUCT_ITEM_TYPE_BASIC
@@ -39,7 +40,7 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
                 product_qty_of.visibility = View.GONE
             }
 
-            item_product_card.background =
+            item_product_card.setCardBackgroundColor(
                 when {
                     item.product.isProcessingFinishedSuccessfully ->
                         processingStatusBackground.finishedWithoutErrors
@@ -49,6 +50,7 @@ class ProductItem(val product: Product) : AbstractItem<ProductItem, ProductItem.
                         processingStatusBackground.startedButNotFinishedYet
                     else -> processingStatusBackground.notEvenStarted
                 }
+            )
 
             product_article_scan_required.visibility =
                 if (item.product.articleScanRequired) View.VISIBLE else View.GONE

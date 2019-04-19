@@ -7,11 +7,6 @@
     <color name="secondaryLightColor">#C9C9C9</color>
     <color name="secondaryDarkColor">#222222</color>
 
-    <color name="gradChartPlusColorStart">#868686</color>
-    <color name="gradChartPlusColorEnd">#D8D8D8</color>
-    <color name="gradChartMinusColorStart">#858585</color>
-    <color name="gradChartMinusColorEnd">#727272</color>
-
     <color name="semiTransparentBackground">#ADFFFFFF</color>
     <color name="resultActionBackground">#D8FFFFFF</color>
     <color name="resultCompletedBackground">#AD7CB342</color>
