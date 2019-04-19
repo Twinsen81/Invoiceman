@@ -54,4 +54,6 @@
     <string name="email">Email</string>
     <string name="quantity_of">of</string>
     <string name="scan_prompt">Scan the barcode on the item/packaging</string>
+    <string name="product_add_result_scan">Scan</string>
+    <string name="product_add_result_generate">Generate</string>
 </resources>

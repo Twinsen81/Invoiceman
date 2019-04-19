@@ -9,6 +9,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/info_panel"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -130,9 +131,11 @@
                                                               android:gravity="center_vertical"
                                                               android:layout_marginBottom="2dp">
                     <ImageView android:layout_width="wrap_content"
-                               app:srcCompat="@drawable/ic_barcode"
+                               app:srcCompat="@drawable/ic_barcode_scan"
+                               android:layout_marginTop="1dp"
                                android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                              android:layout_marginStart="2dp"
                               android:text="@string/product_scan_article" android:textSize="10sp"
                               android:textAlignment="center"
                               android:textColor="@android:color/white"
@@ -186,10 +189,12 @@
                                                               android:gravity="center_vertical"
                                                               android:layout_marginBottom="2dp">
                     <ImageView android:layout_width="wrap_content"
-                               app:srcCompat="@drawable/ic_barcode"
+                               app:srcCompat="@drawable/ic_barcode_scan"
+                               android:layout_marginTop="1dp"
                                android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                               android:text="@string/product_scan_serial" android:textSize="10sp"
+                              android:layout_marginStart="2dp"
                               android:textAlignment="center"
                               android:textColor="@android:color/white"
                               android:gravity="clip_vertical|center_horizontal"/>
@@ -272,6 +277,21 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.leinardi.android.speeddial.SpeedDialOverlayLayout
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    <com.leinardi.android.speeddial.SpeedDialView
+            android:id="@+id/add_result_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="?attr/actionBarSize"
+            app:sdMainFabClosedSrc="@drawable/ic_add"
+            app:sdOverlayLayout="@id/overlay"
+            android:layout_gravity="bottom|end"/>
+
+    <!--android:layout_gravity="bottom"-->
     <com.google.android.material.bottomappbar.BottomAppBar
             android:visibility="gone"
             android:id="@+id/bottomAppBar"
@@ -284,11 +304,4 @@
             android:backgroundTint="@color/primaryColor"
             app:navigationIcon="@drawable/ic_menu"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add"
-            app:layout_anchor="@id/bottomAppBar"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -124,9 +124,11 @@
                                                           android:gravity="center_vertical"
                                                           android:layout_marginBottom="2dp">
                 <ImageView android:layout_width="wrap_content"
-                           app:srcCompat="@drawable/ic_barcode"
+                           app:srcCompat="@drawable/ic_barcode_scan"
+                           android:layout_marginTop="1dp"
                            android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:layout_marginStart="3dp"
                           android:text="@string/product_scan_article" android:textSize="10sp" android:textAlignment="center"
                           android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
                           tools:ignore="SmallSp"/>
@@ -179,9 +181,11 @@
                                                           android:gravity="center_vertical"
                                                           android:layout_marginBottom="2dp">
                 <ImageView android:layout_width="wrap_content"
-                           app:srcCompat="@drawable/ic_barcode"
+                           app:srcCompat="@drawable/ic_barcode_scan"
+                           android:layout_marginTop="1dp"
                            android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:layout_marginStart="2dp"
                           android:text="@string/product_scan_serial" android:textSize="10sp" android:textAlignment="center"
                           android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
                           tools:ignore="SmallSp"/>

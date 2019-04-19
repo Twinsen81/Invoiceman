@@ -6,6 +6,7 @@ import com.evartem.domain.interactor.DeleteResultUseCase
 import com.evartem.domain.interactor.GetProductUseCase
 import com.evartem.domain.interactor.InsertOrUpdateResultUseCase
 import com.evartem.invoiceman.base.MviViewModel
+import com.evartem.invoiceman.util.RandomResultGenerator
 import com.evartem.invoiceman.util.SessionManager
 import io.reactivex.Observable
 import timber.log.Timber
@@ -46,10 +47,12 @@ class ProductDetailViewModel(
         getProductUseCase.execute(Pair(sessionManager.getInvoiceId(), sessionManager.getProductId()))
             .map { ProductDetailViewModelResult.Product(it) }
 
-    private fun onFabClicked(event: ProductDetailEvent): Observable<ProductDetailViewModelResult> {
-        addUiEffect(ProductDetailUiEffect.StartScan(uiState.value!!.product))
-        return relay(event)
-    }
+    private fun onFabClicked(event: ProductDetailEvent.FabClick): Observable<ProductDetailViewModelResult> =
+        if (event.action == ProductDetailEvent.FabClick.ClickAction.SCAN) {
+            addUiEffect(ProductDetailUiEffect.StartScan(uiState.value!!.product))
+            relay(event)
+        } else
+            onAddResult(ProductDetailEvent.AddResult(RandomResultGenerator.generate()))
 
     private fun onAddResult(event: ProductDetailEvent.AddResult): Observable<ProductDetailViewModelResult> {
 

@@ -8,10 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.evartem.domain.entity.doc.Product
 import com.evartem.domain.entity.doc.Result
 import com.evartem.domain.entity.doc.ResultStatus
 import com.evartem.invoiceman.R
@@ -24,7 +24,7 @@ import com.evartem.invoiceman.product.mvi.ProductDetailViewModel
 import com.evartem.invoiceman.util.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.zxing.integration.android.IntentIntegrator
-import com.jakewharton.rxbinding3.view.clicks
+import com.leinardi.android.speeddial.SpeedDialView
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.IItem
@@ -41,11 +41,8 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_product_detail.*
 import kotlinx.android.synthetic.main.item_result.view.*
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import kotlin.random.Random
 
 class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiEffect, ProductDetailEvent>() {
 
@@ -63,7 +60,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
     // A subject to diff and render the recycler view asynchronously
     private val resultsObservable: PublishSubject<ProductDetailUiState> = PublishSubject.create()
 
-    private val resultOperationEvents: PublishSubject<ProductDetailEvent> = PublishSubject.create()
+    //private val resultOperationEvents: PublishSubject<ProductDetailEvent> = PublishSubject.create()
 
     private lateinit var statusDialog: StatusDialog
 
@@ -88,6 +85,8 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         setupRecyclerView()
 
         setupBadgeHints()
+
+        configureFab()
 
         configureBottomAppBar()
     }
@@ -116,9 +115,9 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
 
             override fun onClick(v: View, position: Int, fastAdapter: FastAdapter<ResultItem?>, item: ResultItem?) {
                 if (v.id == R.id.result_action_delete)
-                    resultOperationEvents.onNext(ProductDetailEvent.DeleteResult(item!!.result.id))
+                //resultOperationEvents.onNext(ProductDetailEvent.DeleteResult(item!!.result.id))
+                    viewModel.addEvent(ProductDetailEvent.DeleteResult(item!!.result.id))
                 if (v.id == R.id.result_action_edit)
-                // resultOperationEvents.onNext(ProductDetailEvent.EditResult(item!!.result.id))
                     Toast.makeText(context, "Under construction...", Toast.LENGTH_LONG).show()
             }
         })
@@ -142,10 +141,38 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         }
     }
 
+    private fun configureFab() {
+        add_result_fab.inflate(R.menu.product_detail_fab)
+        val params = add_result_fab.layoutParams as CoordinatorLayout.LayoutParams
+        params.behavior = SpeedDialView.ScrollingViewSnackbarBehavior()
+        add_result_fab.requestLayout()
+
+        add_result_fab.setOnActionSelectedListener { actionItem ->
+            when (actionItem.id) {
+                R.id.product_add_result_scan -> {
+                    viewModel.addEvent(
+                        ProductDetailEvent.FabClick(
+                            ProductDetailEvent.FabClick.ClickAction.SCAN
+                        )
+                    )
+                    false
+                }
+                R.id.product_add_result_generate -> {
+                    viewModel.addEvent(
+                        ProductDetailEvent.FabClick(
+                            ProductDetailEvent.FabClick.ClickAction.GENERATE
+                        )
+                    )
+                    false
+                }
+                else -> false
+            }
+        }
+    }
+
     private fun configureBottomAppBar() {
         bottomAppBar.navigationIcon = ContextCompat.getDrawable(context!!, R.drawable.ic_menu)
         bottomAppBar.visibility = View.VISIBLE
-        fab.show()
 
         bottomAppBar.setNavigationOnClickListener {
             val bottomNavDrawerFragment = BottomNavigationDrawerFragment()
@@ -206,15 +233,6 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
             }.addTo(disposables)
     }
 
-    override fun onSetupUiEvents() {
-        addUiEvent(resultOperationEvents)
-
-        addUiEvent(
-            fab.clicks()
-                .throttleFirst(1, TimeUnit.SECONDS)
-                .map { ProductDetailEvent.FabClick })
-    }
-
     override fun onRenderUiState(uiState: ProductDetailUiState) {
 
         // Render the recycler view asynchronously with diffing
@@ -230,9 +248,9 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
         product_qty.text = uiState.product.quantity.toString()
 
         if (uiState.product.isProcessingFinished)
-            fab.hide()
+            add_result_fab.hide()
         else
-            fab.show()
+            add_result_fab.show()
 
         product_info_panel.setBackgroundColor(
             when {
@@ -258,10 +276,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
 
     override fun onRenderUiEffect(uiEffect: ProductDetailUiEffect) {
         when (uiEffect) {
-            is ProductDetailUiEffect.StartScan -> {
-                // getNextSimulatedResult(uiEffect.product)
-                startBarcodeScanner()
-            }
+            is ProductDetailUiEffect.StartScan -> startBarcodeScanner()
 
             is ProductDetailUiEffect.AddingResultFailed ->
                 Toast.makeText(
@@ -299,7 +314,7 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
 
     private fun setScanResult(barcode: String?) {
         scanResult = if (barcode.isNullOrBlank())
-            Result(ResultStatus.FAILED, "0", R.string.result_add_failed.toString(resources), 0)
+            Result(ResultStatus.FAILED, "0", R.string.result_add_failed_comment.toString(resources), 0)
         else
             Result(ResultStatus.COMPLETED, barcode, null, 0)
     }
@@ -315,28 +330,6 @@ class ProductDetailFragment : MviFragment<ProductDetailUiState, ProductDetailUiE
             viewModel.addEvent(ProductDetailEvent.AddResult(scanResult!!))
             scanResult = null
         }
-    }
-
-    private fun simulateScanning(product: Product) {
-        val serials = listOf("2384294238", "24323423423", "S2349-SFSDF-445", "GDFGDF-3534534", "S454444FF")
-        val comments = listOf(
-            "Broken packaging",
-            "Missing manual",
-            "No serial",
-            "There's oil inside the box and it looks like the box was repackaged somewhere along the way"
-        )
-        val status = if (Random.nextBoolean()) ResultStatus.COMPLETED else ResultStatus.FAILED
-
-        addNewResult(
-            status, serials[Random.nextInt(serials.size)],
-            if (status == ResultStatus.FAILED || Random.nextBoolean())
-                comments[Random.nextInt(comments.size)]
-            else null
-        )
-    }
-
-    private fun addNewResult(status: ResultStatus, serial: String, comment: String? = null) {
-        viewModel.addEvent(ProductDetailEvent.AddResult(Result(status, serial, comment, 0)))
     }
 
     override fun onStop() {
