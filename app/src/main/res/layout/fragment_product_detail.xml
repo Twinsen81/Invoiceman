@@ -7,275 +7,277 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/info_panel"
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/results_recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/product_info_panel"
+            android:layout_height="match_parent"
+            android:paddingBottom="8dp"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/item_result"/>
+
+    <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:elevation="3dp"
-                android:background="@color/semiTransparentBackground"
-                app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" android:paddingBottom="4dp" android:paddingTop="4dp">
+                android:layout_height="match_parent"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <TextView
-                    android:id="@+id/product_label_article"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Article:"
-                    android:textSize="16sp"
-                    android:fontFamily="sans-serif" android:text="@string/product_article"
-                    android:layout_marginStart="8dp"/>
-
-            <TextView
-                    android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/product_info_panel"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/product_article" app:layout_constraintStart_toEndOf="@id/product_label_article"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="6ES7-AB0-XB56"
-                    android:textColor="@android:color/black"
-                    app:layout_constraintEnd_toStartOf="@+id/product_divider"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="4dp"
-                    android:ellipsize="end" android:maxLines="1" android:textSize="16sp"/>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/progress_and_qty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:padding="2dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_collapseMode="parallax"
+                    android:paddingBottom="4dp"
+                    android:paddingTop="4dp">
 
                 <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/product_qty_done"
-                        android:textColor="@android:color/black"
-                        android:minEms="1"
-                        tools:text="12"
+                        android:id="@+id/product_label_article"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Article:"
                         android:textSize="16sp"
-                        android:textAlignment="center"/>
+                        android:fontFamily="sans-serif" android:text="@string/product_article"
+                        android:layout_marginStart="8dp"/>
 
                 <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/product_qty_of"
-                        android:text="@string/quantity_of"
-                        tools:text="of"
-                        android:textSize="14sp"
-                        android:textAlignment="center"/>
-
-                <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/product_qty"
+                        android:id="@+id/product_article" app:layout_constraintStart_toEndOf="@id/product_label_article"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="6ES7-AB0-XB56"
                         android:textColor="@android:color/black"
-                        android:minEms="1"
-                        tools:text="123"
-                        android:textSize="16sp"
-                        android:textAlignment="center"/>
+                        app:layout_constraintEnd_toStartOf="@+id/product_divider"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="4dp"
+                        android:ellipsize="end" android:maxLines="1" android:textSize="16sp"/>
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/progress_and_qty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:padding="2dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
 
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/product_qty_done"
+                            android:textColor="@android:color/black"
+                            android:minEms="1"
+                            tools:text="12"
+                            android:textSize="16sp"
+                            android:textAlignment="center"/>
 
-            <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/product_description"
-                    app:layout_constraintTop_toBottomOf="@+id/product_article"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:text="A very very long product description goes here and here and here"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintEnd_toStartOf="@+id/product_divider"
-                    android:layout_marginTop="2dp"
-                    android:textColor="@android:color/black"
-                    android:textSize="12sp"/>
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/product_qty_of"
+                            android:text="@string/quantity_of"
+                            tools:text="of"
+                            android:textSize="14sp"
+                            android:textAlignment="center"/>
 
-            <View
-                    android:id="@+id/product_divider"
-                    android:layout_width="1dp"
-                    android:layout_height="0dp"
-                    android:background="?android:attr/listDivider"
-                    app:layout_constraintEnd_toStartOf="@+id/progress_and_qty"
-                    android:layout_marginEnd="8dp" android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="4dp"
-                    app:layout_constraintBottom_toBottomOf="parent"/>
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/product_qty"
+                            android:textColor="@android:color/black"
+                            android:minEms="1"
+                            tools:text="123"
+                            android:textSize="16sp"
+                            android:textAlignment="center"/>
 
-            <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="6dp"
-                    app:layout_constraintTop_toBottomOf="@id/product_description"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="6dp"
-                    android:layout_marginStart="8dp"
-                    app:contentPaddingLeft="4dp"
-                    app:contentPaddingRight="4dp"
-                    android:id="@+id/product_article_scan_required"
-                    app:cardBackgroundColor="@color/primaryDarkColor">
-                <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                              android:orientation="horizontal"
-                                                              android:layout_height="match_parent"
-                                                              android:gravity="center_vertical"
-                                                              android:layout_marginBottom="2dp">
-                    <ImageView android:layout_width="wrap_content"
-                               app:srcCompat="@drawable/ic_barcode_scan"
-                               android:layout_marginTop="1dp"
-                               android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                              android:layout_marginStart="2dp"
-                              android:text="@string/product_scan_article" android:textSize="10sp"
-                              android:textAlignment="center"
-                              android:textColor="@android:color/white"
-                              android:gravity="clip_vertical|center_horizontal"/>
                 </androidx.appcompat.widget.LinearLayoutCompat>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/product_description"
-                    app:layout_constraintStart_toEndOf="@id/product_article_scan_required"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="6dp"
-                    app:contentPaddingLeft="2dp"
-                    app:contentPaddingRight="4dp"
-                    android:id="@+id/product_has_serial"
-                    app:cardBackgroundColor="@color/primaryDarkColor">
-                <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                              android:orientation="horizontal"
-                                                              android:layout_height="match_parent"
-                                                              android:gravity="center_vertical"
-                                                              android:layout_marginBottom="2dp">
-                    <ImageView android:layout_width="wrap_content"
-                               app:srcCompat="@drawable/ic_serial"
-                               android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                              android:text="@string/product_has_serial" android:textSize="10sp"
-                              android:textAlignment="center"
-                              android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
-                              android:layout_marginLeft="3dp"/>
-                </androidx.appcompat.widget.LinearLayoutCompat>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/product_description"
-                    app:layout_constraintStart_toEndOf="@id/product_has_serial"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="6dp"
-                    app:contentPaddingLeft="4dp"
-                    app:contentPaddingRight="4dp"
-                    android:id="@+id/product_serial_scan_required"
-                    app:cardBackgroundColor="@color/primaryDarkColor">
-                <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                              android:orientation="horizontal"
-                                                              android:layout_height="match_parent"
-                                                              android:gravity="center_vertical"
-                                                              android:layout_marginBottom="2dp">
-                    <ImageView android:layout_width="wrap_content"
-                               app:srcCompat="@drawable/ic_barcode_scan"
-                               android:layout_marginTop="1dp"
-                               android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                              android:text="@string/product_scan_serial" android:textSize="10sp"
-                              android:layout_marginStart="2dp"
-                              android:textAlignment="center"
-                              android:textColor="@android:color/white"
-                              android:gravity="clip_vertical|center_horizontal"/>
-                </androidx.appcompat.widget.LinearLayoutCompat>
-            </androidx.cardview.widget.CardView>
 
 
-            <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/product_description"
-                    app:layout_constraintStart_toEndOf="@id/product_serial_scan_required"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="6dp"
-                    app:contentPaddingLeft="2dp"
-                    app:contentPaddingRight="4dp"
-                    android:id="@+id/product_serial_same"
-                    app:cardBackgroundColor="@color/primaryDarkColor">
-                <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                              android:orientation="horizontal"
-                                                              android:layout_height="match_parent"
-                                                              android:gravity="center_vertical"
-                                                              android:layout_marginBottom="2dp">
-                    <ImageView android:layout_width="wrap_content"
-                               app:srcCompat="@drawable/ic_content_copy"
-                               android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                              android:text="@string/product_same_serial" android:textSize="10sp"
-                              android:textAlignment="center"
-                              android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
-                              android:layout_marginLeft="3dp"/>
-                </androidx.appcompat.widget.LinearLayoutCompat>
-            </androidx.cardview.widget.CardView>
+                <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/product_description"
+                        app:layout_constraintTop_toBottomOf="@+id/product_article"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:text="A very very long product description goes here and here and here"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintEnd_toStartOf="@+id/product_divider"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@android:color/black"
+                        android:textSize="12sp"/>
 
-            <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/product_description"
-                    app:layout_constraintStart_toEndOf="@id/product_serial_same"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="6dp"
-                    app:contentPaddingLeft="2dp"
-                    app:contentPaddingRight="4dp"
-                    android:id="@+id/product_serial_pattern_used"
-                    app:cardBackgroundColor="@color/primaryDarkColor">
-                <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
-                                                              android:orientation="horizontal"
-                                                              android:layout_height="match_parent"
-                                                              android:gravity="center_vertical"
-                                                              android:layout_marginBottom="2dp">
-                    <ImageView android:layout_width="wrap_content"
-                               app:srcCompat="@drawable/ic_format_shapes"
-                               android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                              android:text="@string/product_serial_pattern" android:textSize="10sp"
-                              android:textAlignment="center"
-                              android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
-                              android:layout_marginLeft="3dp"/>
-                </androidx.appcompat.widget.LinearLayoutCompat>
-            </androidx.cardview.widget.CardView>
+                <View
+                        android:id="@+id/product_divider"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="?android:attr/listDivider"
+                        app:layout_constraintEnd_toStartOf="@+id/progress_and_qty"
+                        android:layout_marginEnd="8dp" android:layout_marginTop="4dp"
+                        app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="4dp"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="6dp"
+                        app:layout_constraintTop_toBottomOf="@id/product_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="6dp"
+                        android:layout_marginStart="8dp"
+                        app:contentPaddingLeft="4dp"
+                        app:contentPaddingRight="4dp"
+                        android:id="@+id/product_article_scan_required"
+                        app:cardBackgroundColor="@color/primaryDarkColor">
+                    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                                  android:orientation="horizontal"
+                                                                  android:layout_height="match_parent"
+                                                                  android:gravity="center_vertical"
+                                                                  android:layout_marginBottom="2dp">
+                        <ImageView android:layout_width="wrap_content"
+                                   app:srcCompat="@drawable/ic_barcode_scan"
+                                   android:layout_marginTop="1dp"
+                                   android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                  android:layout_marginStart="2dp"
+                                  android:text="@string/product_scan_article" android:textSize="10sp"
+                                  android:textAlignment="center"
+                                  android:textColor="@android:color/white"
+                                  android:gravity="clip_vertical|center_horizontal"/>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.cardview.widget.CardView>
 
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/results_recyclerView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:elevation="2dp"
-                android:scrollbars="vertical"
-                android:clipToPadding="false"
-                android:paddingBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/product_info_panel"
-                tools:listitem="@layout/item_result"/>
+                <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginStart="4dp"
+                        app:layout_constraintTop_toBottomOf="@id/product_description"
+                        app:layout_constraintStart_toEndOf="@id/product_article_scan_required"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="6dp"
+                        app:contentPaddingLeft="2dp"
+                        app:contentPaddingRight="4dp"
+                        android:id="@+id/product_has_serial"
+                        app:cardBackgroundColor="@color/primaryDarkColor">
+                    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                                  android:orientation="horizontal"
+                                                                  android:layout_height="match_parent"
+                                                                  android:gravity="center_vertical"
+                                                                  android:layout_marginBottom="2dp">
+                        <ImageView android:layout_width="wrap_content"
+                                   app:srcCompat="@drawable/ic_serial"
+                                   android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                  android:text="@string/product_has_serial" android:textSize="10sp"
+                                  android:textAlignment="center"
+                                  android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
+                                  android:layout_marginLeft="3dp"/>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginStart="4dp"
+                        app:layout_constraintTop_toBottomOf="@id/product_description"
+                        app:layout_constraintStart_toEndOf="@id/product_has_serial"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="6dp"
+                        app:contentPaddingLeft="4dp"
+                        app:contentPaddingRight="4dp"
+                        android:id="@+id/product_serial_scan_required"
+                        app:cardBackgroundColor="@color/primaryDarkColor">
+                    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                                  android:orientation="horizontal"
+                                                                  android:layout_height="match_parent"
+                                                                  android:gravity="center_vertical"
+                                                                  android:layout_marginBottom="2dp">
+                        <ImageView android:layout_width="wrap_content"
+                                   app:srcCompat="@drawable/ic_barcode_scan"
+                                   android:layout_marginTop="1dp"
+                                   android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                  android:text="@string/product_scan_serial" android:textSize="10sp"
+                                  android:layout_marginStart="2dp"
+                                  android:textAlignment="center"
+                                  android:textColor="@android:color/white"
+                                  android:gravity="clip_vertical|center_horizontal"/>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.cardview.widget.CardView>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginStart="4dp"
+                        app:layout_constraintTop_toBottomOf="@id/product_description"
+                        app:layout_constraintStart_toEndOf="@id/product_serial_scan_required"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="6dp"
+                        app:contentPaddingLeft="2dp"
+                        app:contentPaddingRight="4dp"
+                        android:id="@+id/product_serial_same"
+                        app:cardBackgroundColor="@color/primaryDarkColor">
+                    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                                  android:orientation="horizontal"
+                                                                  android:layout_height="match_parent"
+                                                                  android:gravity="center_vertical"
+                                                                  android:layout_marginBottom="2dp">
+                        <ImageView android:layout_width="wrap_content"
+                                   app:srcCompat="@drawable/ic_content_copy"
+                                   android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                  android:text="@string/product_same_serial" android:textSize="10sp"
+                                  android:textAlignment="center"
+                                  android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
+                                  android:layout_marginLeft="3dp"/>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginStart="4dp"
+                        app:layout_constraintTop_toBottomOf="@id/product_description"
+                        app:layout_constraintStart_toEndOf="@id/product_serial_same"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="6dp"
+                        app:contentPaddingLeft="2dp"
+                        app:contentPaddingRight="4dp"
+                        android:id="@+id/product_serial_pattern_used"
+                        app:cardBackgroundColor="@color/primaryDarkColor">
+                    <androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
+                                                                  android:orientation="horizontal"
+                                                                  android:layout_height="match_parent"
+                                                                  android:gravity="center_vertical"
+                                                                  android:layout_marginBottom="2dp">
+                        <ImageView android:layout_width="wrap_content"
+                                   app:srcCompat="@drawable/ic_format_shapes"
+                                   android:layout_height="wrap_content" tools:ignore="ContentDescription"/>
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                  android:text="@string/product_serial_pattern" android:textSize="10sp"
+                                  android:textAlignment="center"
+                                  android:textColor="@android:color/white" android:gravity="clip_vertical|center_horizontal"
+                                  android:layout_marginLeft="3dp"/>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <com.leinardi.android.speeddial.SpeedDialOverlayLayout
             android:id="@+id/overlay"
@@ -286,12 +288,12 @@
             android:id="@+id/add_result_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="?attr/actionBarSize"
             app:sdMainFabClosedSrc="@drawable/ic_add"
             app:sdOverlayLayout="@id/overlay"
-            android:layout_gravity="bottom|end"/>
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:layout_anchor="@id/bottomAppBar"
+            app:layout_anchorGravity="top|end"/>
 
-    <!--android:layout_gravity="bottom"-->
     <com.google.android.material.bottomappbar.BottomAppBar
             android:visibility="gone"
             android:id="@+id/bottomAppBar"
@@ -299,8 +301,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:hideOnScroll="true"
-            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
-            app:fabAlignmentMode="end"
             android:backgroundTint="@color/primaryColor"
             app:navigationIcon="@drawable/ic_menu"/>
 

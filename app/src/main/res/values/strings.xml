@@ -16,6 +16,7 @@
     <string name="invoice_returning">Returning the invoice …</string>
     <string name="invoice_submitting">Submitting the invoice …</string>
     <string name="invoices_search_hint">Enter number, date or seller</string>
+    <string name="invoice_search_hint">Enter article or description</string>
     <string name="invoices_sort_by_number">By number</string>
     <string name="invoices_sort_by_date">By date</string>
     <string name="invoices_sort_by_seller">By seller</string>
