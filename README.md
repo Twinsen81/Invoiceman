@@ -3,16 +3,56 @@
 ![compileSdkVersion 28](https://img.shields.io/badge/compileSdkVersion-28-blueviolet.svg?style=true)
 [![CircleCI](https://circleci.com/gh/Twinsen81/Invoiceman.svg?style=svg)](https://circleci.com/gh/Twinsen81/Invoiceman)
 
-<img alt="Icon" src="app/src/main/res/mipmap-xxhdpi/ic_launcher.png?raw=true" align="left" hspace="1" vspace="1">
+<img alt="Icon" src="app/src/main/res/mipmap-xxhdpi/ic_launcher2.png?raw=true" align="left" hspace="1" vspace="1">
 
-# Invoiceman
+# INVOICEMAN
 
-An app for processing invoices at a storage facility. 
-<BR/>
+A pet project for processing invoices at a storage facility (warehouse). The app is not finished yet. The backend doesn't exist at all,
+so it is simulated within the app.   
 
-## TODO
+<p align="center">
+  <img alt='Sample screenshot 1' src="/art/sampleshot1.jpg">
+  <img alt='Sample screenshot 2' src="/art/sampleshot2.jpg">
+  <img alt='Sample screenshot 3' src="/art/sampleshot3.jpg">
+</p>
 
-* TODO
+#### The Workflow
+The app is designed to use in the following workflow:
+1. An employee at the office receives an invoice from a supplier;
+2. The employee enters data from the invoice into the backend's DB using a GUI app or a web frontend;
+3. The supplier ships products listed in the invoice to the company's warehouse;
+4. An employee at the warehouse finds the corresponding invoice in the app and accepts it for processing;
+5. He or she scans or enters manually serial numbers (possibly, some other info) of the products using the app, then submits the collected data 
+to the backend;
+6. An employee at the office reviews the data and confirms the successful receipt of the products;
+7. The data is kept on the backend for future reference (e.g. warranty service requests).   
+
+## The Architecture
+
+The app is built using the [clean architecture approach](https://www.youtube.com/watch?v=Nsjsiz2A9mg). The following diagram 
+depicts the objects and relationships used in this implementation of the clean architecture:
+
+<p align="center">
+  <img alt='Clean architecture implementation' src="/art/Invoiceman_clean_architecture.png">
+</p>
+ 
+ The UI layer is implemented using the MVI pattern. Although there're many existing libraries, I've decided to implement it
+ myself to get better understanding on how it works. The result is far from ideal but it works as intended. The implementation
+ was inspired by:
+ * [The State of Managing State with RxJava by Jake Wharton](https://jakewharton.com/the-state-of-managing-state-with-rxjava/)
+ * [Reactive Apps with Model-View-Intent by Hannes Dorfmann](http://hannesdorfmann.com/android/mosby3-mvi-1)
+ * [Kaushik Gopal's approach](https://fragmentedpodcast.com/episodes/148/)
+ The gist of the implementation is depicted on the following diagram:
+<p align="center">
+  <img alt='MVI implementation' src="/art/invoiceman_mvi.png">
+</p>
+
+## Credits
+
+* Frameworks, libraries & tools: Koin, Moshi, Retrofit, Okhttp, RxJava2 + RxKotlin, RxBinding, FastAdapter, Glide,
+zxing-android-embedded ,leinardi.android:speed-dial, Timber, LeakCanary, Mockito, RESTMock, detekt
+* Free logo at [LogoMakr.com](https://logomakr.com)
+* Diagrams at [Lucidchart.com](https://www.lucidchart.com)
 
 ## License
 
